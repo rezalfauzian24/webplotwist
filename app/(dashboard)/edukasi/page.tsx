@@ -38,16 +38,16 @@ const MYSTERY_REWARDS = [
   {type:"energy",label:"+ 20 Energi!",icon:"💚",amount:20},
 ];
 const ALL_ACHIEVEMENTS = [
-  {key:"Mulai Perjalanan",icon:"🌱",desc:"Login pertama kali",check:s=>true},
-  {key:"7 Hari Konsisten",icon:"🔥",desc:"Streak 7 hari berturut-turut",check:s=>s.streak>=7},
-  {key:"Raja Catatan",icon:"📝",desc:"Buat 5 catatan",check:s=>s.noteCount>=5},
-  {key:"Master Fokus",icon:"⏱",desc:"Selesaikan 5 sesi Focus Mode",check:s=>s.focusSessions>=5},
-  {key:"Pemburu XP",icon:"⚡",desc:"Kumpulkan 500 XP",check:s=>s.totalXpEarned>=500},
-  {key:"Produktif Level Dewa",icon:"🚀",desc:"Selesaikan 10 Daily Quest",check:s=>s.totalQuestsDone>=10},
-  {key:"Raja Flashcard",icon:"🃏",desc:"Review 20 flashcard",check:s=>s.flashcardViewed>=20},
-  {key:"Money Saver",icon:"💰",desc:"Catat 10 transaksi",check:s=>s.transactions.length>=10},
-  {key:"Explorer",icon:"🗺️",desc:"Kunjungi 3 area Study Map",check:s=>s.mapVisited.length>=3},
-  {key:"Peneliti Muda",icon:"🔬",desc:"Gunakan AI Belajar Kilat 3 kali",check:s=>s.aiAnalyzeCount>=3},
+  {key:"Mulai Perjalanan",icon:"🌱",desc:"Login pertama kali",check:(s:any)=>true},
+  {key:"7 Hari Konsisten",icon:"🔥",desc:"Streak 7 hari berturut-turut",check:(s:any)=>s.streak>=7},
+  {key:"Raja Catatan",icon:"📝",desc:"Buat 5 catatan",check:(s:any)=>s.noteCount>=5},
+  {key:"Master Fokus",icon:"⏱",desc:"Selesaikan 5 sesi Focus Mode",check:(s:any)=>s.focusSessions>=5},
+  {key:"Pemburu XP",icon:"⚡",desc:"Kumpulkan 500 XP",check:(s:any)=>s.totalXpEarned>=500},
+  {key:"Produktif Level Dewa",icon:"🚀",desc:"Selesaikan 10 Daily Quest",check:(s:any)=>s.totalQuestsDone>=10},
+  {key:"Raja Flashcard",icon:"🃏",desc:"Review 20 flashcard",check:(s:any)=>s.flashcardViewed>=20},
+  {key:"Money Saver",icon:"💰",desc:"Catat 10 transaksi",check:(s:any)=>s.transactions.length>=10},
+  {key:"Explorer",icon:"🗺️",desc:"Kunjungi 3 area Study Map",check:(s:any)=>s.mapVisited.length>=3},
+  {key:"Peneliti Muda",icon:"🔬",desc:"Gunakan AI Belajar Kilat 3 kali",check:(s:any)=>s.aiAnalyzeCount>=3},
 ];
 const CAT_ICONS={Jajan:"🍜",Kopi:"☕",Game:"🎮",Hiburan:"🎬",Pendidikan:"📚",Transportasi:"🚗",Belanja:"🛒",Lainnya:"💰"};
 const TABS=[
