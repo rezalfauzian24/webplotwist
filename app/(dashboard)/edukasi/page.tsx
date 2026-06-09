@@ -93,8 +93,8 @@ const INIT={
   ],
 };
 
-function getRankIdx(xp){let i=0;for(let j=0;j<RANK_XP.length;j++){if(xp>=RANK_XP[j])i=j;}return i;}
-function getEvo(xp){if(xp>=1000)return"legend";if(xp>=300)return"adult";if(xp>=100)return"teen";return"baby";}
+function getRankIdx(xp:any){let i=0;for(let j=0;j<RANK_XP.length;j++){if(xp>=RANK_XP[j])i=j;}return i;}
+function getEvo(xp:any){if(xp>=1000)return"legend";if(xp>=300)return"adult";if(xp>=100)return"teen";return"baby";}
 function checkAch(state){
   const newOnes=ALL_ACHIEVEMENTS.filter(a=>a.check(state)&&!state.achievements.includes(a.key)).map(a=>a.key);
   return newOnes.length>0?[...state.achievements,...newOnes]:state.achievements;
