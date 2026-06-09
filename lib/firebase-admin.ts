@@ -17,3 +17,4 @@ if (getApps().length === 0 && serviceAccount.project_id) {
     credential: admin.credential.cert(serviceAccount),
   })
 }
+// trigger redeploy baru
