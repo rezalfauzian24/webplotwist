@@ -1,11 +1,14 @@
 import admin from 'firebase-admin'
 import { getApps } from 'firebase-admin/app'
-import serviceAccount from '../service-account.json'
+
+// HAPUS baris import serviceAccount JSON yang lama, ganti dengan ini:
+const serviceAccount = JSON.parse(
+  process.env.FIREBASE_SERVICE_ACCOUNT || '{}'
+)
 
 if (getApps().length === 0) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+    credential: admin.credential.cert(serviceAccount),
+    // tambahkan databaseURL jika kamu memakainya, jika tidak kosongkan saja
   })
 }
-
-export const adminDb = admin.firestore()
