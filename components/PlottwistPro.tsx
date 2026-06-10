@@ -6,11 +6,11 @@ import { usePathname } from 'next/navigation'
 import { PawPrint, ChevronDown, Lock } from 'lucide-react'
 
 const MASCOT = {
-  idle:      { src: '/15.png', mood: 'Siap menemanimu belajar!',       anim: 'animate-bounce-slow' },
-  focus:     { src: '/18.png', mood: 'Lagi fokus, jangan ganggu! 📚',  anim: 'animate-bounce' },
-  sad:       { src: '/17.png', mood: 'Gua laper materi, belajar yuk!', anim: 'animate-wobble' },
-  celebrate: { src: '/16.png', mood: 'Yeayyy! Kamu keren banget! 🎉',  anim: 'animate-pop' },
-  levelup:   { src: '/14.png', mood: 'Evolved! Level baru! 🎓',         anim: 'animate-spin-once' },
+  idle:      { src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/15.png', mood: 'Siap menemanimu belajar!',       anim: 'animate-bounce-slow' },
+  focus:     { src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/18.png', mood: 'Lagi fokus, jangan ganggu! 📚',  anim: 'animate-bounce' },
+  sad:       { src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/17.png', mood: 'Gua laper materi, belajar yuk!', anim: 'animate-wobble' },
+  celebrate: { src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/16.png', mood: 'Yeayyy! Kamu keren banget! 🎉',  anim: 'animate-pop' },
+  levelup:   { src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/14.png', mood: 'Evolved! Level baru! 🎓',         anim: 'animate-spin-once' },
 }
 
 const PRO_MENU = [

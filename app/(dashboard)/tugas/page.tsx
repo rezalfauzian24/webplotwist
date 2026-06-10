@@ -1941,7 +1941,7 @@ export default function TaskPage() {
           </div>
 
           {/* STAT CARDS */}
-          <div className="grid grid-cols-5 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 mb-6">
             <div className="bg-white rounded-[24px] p-5 shadow-sm border-2 border-[#CECBF6]">
               <div className="text-3xl font-bold text-[#3C3489]">{tasks.length}</div>
               <div className="text-sm text-[#7F77DD] font-medium mt-1">Total Tugas</div>
@@ -2088,7 +2088,7 @@ export default function TaskPage() {
 
               <div className="flex justify-center items-end pt-4 mt-auto">
                 <img
-                  src="/tugas.png"
+                  src="https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/tugas.png"
                   alt="Maskot Tugas"
                   className="w-48 object-contain drop-shadow-lg"
                 />

@@ -94,7 +94,7 @@ export default function ProfilePage() {
   const [studentId,      setStudentId]      = useState('')
   const [angkatan,       setAngkatan]       = useState('')
   const [bio,            setBio]            = useState('')
-  const [profileImage,   setProfileImage]   = useState('/profile.png')
+  const [profileImage,   setProfileImage]   = useState('https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/profile.png')
   const [educationLevel, setEducationLevel] = useState<EducationLevel>('kuliah')
   const [socialLinks,    setSocialLinks]    = useState<SocialLinks>({
     linkedin: '', instagram: '', tiktok: '', facebook: '', twitter: '', portfolio: ''
@@ -175,7 +175,7 @@ export default function ProfilePage() {
   const playPreview = (key: 'musik1'|'musik2') => {
     if (audioRef.current) { audioRef.current.pause(); audioRef.current.src = '' }
     if (playingAudio === key) { setPlayingAudio(null); audioRef.current = null; return }
-    const audio = new Audio(`/${key}.mp3`)
+    const audio = new Audio(`https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/${key}.mp3`)
     audio.oncanplaythrough = () => audio.play().catch(() => { triggerToast('File tidak ditemukan ⚠️'); setPlayingAudio(null) })
     audio.onended = () => { setPlayingAudio(null); audioRef.current = null }
     audio.onerror = () => { triggerToast(`${key}.mp3 tidak ditemukan ⚠️`); setPlayingAudio(null) }
@@ -312,7 +312,7 @@ export default function ProfilePage() {
           setStudentId(d.studentId ?? '')
           setAngkatan(d.angkatan   ?? '')
           setBio(d.bio             ?? '')
-          setProfileImage(d.profileImage ?? '/profile.png')
+          setProfileImage(d.profileImage ?? 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/profile.png')
           if (d.educationLevel) setEducationLevel(d.educationLevel as EducationLevel)
           if (d.xp !== undefined) setLocalXp(d.xp)
           if (d.socialLinks) setSocialLinks({
@@ -333,7 +333,7 @@ export default function ProfilePage() {
         } else {
           await setDoc(doc(db, 'pengguna', uid), {
             name: '', major: '', semester: '', studentId: '',
-            angkatan: '', bio: '', profileImage: '/profile.png',
+            angkatan: '', bio: '', profileImage: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/profile.png',
             educationLevel: 'kuliah', socialLinks: {}, xp: 0,
             updatedAt: serverTimestamp(),
           })
@@ -524,7 +524,7 @@ export default function ProfilePage() {
   return (
     <>
       <div className={`flex-1 min-h-screen transition-colors duration-300 ${ct.background}`}>
-        <div className="p-8 overflow-y-auto">
+        <div className="p-4 md:p-8 overflow-y-auto">
 
           {/* ══ HERO ══════════════════════════════════════════════════════════ */}
           <div className={`relative overflow-visible rounded-[40px] bg-gradient-to-r ${ct.hero} p-8 shadow-2xl mb-8`}>
@@ -574,7 +574,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Body: Avatar + Identitas + Buttons */}
-            <div className="relative z-10 flex items-start gap-8">
+            <div className="relative z-10 flex flex-col md:flex-row items-start gap-6">
               {/* Avatar */}
               <div className="relative w-[130px] h-[130px] flex-shrink-0">
                 <Image src={profileImage} alt="profile" fill className="rounded-full object-cover border-4 border-white/40 shadow-2xl" />
@@ -588,7 +588,7 @@ export default function ProfilePage() {
                   value={isEditMode ? draft.name : name}
                   onChange={e => isEditMode && setDraft(d => ({ ...d, name: e.target.value }))}
                   readOnly={!isEditMode} placeholder="Nama lengkap kamu"
-                  className={`bg-transparent text-white text-4xl font-extrabold outline-none w-full placeholder-white/40 transition-all ${isEditMode ? 'border-b-2 border-white/40 pb-1' : 'border-b-2 border-transparent pb-1'}`}
+                  className={`bg-transparent text-white text-2xl sm:text-4xl font-extrabold outline-none w-full placeholder-white/40 transition-all truncate ${isEditMode ? 'border-b-2 border-white/40 pb-1' : 'border-b-2 border-transparent pb-1'}`}
                 />
                 <div className="flex items-center gap-2 flex-wrap">
                   {isEditMode ? (
@@ -623,7 +623,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Action buttons */}
-              <div className="flex flex-col gap-3 flex-shrink-0 min-w-[155px]">
+              <div className="flex flex-col gap-3 w-full md:w-auto md:flex-shrink-0 md:min-w-[155px]">
                 {!isEditMode
                   ? <button onClick={openEditMode} className="px-6 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 bg-white/20 border border-white/40 text-white hover:bg-white/30 hover:scale-105 active:scale-95 transition-all"><FaEdit /> Edit Profil</button>
                   : <>
@@ -646,8 +646,8 @@ export default function ProfilePage() {
           </div>
 
           {/* ══ GRID ═════════════════════════════════════════════════════════ */}
-          <div className="grid grid-cols-3 gap-6">
-            <div className="col-span-2 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="col-span-1 lg:col-span-2 space-y-6">
 
               {/* ABOUT */}
               <div className={`${ct.card} rounded-[35px] p-8 shadow-xl`}>
@@ -779,7 +779,7 @@ export default function ProfilePage() {
                   <h3 className={`text-xl font-bold ${ct.text}`}>Badges</h3>
                   <span className="text-sm font-semibold px-3 py-1 rounded-full bg-purple-100 text-purple-600">{earnedCount}/{badges.length} Unlocked</span>
                 </div>
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {badges.map(badge=>(
                     <div key={badge.id}
                       className={`relative rounded-3xl p-6 shadow-xl transition-all duration-300 ${badge.earned?`bg-gradient-to-br ${badge.gradient} text-white hover:scale-105 cursor-pointer`:`${ct.soft} opacity-40 grayscale cursor-not-allowed`}`}

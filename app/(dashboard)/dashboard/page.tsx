@@ -81,7 +81,6 @@ function getLevelTitle(level: number): string {
   return "Novice";
 }
 
-// ── useUserAccount: baca dari Firestore (realtime) + localStorage backup ──────
 function useUserAccount(): UserAccount {
   const [account, setAccount] = useState<UserAccount>({
     name: "User",
@@ -93,7 +92,6 @@ function useUserAccount(): UserAccount {
   });
 
   useEffect(() => {
-    // 1. Restore localStorage dulu (instant, tidak perlu tunggu network)
     try {
       const backup = localStorage.getItem("plotwist_profile_backup");
       if (backup) {
@@ -113,17 +111,12 @@ function useUserAccount(): UserAccount {
       }
     } catch {}
 
-    // 2. Subscribe Firestore realtime — update otomatis saat profil diubah
     let unsubFn: (() => void) | undefined;
-
     const init = async () => {
       const { db } = await import("@/firebase/config");
       const { doc, onSnapshot } = await import("firebase/firestore");
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
-
       const unsub = onSnapshot(doc(db, "pengguna", session.user.id), (snap) => {
         if (!snap.exists()) return;
         const d = snap.data();
@@ -138,17 +131,10 @@ function useUserAccount(): UserAccount {
           streakDays: d.streakDays ?? 0,
         });
       });
-
       return unsub;
     };
-
-    init().then((fn) => {
-      unsubFn = fn;
-    });
-
-    return () => {
-      unsubFn?.();
-    };
+    init().then((fn) => { unsubFn = fn; });
+    return () => { unsubFn?.(); };
   }, []);
 
   return account;
@@ -206,10 +192,7 @@ function EnergyWave({ energy, warMode }: { energy: number; warMode: boolean }) {
       ctx.beginPath();
       ctx.moveTo(0, H);
       for (let x = 0; x <= W; x++) {
-        const y =
-          H / 2 +
-          Math.sin((x / W) * Math.PI * 4 * speed + t) * amp +
-          Math.sin((x / W) * Math.PI * 2 * speed + t * 1.3) * (amp * 0.4);
+        const y = H / 2 + Math.sin((x / W) * Math.PI * 4 * speed + t) * amp + Math.sin((x / W) * Math.PI * 2 * speed + t * 1.3) * (amp * 0.4);
         ctx.lineTo(x, y);
       }
       ctx.lineTo(W, H);
@@ -229,10 +212,7 @@ function EnergyWave({ energy, warMode }: { energy: number; warMode: boolean }) {
       ctx.beginPath();
       ctx.moveTo(0, H);
       for (let x = 0; x <= W; x++) {
-        const y =
-          H / 2 +
-          Math.sin((x / W) * Math.PI * 3 * speed + t * 1.5 + 1) * amp * 0.7 +
-          Math.sin((x / W) * Math.PI * 5 * speed + t * 0.8) * (amp * 0.3);
+        const y = H / 2 + Math.sin((x / W) * Math.PI * 3 * speed + t * 1.5 + 1) * amp * 0.7 + Math.sin((x / W) * Math.PI * 5 * speed + t * 0.8) * (amp * 0.3);
         ctx.lineTo(x, y);
       }
       ctx.lineTo(W, H);
@@ -247,9 +227,7 @@ function EnergyWave({ energy, warMode }: { energy: number; warMode: boolean }) {
     return () => cancelAnimationFrame(animRef.current);
   }, [energy, warMode]);
 
-  return (
-    <canvas ref={canvasRef} width={500} height={120} className="w-full h-full rounded-2xl" />
-  );
+  return <canvas ref={canvasRef} width={500} height={120} className="w-full h-full rounded-2xl" />;
 }
 
 function Equalizer({ playing }: { playing: boolean }) {
@@ -280,16 +258,12 @@ function StatBar({ label, value, color }: { label: string; value: number; color:
         <span className="font-bold text-white">{value}</span>
       </div>
       <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-1000"
-          style={{ width: `${value}%`, background: color }}
-        />
+        <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${value}%`, background: color }} />
       </div>
     </div>
   );
 }
 
-// ── useLiveCalendarData: baca dari localStorage key yang sama dengan kalender ──
 function useLiveCalendarData() {
   const today = new Date();
   const [jadwal, setJadwal] = useState<CalEvent[]>([]);
@@ -297,21 +271,15 @@ function useLiveCalendarData() {
   useEffect(() => {
     const load = () => {
       try {
-        // Key sama dengan yang dipakai di calendar.tsx: 'plotwist_cal:events'
         const raw = localStorage.getItem("plotwist_cal:events");
         if (!raw) return;
         const events: CalEvent[] = JSON.parse(raw);
         const todayEvents = events.filter(
-          (e) =>
-            e.type === "class" &&
-            e.year === today.getFullYear() &&
-            e.month === today.getMonth() + 1 &&
-            e.day === today.getDate()
+          (e) => e.type === "class" && e.year === today.getFullYear() && e.month === today.getMonth() + 1 && e.day === today.getDate()
         );
         setJadwal(todayEvents);
       } catch {}
     };
-
     load();
     const id = setInterval(load, 5000);
     return () => clearInterval(id);
@@ -329,14 +297,10 @@ function useLiveTaskData() {
         const raw = localStorage.getItem("taskpage:tasks");
         if (!raw) return;
         const parsed: Task[] = JSON.parse(raw);
-        const active = parsed
-          .filter((t) => t.status !== "done")
-          .sort((a, b) => daysUntil(a.deadline) - daysUntil(b.deadline))
-          .slice(0, 4);
+        const active = parsed.filter((t) => t.status !== "done").sort((a, b) => daysUntil(a.deadline) - daysUntil(b.deadline)).slice(0, 4);
         setTasks(active);
       } catch {}
     };
-
     load();
     const id = setInterval(load, 5000);
     return () => clearInterval(id);
@@ -347,13 +311,8 @@ function useLiveTaskData() {
 
 export default function Dashboard() {
   const userAccount = useUserAccount();
-
-  const displayName = userAccount.nickname
-    ? userAccount.nickname
-    : getFirstName(userAccount.name);
-
-  const resolveQuote = (template: string) =>
-    template.replace(/\{nama\}/g, displayName);
+  const displayName = userAccount.nickname ? userAccount.nickname : getFirstName(userAccount.name);
+  const resolveQuote = (template: string) => template.replace(/\{nama\}/g, displayName);
 
   const [energy, setEnergy] = useState(72);
   const [warMode, setWarMode] = useState(false);
@@ -373,45 +332,30 @@ export default function Dashboard() {
   const vinylRef = useRef<number>(0);
 
   useEffect(() => {
-    const audio = new Audio("/lagu.mp3");
+    const audio = new Audio("https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/lagu.mp3");
     audio.loop = true;
     audio.volume = volume;
     audioRef.current = audio;
-
     audio.addEventListener("timeupdate", () => setCurrentTime(audio.currentTime));
     audio.addEventListener("loadedmetadata", () => setDuration(audio.duration));
     audio.addEventListener("ended", () => setPlaying(false));
-
-    return () => {
-      audio.pause();
-      audio.src = "";
-    };
+    return () => { audio.pause(); audio.src = ""; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (!audioRef.current) return;
-    if (playing) {
-      audioRef.current.play().catch(() => setPlaying(false));
-    } else {
-      audioRef.current.pause();
-    }
+    if (playing) { audioRef.current.play().catch(() => setPlaying(false)); }
+    else { audioRef.current.pause(); }
   }, [playing]);
 
-  useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume;
-  }, [volume]);
+  useEffect(() => { if (audioRef.current) audioRef.current.volume = volume; }, [volume]);
 
   useEffect(() => {
     if (playing) {
-      const spin = () => {
-        setVinylRotation((r) => (r + 0.5) % 360);
-        vinylRef.current = requestAnimationFrame(spin);
-      };
+      const spin = () => { setVinylRotation((r) => (r + 0.5) % 360); vinylRef.current = requestAnimationFrame(spin); };
       vinylRef.current = requestAnimationFrame(spin);
-    } else {
-      cancelAnimationFrame(vinylRef.current);
-    }
+    } else { cancelAnimationFrame(vinylRef.current); }
     return () => cancelAnimationFrame(vinylRef.current);
   }, [playing]);
 
@@ -438,14 +382,10 @@ export default function Dashboard() {
   }, []);
 
   const urgentCount = deadlineTasks.filter((t) => daysUntil(t.deadline) <= 1).length;
-  useEffect(() => {
-    if (urgentCount >= 2 || energy < 30) setWarMode(true);
-  }, [urgentCount, energy]);
+  useEffect(() => { if (urgentCount >= 2 || energy < 30) setWarMode(true); }, [urgentCount, energy]);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setQuoteIdx((p) => (p + 1) % RABBIT_HOLE_QUOTE_TEMPLATES.length);
-    }, 8000);
+    const id = setInterval(() => { setQuoteIdx((p) => (p + 1) % RABBIT_HOLE_QUOTE_TEMPLATES.length); }, 8000);
     return () => clearInterval(id);
   }, []);
 
@@ -455,10 +395,7 @@ export default function Dashboard() {
     setAdventure(msg);
     setAdventureTimer(15);
     const id = setInterval(() => {
-      setAdventureTimer((t) => {
-        if (t <= 1) { clearInterval(id); setAdventure(null); return 0; }
-        return t - 1;
-      });
+      setAdventureTimer((t) => { if (t <= 1) { clearInterval(id); setAdventure(null); return 0; } return t - 1; });
     }, 1000);
     setAdventureInterval(id);
   };
@@ -504,16 +441,19 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="p-8 pt-10">
-        <div className="mb-8 flex items-end justify-between">
+      {/* ── MAIN CONTENT ── */}
+      <div className="p-4 md:p-8 pt-6 md:pt-10">
+
+        {/* ── HEADER ── */}
+        <div className="mb-6 md:mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className={`text-sm font-semibold tracking-widest uppercase mb-1 ${textSecondary}`}>
+            <p className={`text-xs font-semibold tracking-widest uppercase mb-1 ${textSecondary}`}>
               {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" })}
             </p>
             <h1
               className={`font-black leading-none ${warMode ? "text-red-200" : "text-gray-900"}`}
               style={{
-                fontSize: "clamp(2.5rem, 5vw, 4rem)",
+                fontSize: "clamp(2rem, 6vw, 4rem)",
                 fontFamily: "'Syne', 'Space Grotesk', sans-serif",
                 background: warMode
                   ? "linear-gradient(135deg, #ff6b6b, #ff4500)"
@@ -528,7 +468,7 @@ export default function Dashboard() {
           </div>
           <button
             onClick={() => setWarMode((w) => !w)}
-            className={`px-4 py-2 rounded-2xl text-sm font-bold transition-all ${
+            className={`self-start sm:self-auto px-4 py-2 rounded-2xl text-sm font-bold transition-all ${
               warMode
                 ? "bg-red-600 text-white hover:bg-red-700"
                 : "bg-white/60 text-purple-700 hover:bg-purple-100 border border-purple-200"
@@ -538,19 +478,23 @@ export default function Dashboard() {
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-5 mb-5">
-          <div className={`${card} p-5 col-span-1`}>
+        {/* ── TOP ROW: Daily Pulse + Hero Stats + Now Playing ── */}
+        {/* Mobile: 1 col | Tablet: 2 col | Desktop: 3 col */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-4 md:mb-5">
+
+          {/* Daily Pulse */}
+          <div className={`${card} p-4 md:p-5`}>
             <div className="flex items-center justify-between mb-3">
               <div>
                 <p className={`text-xs font-bold tracking-widest uppercase ${textSecondary}`}>Daily Pulse</p>
-                <p className={`text-2xl font-black ${textPrimary}`}>{energy}% Energy</p>
+                <p className={`text-xl md:text-2xl font-black ${textPrimary}`}>{energy}% Energy</p>
               </div>
               <div className="flex flex-col gap-1">
                 <button onClick={() => setEnergy((e) => Math.min(100, e + 10))} className="text-xs bg-purple-500/20 hover:bg-purple-500/40 text-purple-700 rounded-lg px-2 py-1 font-bold">+10</button>
                 <button onClick={() => setEnergy((e) => Math.max(0, e - 10))} className="text-xs bg-pink-500/20 hover:bg-pink-500/40 text-pink-700 rounded-lg px-2 py-1 font-bold">-10</button>
               </div>
             </div>
-            <div className="h-[100px] rounded-2xl overflow-hidden">
+            <div className="h-[90px] md:h-[100px] rounded-2xl overflow-hidden">
               <EnergyWave energy={energy} warMode={warMode} />
             </div>
             <div className="flex justify-between mt-2 text-xs text-gray-400">
@@ -558,37 +502,35 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Hero Stats */}
           <div
-            className="rounded-3xl p-5 col-span-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+            className="rounded-3xl p-4 md:p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
             style={{ background: warMode ? "linear-gradient(135deg, #7f1d1d, #450a0a)" : "linear-gradient(135deg, #4f1d96, #831843)" }}
           >
             <p className="text-xs font-bold tracking-widest uppercase text-white/60 mb-1">Hero Stats</p>
-            <p className="text-xl font-black text-white mb-4">Level {userAccount.productivityLevel} {userAccount.productivityTitle}</p>
+            <p className="text-lg md:text-xl font-black text-white mb-4">Level {userAccount.productivityLevel} {userAccount.productivityTitle}</p>
             <StatBar label="Focus" value={heroStats.focus} color="linear-gradient(90deg,#a78bfa,#818cf8)" />
             <StatBar label="Consistency" value={heroStats.consistency} color="linear-gradient(90deg,#f472b6,#fb7185)" />
             <StatBar label="Willpower" value={heroStats.willpower} color="linear-gradient(90deg,#34d399,#06b6d4)" />
             <p className="text-xs text-white/40 mt-2 italic">+{userAccount.xpToday} XP hari ini · Streak {userAccount.streakDays} hari 🔥</p>
           </div>
 
-          <div className={`${card} p-5 col-span-1 relative overflow-hidden`}>
+          {/* Now Playing — full width on mobile sm, spans both cols on tablet, 1 col on desktop */}
+          <div className={`${card} p-4 md:p-5 sm:col-span-2 lg:col-span-1 relative overflow-hidden`}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/cinta.png"
+              src="https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/cinta.png"
               alt="Maskot Cinta"
               className="absolute bottom-0 right-0 pointer-events-none z-0"
-              style={{ width: 90, height: "auto", opacity: 0.92 }}
+              style={{ width: 80, height: "auto", opacity: 0.92 }}
             />
             <div className="relative z-10">
               <p className={`text-xs font-bold tracking-widest uppercase ${textSecondary} mb-1`}>Now Playing</p>
-              <p className={`text-lg font-black ${textPrimary} mb-3`}>Productivity Audio 🎵</p>
+              <p className={`text-base md:text-lg font-black ${textPrimary} mb-3`}>Productivity Audio 🎵</p>
               <div className="flex items-center gap-3 mb-4">
                 <div
                   className="relative shrink-0"
-                  style={{
-                    width: 56, height: 56,
-                    transform: `rotate(${vinylRotation}deg)`,
-                    transition: playing ? "none" : "transform 0.5s ease",
-                  }}
+                  style={{ width: 52, height: 52, transform: `rotate(${vinylRotation}deg)`, transition: playing ? "none" : "transform 0.5s ease" }}
                 >
                   <div
                     className="w-full h-full rounded-full border-4 border-purple-900/40 flex items-center justify-center"
@@ -612,11 +554,7 @@ export default function Dashboard() {
               </div>
               <div className="mb-2">
                 <input
-                  type="range"
-                  min={0}
-                  max={duration || 100}
-                  value={currentTime}
-                  onChange={handleSeek}
+                  type="range" min={0} max={duration || 100} value={currentTime} onChange={handleSeek}
                   className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
                   style={{
                     background: `linear-gradient(to right, #7c3aed ${duration ? (currentTime / duration) * 100 : 0}%, rgba(139,92,246,0.2) 0%)`,
@@ -631,9 +569,7 @@ export default function Dashboard() {
               <button
                 onClick={() => setPlaying((p) => !p)}
                 className={`w-full py-2.5 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2 mb-3 ${
-                  playing
-                    ? "bg-purple-600 text-white hover:bg-purple-700"
-                    : "bg-white/60 text-purple-700 border border-purple-200 hover:bg-purple-50"
+                  playing ? "bg-purple-600 text-white hover:bg-purple-700" : "bg-white/60 text-purple-700 border border-purple-200 hover:bg-purple-50"
                 }`}
               >
                 <span className="text-base">{playing ? "⏸" : "▶"}</span>
@@ -642,12 +578,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2">
                 <span className="text-xs">{volume === 0 ? "🔇" : volume < 0.5 ? "🔉" : "🔊"}</span>
                 <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.01}
-                  value={volume}
-                  onChange={(e) => setVolume(Number(e.target.value))}
+                  type="range" min={0} max={1} step={0.01} value={volume} onChange={(e) => setVolume(Number(e.target.value))}
                   className="flex-1 h-1.5 rounded-full appearance-none cursor-pointer"
                   style={{
                     background: `linear-gradient(to right, #a78bfa ${volume * 100}%, rgba(167,139,250,0.2) 0%)`,
@@ -660,13 +591,16 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-5">
-          <div className={`${card} p-5`}>
+        {/* ── BOTTOM ROW: Jadwal + Deadline + Rabbit Hole ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+
+          {/* Jadwal */}
+          <div className={`${card} p-4 md:p-5`}>
             <div className="flex items-center justify-between mb-1">
               <p className={`text-xs font-bold tracking-widest uppercase ${textSecondary}`}>Jadwal</p>
               <a href="/calendar" className={`text-xs font-semibold underline underline-offset-2 ${textSecondary} hover:opacity-70 transition`}>Lihat semua →</a>
             </div>
-            <p className={`text-xl font-black ${textPrimary} mb-4`}>Hari Ini 📅</p>
+            <p className={`text-lg md:text-xl font-black ${textPrimary} mb-4`}>Hari Ini 📅</p>
             {jadwalHariIni.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 gap-2">
                 <p className="text-3xl">📭</p>
@@ -693,12 +627,13 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className={`${card} p-5`}>
+          {/* Deadline Tugas */}
+          <div className={`${card} p-4 md:p-5`}>
             <div className="flex items-center justify-between mb-1">
               <p className={`text-xs font-bold tracking-widest uppercase ${textSecondary}`}>Deadline Tugas</p>
               <a href="/tugas" className={`text-xs font-semibold underline underline-offset-2 ${textSecondary} hover:opacity-70 transition`}>Lihat semua →</a>
             </div>
-            <p className={`text-xl font-black ${textPrimary} mb-4`}>Jangan Lupa ⏰</p>
+            <p className={`text-lg md:text-xl font-black ${textPrimary} mb-4`}>Jangan Lupa ⏰</p>
             {deadlineTasks.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 gap-2">
                 <p className="text-3xl">✅</p>
@@ -739,8 +674,9 @@ export default function Dashboard() {
             )}
           </div>
 
+          {/* Rabbit Hole — full width on sm, 1 col on lg */}
           <div
-            className="rounded-3xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden"
+            className="rounded-3xl p-4 md:p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden sm:col-span-2 lg:col-span-1"
             style={{
               background: "linear-gradient(135deg, #fdf4ff, #fce7f3)",
               border: warMode ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(216,180,254,0.5)",
@@ -749,7 +685,7 @@ export default function Dashboard() {
             <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-purple-300/20 blur-2xl" />
             <div className="absolute -bottom-6 -left-6 w-20 h-20 rounded-full bg-pink-300/20 blur-xl" />
             <p className={`text-xs font-bold tracking-widest uppercase ${textSecondary} mb-1 relative z-10`}>🐇 Rabbit Hole Prevention</p>
-            <p className={`text-xl font-black ${textPrimary} mb-4 relative z-10`}>Reality Check</p>
+            <p className={`text-lg md:text-xl font-black ${textPrimary} mb-4 relative z-10`}>Reality Check</p>
             <div className={`p-4 rounded-2xl relative z-10 ${warMode ? "bg-pink-50/60" : "bg-white/50"}`}>
               <p className="text-sm font-semibold leading-relaxed italic text-gray-700" key={quoteIdx} style={{ animation: "fade-in 0.5s ease" }}>
                 "{currentQuote}"
@@ -761,9 +697,10 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* ── Micro Adventure Button ── */}
       <button
         onClick={triggerAdventure}
-        className="fixed bottom-8 right-8 w-14 h-14 rounded-2xl shadow-2xl flex items-center justify-center text-2xl transition-all hover:scale-110 active:scale-95 z-40"
+        className="fixed bottom-8 right-4 md:right-8 w-12 h-12 md:w-14 md:h-14 rounded-2xl shadow-2xl flex items-center justify-center text-xl md:text-2xl transition-all hover:scale-110 active:scale-95 z-40"
         style={{ background: "linear-gradient(135deg, #7c3aed, #db2777)", boxShadow: "0 8px 32px rgba(124,58,237,0.4)" }}
         title="Klik untuk Micro-Adventure!"
       >
@@ -771,7 +708,7 @@ export default function Dashboard() {
       </button>
 
       {adventure && (
-        <div className="fixed bottom-28 right-8 max-w-xs z-50 p-5 rounded-3xl shadow-2xl" style={{ background: "linear-gradient(135deg, #4f1d96, #831843)", animation: "slide-up 0.3s ease" }}>
+        <div className="fixed bottom-24 right-4 md:right-8 max-w-[280px] md:max-w-xs z-50 p-4 md:p-5 rounded-3xl shadow-2xl" style={{ background: "linear-gradient(135deg, #4f1d96, #831843)", animation: "slide-up 0.3s ease" }}>
           <div className="flex justify-between items-start mb-2">
             <p className="text-xs font-bold tracking-widest uppercase text-purple-300">⚡ Micro-Adventure!</p>
             <span className="text-xs text-white/50 font-mono">{adventureTimer}s</span>

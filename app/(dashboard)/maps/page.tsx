@@ -597,15 +597,15 @@ export default function MapsPage() {
       <div className="flex flex-col overflow-hidden">
         {/* ── HEADER ── */}
         <div className="px-7 pt-6 pb-4 bg-white border-b border-slate-100">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-3 gap-3">
             <div>
               <h1 className="text-3xl font-black text-slate-900 leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Study Maps 🗺️
               </h1>
               <p className="text-slate-400 text-xs mt-1 font-semibold">Lihat teman, rute, dan rekomendasi tempat belajar</p>
             </div>
-            <div className="flex gap-2">
-              <div className="flex bg-slate-100 rounded-2xl p-1 gap-1">
+            <div className="flex flex-wrap gap-2">
+  <div className="flex bg-slate-100 rounded-2xl p-1 gap-1">
                 <button onClick={() => { setMapMode("custom"); setGmapsEmbedLoc(null) }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all ${mapMode === "custom" ? "bg-white text-violet-600 shadow" : "text-slate-400 hover:text-slate-600"}`}>
                   🗺️ Custom
@@ -623,7 +623,7 @@ export default function MapsPage() {
                 📍 Check-in
               </button>
               <button onClick={handleSurprise}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl font-black text-sm text-white shadow-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 hover:scale-105 active:scale-95 transition-all ${surpriseAnim ? "animate-spin" : ""}`}>
+                className={`flex items-center gap-2 px-3 py-2 rounded-2xl font-black text-sm text-white shadow-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 hover:scale-105 active:scale-95 transition-all shrink-0 ${surpriseAnim ? "animate-spin" : ""}`}>
                 🎲 Surprise
               </button>
             </div>
@@ -853,7 +853,7 @@ export default function MapsPage() {
                 {/* Maskot pojok kanan bawah peta */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/11.png"
+                  src="https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/11.png"
                   alt="Maskot Plotwist"
                   className="absolute bottom-0 right-0 z-30 pointer-events-none"
                   style={{ width: 180, height: "auto" }}

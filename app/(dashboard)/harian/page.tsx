@@ -7,14 +7,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 const PET_STORAGE_KEY = 'plotwist_active_pet'
 
 const ALL_PETS = [
-  { id: 1, src: '/35.png', name: 'Sparky',  color: '#FFD700', glow: '#FFA500' },
-  { id: 2, src: '/36.png', name: 'Frostie', color: '#00CFFF', glow: '#0099FF' },
-  { id: 3, src: '/37.png', name: 'Blaze',   color: '#FF4D00', glow: '#FF0000' },
-  { id: 4, src: '/38.png', name: 'Leafy',   color: '#00E676', glow: '#00C853' },
-  { id: 5, src: '/39.png', name: 'Mystico', color: '#CC00FF', glow: '#9900CC' },
-  { id: 6, src: '/40.png', name: 'Aqua',    color: '#00B0FF', glow: '#0091EA' },
-  { id: 7, src: '/41.png', name: 'Rocko',   color: '#FF8C00', glow: '#FF6600' },
-  { id: 8, src: '/42.png', name: 'Lumina',  color: '#FFF176', glow: '#FFEE58' },
+  { id: 1, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/35.png', name: 'Sparky',  color: '#FFD700', glow: '#FFA500' },
+  { id: 2, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/36.png', name: 'Frostie', color: '#00CFFF', glow: '#0099FF' },
+  { id: 3, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/37.png', name: 'Blaze',   color: '#FF4D00', glow: '#FF0000' },
+  { id: 4, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/38.png', name: 'Leafy',   color: '#00E676', glow: '#00C853' },
+  { id: 5, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/39.png', name: 'Mystico', color: '#CC00FF', glow: '#9900CC' },
+  { id: 6, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/40.png', name: 'Aqua',    color: '#00B0FF', glow: '#0091EA' },
+  { id: 7, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/41.png', name: 'Rocko',   color: '#FF8C00', glow: '#FF6600' },
+  { id: 8, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/42.png', name: 'Lumina',  color: '#FFF176', glow: '#FFEE58' },
 ]
 
 function useActivePet() {
@@ -682,7 +682,7 @@ export default function HarianPage() {
       )}
 
       <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
-        <main className="flex-1 p-6 space-y-5 max-w-6xl">
+        <main className="flex-1 p-4 md:p-6 space-y-5 max-w-6xl">
 
           {/* ── Pet Companion Banner: tampil hanya jika Pro terbuka ────────── */}
           {isProUnlocked ? (
@@ -752,7 +752,7 @@ export default function HarianPage() {
                     </div>
                   )}
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {habits.map(habit => (
                     <div key={habit.id} className="relative group">
                       <div
@@ -962,7 +962,7 @@ export default function HarianPage() {
                   </span>
                 </div>
                 <p className="text-[10px] text-slate-400 font-semibold mb-3">Minum air putih itu bukan opsi, Rezal 💧</p>
-                <div className="grid grid-cols-4 gap-2 mb-3">
+                <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 mb-3">
                   {Array.from({ length: WATER_GOAL }).map((_, i) => (
                     <button key={i} onClick={i < waterCount ? removeWater : addWater}
                       className={`relative h-10 rounded-2xl flex items-end justify-center pb-1 transition-all duration-300 border-2 ${

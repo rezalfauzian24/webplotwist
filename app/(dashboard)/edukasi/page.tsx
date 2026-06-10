@@ -210,7 +210,7 @@ function Mascot({evo,costume,mood,size=56}){
     <div style={{userSelect:"none",display:"flex",flexDirection:"column",alignItems:"center",position:"relative"}}>
       <div style={{width:size,height:size,borderRadius:"50%",border:`3px solid ${border}`,overflow:"hidden",position:"relative",flexShrink:0,
         boxShadow:`0 0 0 2px ${border}44, 0 4px 14px rgba(0,0,0,0.15)`}}>
-        <img src="/petualang.png" alt="Mascot"
+        <img src="https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/petualang.png" alt="Mascot"
           style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}
           onError={e=>{
             e.target.style.display="none";
@@ -1674,6 +1674,13 @@ export default function PlottwistApp(){
   const[state,dispatch]=useReducer(reducer,undefined,loadState);
   const[tab,setTab]=useState("dashboard");
   const[toast,setToast]=useState(null);
+  const[isMobile,setIsMobile]=useState(false);
+useEffect(()=>{
+  const check=()=>setIsMobile(window.innerWidth<768);
+  check();
+  window.addEventListener('resize',check);
+  return()=>window.removeEventListener('resize',check);
+},[]);
   const ri=getRankIdx(state.xp);
 
   useEffect(()=>{
@@ -1735,6 +1742,13 @@ export default function PlottwistApp(){
         textarea,input,select{font-family:'Sora',sans-serif;}
         ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#c7d2fe;border-radius:4px;}
         button:hover{opacity:0.9;}
+        button:hover{opacity:0.9;}
+@media (max-width: 768px) {
+  aside { display: none !important; }
+  main { padding: 70px 16px 40px !important; }
+  .mobile-topbar { display: flex !important; }
+}
+.mobile-topbar { display: none; }
       `}</style>
 
       {toast&&(
@@ -1756,6 +1770,18 @@ export default function PlottwistApp(){
       </div>
 
       <div style={{minHeight:"100vh",background:"#f0f2f8",display:"flex",fontFamily:"'Sora',sans-serif"}}>
+       {/* MOBILE TOP BAR */}
+<div className="mobile-topbar" style={{
+  position:"fixed",top:0,left:0,right:0,zIndex:50,
+  background:"#fff",borderBottom:"1.5px solid #e8eaf2",
+  padding:"12px 16px",alignItems:"center",justifyContent:"space-between"
+}}>
+  <div style={{fontSize:18,fontWeight:900,color:"#4f46e5"}}>Plotwist</div>
+  <div style={{display:"flex",gap:8}}>
+    <span style={{background:"#eef2ff",borderRadius:10,padding:"4px 10px",fontSize:10,fontWeight:800,color:"#4f46e5"}}>⚡ {state.xp}</span>
+    <span style={{background:"#fff7ed",borderRadius:10,padding:"4px 10px",fontSize:10,fontWeight:800,color:"#92400e"}}>🔥 {state.streak}</span>
+  </div>
+</div>
         {/* SIDEBAR */}
         <aside style={{width:210,background:"#fff",display:"flex",flexDirection:"column",borderRight:"1.5px solid #e8eaf2",height:"100vh",position:"sticky",top:0,flexShrink:0}}>
           <div style={{padding:"18px 16px 10px"}}>
@@ -1791,7 +1817,7 @@ export default function PlottwistApp(){
         </aside>
 
         {/* MAIN */}
-        <main style={{flex:1,padding:"22px 26px 40px",overflowY:"auto",minWidth:0}}>
+        <main style={{flex:1,padding:"22px 26px 40px",overflowY:"auto",minWidth:0,paddingBottom:"80px"}}>
           <div style={{marginBottom:18,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div style={{display:"flex",alignItems:"center",gap:12}}>
               {tab!=="dashboard"&&(
@@ -1819,6 +1845,47 @@ export default function PlottwistApp(){
           {CONTENT[tab]}
         </main>
       </div>
+      {/* MOBILE BOTTOM NAV */}
+<div className="mobile-topbar" style={{
+  position:"fixed",bottom:0,left:0,right:0,zIndex:50,
+  background:"#fff",borderTop:"1.5px solid #e8eaf2",
+  padding:"8px 4px",alignItems:"center",
+  overflowX:"auto",gap:0,
+}}>
+  {TABS.map(t=>(
+    <button key={t.key} onClick={()=>setTab(t.key)}
+      style={{
+        display:"flex",flexDirection:"column",alignItems:"center",
+        gap:2,padding:"4px 8px",border:"none",background:"none",
+        cursor:"pointer",fontFamily:"inherit",flexShrink:0,
+        opacity:tab===t.key?1:0.4,
+      }}>
+      <span style={{fontSize:18}}>{t.icon}</span>
+      <span style={{fontSize:7,fontWeight:800,color:tab===t.key?"#4f46e5":"#94a3b8",whiteSpace:"nowrap"}}>{t.label}</span>
+    </button>
+  ))}
+</div>
+{isMobile&&(
+  <div style={{
+    position:"fixed",bottom:0,left:0,right:0,zIndex:50,
+    background:"#fff",borderTop:"1.5px solid #e8eaf2",
+    padding:"8px 4px",display:"flex",alignItems:"center",
+    overflowX:"auto",
+  }}>
+    {TABS.map(t=>(
+      <button key={t.key} onClick={()=>setTab(t.key)}
+        style={{
+          display:"flex",flexDirection:"column",alignItems:"center",
+          gap:2,padding:"4px 8px",border:"none",background:"none",
+          cursor:"pointer",fontFamily:"inherit",flexShrink:0,
+          opacity:tab===t.key?1:0.4,
+        }}>
+        <span style={{fontSize:18}}>{t.icon}</span>
+        <span style={{fontSize:7,fontWeight:800,color:tab===t.key?"#4f46e5":"#94a3b8",whiteSpace:"nowrap"}}>{t.label}</span>
+      </button>
+    ))}
+  </div>
+)}
     </>
   );
 }

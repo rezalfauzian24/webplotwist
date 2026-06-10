@@ -84,7 +84,7 @@ export default function LoginPage() {
           </div>
           <div className="relative z-10 flex justify-center items-end">
             <Image
-              src="/maskot3/maskot3.png"
+              src="https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/maskot3/maskot3.png"
               alt="Plotwist Mascot"
               width={430}
               height={430}

@@ -30,7 +30,7 @@ export default function MascotPopup({ trigger, mode = 'celebrate', onDone }: Pro
 
   if (!visible) return null
 
-  const img   = mode === 'levelup' ? '/14.png' : '/16.png'
+  const img   = mode === 'levelup' ? 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/14.png' : 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/16.png'
   const title = mode === 'levelup' ? '🎓 Level Up!' : '🎉 Keren banget!'
   const desc  = mode === 'levelup'
     ? 'Kamu udah fokus 5 jam! Plowie naik level!'

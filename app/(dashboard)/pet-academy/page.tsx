@@ -9,7 +9,7 @@ const PET_STORAGE_KEY = 'plotwist_active_pet'
 // ─── Pet Data ────────────────────────────────────────────────────────────────
 const PETS = [
   {
-    id: 1, src: '/35.png', name: 'Sparky',
+    id: 1, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/35.png', name: 'Sparky',
     type: 'Thunder', rarity: 'Rare',
     color: '#FFD700', glow: '#FFA500',
     trait: '+15% Focus Speed',
@@ -18,7 +18,7 @@ const PETS = [
     desc: 'Pet listrik yang bikin kamu semangat belajar!'
   },
   {
-    id: 2, src: '/36.png', name: 'Frostie',
+    id: 2, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/36.png', name: 'Frostie',
     type: 'Ice', rarity: 'Common',
     color: '#00CFFF', glow: '#0099FF',
     trait: '+10% Memory Boost',
@@ -27,7 +27,7 @@ const PETS = [
     desc: 'Tenang dan dingin, cocok buat sesi belajar panjang.'
   },
   {
-    id: 3, src: '/37.png', name: 'Blaze',
+    id: 3, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/37.png', name: 'Blaze',
     type: 'Fire', rarity: 'Epic',
     color: '#FF4D00', glow: '#FF0000',
     trait: '+20% XP Gain',
@@ -36,7 +36,7 @@ const PETS = [
     desc: 'Semangat membara yang membakar malas-malasanmu!'
   },
   {
-    id: 4, src: '/38.png', name: 'Leafy',
+    id: 4, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/38.png', name: 'Leafy',
     type: 'Nature', rarity: 'Common',
     color: '#00E676', glow: '#00C853',
     trait: '+12% Streak Bonus',
@@ -45,7 +45,7 @@ const PETS = [
     desc: 'Tumbuh bersama ilmu, satu hari satu langkah.'
   },
   {
-    id: 5, src: '/39.png', name: 'Mystico',
+    id: 5, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/39.png', name: 'Mystico',
     type: 'Mystic', rarity: 'Legendary',
     color: '#CC00FF', glow: '#9900CC',
     trait: '+30% Quest Reward',
@@ -54,7 +54,7 @@ const PETS = [
     desc: 'Kekuatan mistis dari dimensi ilmu pengetahuan.'
   },
   {
-    id: 6, src: '/40.png', name: 'Aqua',
+    id: 6, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/40.png', name: 'Aqua',
     type: 'Water', rarity: 'Rare',
     color: '#00B0FF', glow: '#0091EA',
     trait: '+18% Recovery Rate',
@@ -63,7 +63,7 @@ const PETS = [
     desc: 'Mengalir tenang, selalu ada di sisimu.'
   },
   {
-    id: 7, src: '/41.png', name: 'Rocko',
+    id: 7, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/41.png', name: 'Rocko',
     type: 'Earth', rarity: 'Epic',
     color: '#FF8C00', glow: '#FF6600',
     trait: '+25% Defense Bonus',
@@ -72,7 +72,7 @@ const PETS = [
     desc: 'Kokoh dan kuat, tameng dari godaan distraksi!'
   },
   {
-    id: 8, src: '/42.png', name: 'Lumina',
+    id: 8, src: 'https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/42.png', name: 'Lumina',
     type: 'Light', rarity: 'Legendary',
     color: '#FFF176', glow: '#FFEE58',
     trait: '+35% All Stats',

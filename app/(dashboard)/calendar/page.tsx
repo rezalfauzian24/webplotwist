@@ -278,7 +278,7 @@ function EventModal({ event, defaultDay, defaultYear, defaultMonth, onSave, onCl
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-[28px] p-8 w-full max-w-md shadow-2xl">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col gap-3 mb-6">
           <h2 className="text-2xl font-bold text-gray-800">{event ? 'Edit Jadwal' : 'Tambah Jadwal'}</h2>
           <button onClick={onClose} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
             <FaTimes className="text-gray-500" />
@@ -530,7 +530,7 @@ export default function CalendarPage() {
 
   return (
     <div className="flex-1 min-h-screen bg-[#F5F7FB]">
-      <div className="p-8 overflow-y-auto">
+      <div className="p-4 md:p-8 overflow-y-auto">
 
         {/* ── PetCompanion: tampil hanya jika Pro terbuka, sisanya banner terkunci ── */}
         {isProUnlocked ? (
@@ -555,18 +555,18 @@ export default function CalendarPage() {
 
         {/* HEADER */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col gap-3 mb-6">
             <div>
               <h1 className="text-5xl font-bold text-gray-800">Kalender</h1>
               <p className="text-gray-500 mt-2 text-lg">Pusat Manajemen Waktu Mahasiswa</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => {
                   if (isLocked) { setIsLocked(false); triggerToast('Mode edit aktif 🔓') }
                   else if (isDirty) { setIsDirty(false); setIsLocked(true); triggerToast('Tersimpan & terkunci 🔒') }
                 }}
-                className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-bold transition-all ${
+                className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-2xl font-bold transition-all ${
                   isLocked ? 'bg-gray-200 text-gray-600 hover:bg-gray-300' :
                   isDirty ? 'bg-green-500 text-white hover:bg-green-600 animate-pulse' :
                   'bg-gray-100 text-gray-400 cursor-default'
@@ -579,20 +579,20 @@ export default function CalendarPage() {
                 <button onClick={() => changeMonth(-1)} className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
                   <FaChevronLeft />
                 </button>
-                <div className="font-bold text-xl px-3 min-w-[180px] text-center text-gray-800 select-none">
+                <div className="font-bold text-xl px-3 min-w-[120px] text-center text-gray-800 text-sm select-none">
                   {MONTH_NAMES[currentMonth - 1]} {currentYear}
                 </div>
-                <button onClick={() => changeMonth(1)} className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
+                <button onClick={() => changeMonth(1)} className="w-9 h-9 rounded-2xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
                   <FaChevronRight />
                 </button>
               </div>
-              <button onClick={goToday} className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-3xl font-bold shadow-xl hover:scale-105 transition">
+          <button onClick={goToday} className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 text-sm rounded-3xl font-bold shadow-xl hover:scale-105 transition flex-1 md:flex-none text-center">
                 Hari Ini
               </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="relative bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500 text-white px-8 py-5 rounded-[28px] shadow-2xl flex items-center gap-4 group flex-1">
               <FaFire className="text-3xl shrink-0" />
               <div className="flex-1">
@@ -627,10 +627,10 @@ export default function CalendarPage() {
         </div>
 
         {/* MAIN GRID */}
-        <div className="grid grid-cols-10 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
 
           {/* LEFT: CALENDAR */}
-          <div className="col-span-7 space-y-6">
+          <div className="col-span-1 lg:col-span-7 space-y-6">
             {upcomingHolidays.length > 0 && (
               <div className="bg-white rounded-[28px] p-5 shadow-xl overflow-hidden">
                 <div className="flex items-center gap-3 mb-4">
@@ -762,7 +762,7 @@ export default function CalendarPage() {
           </div>
 
           {/* RIGHT SIDEBAR */}
-          <div className="col-span-3 space-y-6">
+          <div className="col-span-1 lg:col-span-3 space-y-6">
             <div className="bg-white rounded-[28px] p-3 shadow-xl grid grid-cols-2 gap-2">
               {([
                 { id: 'calendar', label: '📅 Jadwal' },
@@ -966,7 +966,7 @@ export default function CalendarPage() {
       {editingCountdown && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-[28px] p-8 w-full max-w-sm shadow-2xl">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
               <h2 className="text-xl font-bold text-gray-800">Edit Countdown</h2>
               <button onClick={() => setEditingCountdown(false)} className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
                 <FaTimes className="text-gray-500" />

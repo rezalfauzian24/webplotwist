@@ -14,7 +14,7 @@ export default function Footer() {
         <div className="pw-logo-area">
           <div className="pw-logo-wrap">
             <Image
-              src="/23.png"
+              src="https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/23.png"
               alt="Plotwist Logo"
               width={160}
               height={42}
