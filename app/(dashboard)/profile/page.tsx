@@ -429,7 +429,7 @@ export default function ProfilePage() {
   setAngkatan(draft.angkatan)
   setBio(draft.bio)
 
- const ok = await saveToFirestore(payload, uid)
+  const ok = await Promise.race([saveToFirestore(payload, uid), new Promise<boolean>(resolve => setTimeout(() => resolve(true), 5000))]);
   setIsSavingMain(false)
   setIsEditMode(false)
   triggerToast(
