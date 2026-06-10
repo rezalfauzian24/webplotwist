@@ -429,13 +429,9 @@ export default function ProfilePage() {
   setAngkatan(draft.angkatan)
   setBio(draft.bio)
 
-  const ok = await saveToFirestore(payload, uid)
-
-  console.log('SAVE RESULT:', ok)
-
-  setIsEditMode(false)
+ const ok = await saveToFirestore(payload, uid)
   setIsSavingMain(false)
-
+  setIsEditMode(false)
   triggerToast(
     ok
       ? 'Profil tersimpan ✅'
