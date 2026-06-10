@@ -82,16 +82,16 @@ export default function LoginPage() {
               Manage your study journey smarter.
             </p>
           </div>
-          <div className="relative z-10 flex justify-center items-end">
-            <Image
-              src="https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/maskot3/maskot3.png"
-              alt="Plotwist Mascot"
-              width={430}
-              height={430}
-              priority
-              className="object-contain drop-shadow-2xl"
-            />
-          </div>
+         <div className="relative z-10 flex justify-center items-end mt-auto">
+  <Image
+    src="https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/maskot3.png"
+    alt="Plotwist Mascot"
+    width={430}
+    height={430}
+    priority
+    className="object-contain drop-shadow-2xl object-bottom w-[180px] md:w-[430px] h-auto"
+  />
+</div>
         </div>
 
         {/* RIGHT SIDE */}

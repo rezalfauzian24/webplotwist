@@ -795,7 +795,7 @@ function StatsView({ tasks }: { tasks: Task[] }) {
       </div>
 
       <div className="bg-white rounded-[24px] border border-gray-100 p-5 shadow-sm">
-        <h3 className="font-bold text-gray-700 mb-4 text-sm">🍅 Produktivitas per Mata Kuliah</h3>
+        <h3 className="font-bold text-gray-700 mb-4 text-sm">🍅 Produktivitas per Kelola Studi</h3>
         <div className="space-y-3">
           {DEFAULT_SUBJECTS.slice(0, 5).map(subject => {
             const subjectTasks = tasks.filter(t => t.subject === subject)
@@ -879,7 +879,7 @@ function ManageSubjectsModal({ subjects, onSave, onClose }: ManageSubjectsProps)
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-[32px] p-8 w-full max-w-md shadow-2xl">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Kelola Mata Kuliah</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Kelola Kelola Studi</h2>
           <div className="flex items-center gap-3">
             <AutoSaveIndicator show={savedIndicator} />
             <button onClick={onClose} className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
@@ -925,7 +925,7 @@ function ManageSubjectsModal({ subjects, onSave, onClose }: ManageSubjectsProps)
         <div className="flex gap-2 mb-6">
           <input
             className="flex-1 border-2 border-gray-200 rounded-2xl px-4 py-2.5 text-sm text-gray-700 focus:border-purple-400 focus:outline-none transition"
-            placeholder="Tambah mata kuliah baru..."
+            placeholder="Tambah kelola studi baru..."
             value={newName}
             onChange={e => setNew(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && add()}
@@ -1567,7 +1567,7 @@ function AddTaskModal({ subjects, onAdd, onClose }: AddTaskModalProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-semibold text-gray-600 mb-1 block">Mata Kuliah</label>
+              <label className="text-sm font-semibold text-gray-600 mb-1 block">Kelola Studi</label>
               <select
                 className="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-gray-800 focus:border-purple-400 focus:outline-none transition bg-white"
                 value={subject}
@@ -2004,7 +2004,7 @@ export default function TaskPage() {
               onClick={() => setShowManageSubjects(true)}
               className="ml-auto px-4 py-2 rounded-2xl text-sm font-semibold bg-white border-2 border-dashed border-[#AFA9EC] text-[#534AB7] hover:bg-[#EEEDFE] transition flex items-center gap-1.5"
             >
-              <FaEdit className="text-xs" /> Kelola Mata Kuliah
+              <FaEdit className="text-xs" /> Kelola Kelola Studi
             </button>
           </div>
         </div>
