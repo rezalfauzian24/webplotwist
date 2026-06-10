@@ -60,8 +60,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5FA] flex items-center justify-center p-6">
-      <div className="w-[500px] bg-white rounded-[40px] shadow-2xl p-10">
+    <div className="min-h-screen bg-[#F5F5FA] flex items-center justify-center p-4">
+      <div className="w-full max-w-[500px] bg-white rounded-[40px] shadow-2xl p-8 md:p-10">
 
         {/* TITLE */}
         <h1 className="text-5xl font-bold text-gray-800 mb-3">

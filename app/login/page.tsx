@@ -69,10 +69,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F5FA] flex items-center justify-center p-6">
-      <div className="w-[1100px] h-[650px] bg-white rounded-[40px] shadow-2xl overflow-hidden flex">
+      <div className="w-full max-w-[1100px] bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col md:flex-row">
 
         {/* LEFT SIDE */}
-        <div className="w-1/2 relative bg-gradient-to-br from-purple-600 via-fuchsia-500 to-pink-400 p-12 flex flex-col justify-between overflow-hidden">
+        <div className="w-full md:w-1/2 relative bg-gradient-to-br from-purple-600 via-fuchsia-500 to-pink-400 p-8 md:p-12 flex flex-col justify-between overflow-hidden min-h-[280px] md:min-h-[650px]">
           <div className="absolute -top-24 -left-24 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl"></div>
           <div className="relative z-10 text-white">
             <h1 className="text-6xl font-extrabold mb-6">Plotwist</h1>
@@ -95,7 +95,7 @@ export default function LoginPage() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="w-1/2 flex items-center justify-center bg-white overflow-y-auto">
+        <div className="w-full md:w-1/2 flex items-center justify-center bg-white overflow-y-auto">
           <div className="w-[80%] py-8">
 
             <h2 className="text-5xl font-bold text-gray-800 mb-2">Welcome Back</h2>
