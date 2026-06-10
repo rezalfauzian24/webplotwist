@@ -89,7 +89,7 @@ export default function LoginPage() {
     width={430}
     height={430}
     priority
-    className="object-contain object-bottom drop-shadow-2xl w-[180px] md:w-[430px] h-auto translate-y-4"
+    className="object-contain object-bottom drop-shadow-2xl w-[180px] md:w-[430px] h-auto translate-y-8"
   />
 </div>
         </div>
