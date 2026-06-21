@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { FaGoogle, FaGithub, FaFacebook } from 'react-icons/fa'
+import { FaGoogle } from 'react-icons/fa'
 import { signIn, useSession } from 'next-auth/react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // ✅ Handle Google/Github/Facebook login via NextAuth
+  // ✅ Handle Google login via NextAuth
   // Setelah redirect balik ke app, init data Firebase pakai email sebagai ID
   useEffect(() => {
     if (session?.user?.email) {
@@ -57,14 +57,6 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     await signIn('google', { callbackUrl: '/dashboard' })
-  }
-
-  const handleGithubLogin = async () => {
-    await signIn('github', { callbackUrl: '/dashboard' })
-  }
-
-  const handleFacebookLogin = async () => {
-    await signIn('facebook', { callbackUrl: '/dashboard' })
   }
 
   return (
@@ -155,18 +147,10 @@ export default function LoginPage() {
               <div className="flex-1 h-[1px] bg-gray-200"></div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1">
               <button onClick={handleGoogleLogin} className="flex items-center justify-center gap-3 p-4 rounded-2xl border border-gray-200 hover:bg-gray-50 transition">
                 <FaGoogle className="text-red-500 text-xl" />
                 <span className="font-medium text-gray-700">Google</span>
-              </button>
-              <button onClick={handleGithubLogin} className="flex items-center justify-center gap-3 p-4 rounded-2xl border border-gray-200 hover:bg-gray-50 transition">
-                <FaGithub className="text-black text-xl" />
-                <span className="font-medium text-gray-700">Github</span>
-              </button>
-              <button onClick={handleFacebookLogin} className="flex items-center justify-center gap-3 p-4 rounded-2xl border border-gray-200 hover:bg-gray-50 transition">
-                <FaFacebook className="text-blue-500 text-xl" />
-                <span className="font-medium text-gray-700">Facebook</span>
               </button>
             </div>
 
