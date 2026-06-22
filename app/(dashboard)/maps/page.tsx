@@ -137,6 +137,73 @@ const CROWD_EMOJI: Record<CrowdLevel, string> = { sepi: "🟢", sedang: "🟡", 
 const AVATAR_COLORS = ["bg-violet-500","bg-emerald-500","bg-blue-500","bg-pink-500","bg-amber-500","bg-cyan-500"]
 const RANDOM_EMOJIS = ["🏠","🌳","🏢","🎨","🎵","🌸","🏫","🎭","🌺","🏖️"]
 
+/* ── 3D EMOJI SYSTEM ──────────────────────────────────────────────────
+   Pakai set "Fluent Emoji 3D" (Microsoft, open source) lewat CDN jsDelivr.
+   Jauh lebih "berisi" / glossy dibanding emoji bawaan HP, dan ukurannya
+   bisa diatur bebas tanpa pecah karena format PNG resolusi tinggi.
+   Kalau emoji belum ada di mapping, otomatis fallback ke emoji native
+   yang diperbesar + diberi efek 3D (drop-shadow + sedikit transform)
+   supaya tetap terasa "beda" dari emoji polos.
+------------------------------------------------------------------------- */
+const EMOJI_3D_MAP: Record<string, string> = {
+  "📚": "Books", "🌿": "Herb", "☕": "Hot beverage", "🏛️": "Classical building",
+  "🌟": "Glowing star", "🧃": "Beverage box", "🏠": "House", "🌳": "Deciduous tree",
+  "🏢": "Office building", "🎨": "Artist palette", "🎵": "Musical note", "🌸": "Cherry blossom",
+  "🏫": "School", "🎭": "Performing arts", "🌺": "Hibiscus", "🏖️": "Beach with umbrella",
+  "🔍": "Magnifying glass tilted left", "🗺️": "World map", "📍": "Round pushpin",
+  "🎲": "Game die", "🧭": "Compass", "👥": "Busts in silhouette", "⭐": "Star",
+  "🤫": "Shushing face", "🔴": "Red circle", "🟡": "Yellow circle", "🟢": "Green circle",
+  "🚶": "Person walking", "👋": "Waving hand", "💔": "Broken heart", "📣": "Megaphone",
+  "🎯": "Direct hit", "🤷": "Person shrugging", "👻": "Ghost", "💡": "Light bulb",
+  "✨": "Sparkles", "📝": "Memo", "🍜": "Steaming bowl", "😭": "Loudly crying face",
+}
+
+function emoji3dUrl(name: string) {
+  const slug = name.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim().replace(/\s+/g, "_")
+  return `https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/${name}/3D/${slug}_3d.png`
+}
+
+interface Emoji3DProps {
+  e: string
+  size?: number
+  className?: string
+}
+function Emoji3D({ e, size = 28, className = "" }: Emoji3DProps) {
+  const mapped = EMOJI_3D_MAP[e]
+  const [failed, setFailed] = useState(false)
+
+  if (mapped && !failed) {
+    return (
+      <img
+        src={emoji3dUrl(mapped)}
+        alt={e}
+        draggable={false}
+        onError={() => setFailed(true)}
+        className={`inline-block align-middle select-none ${className}`}
+        style={{
+          width: size, height: size, objectFit: "contain",
+          filter: "drop-shadow(0 3px 4px rgba(0,0,0,0.25))",
+        }}
+      />
+    )
+  }
+  // Fallback: native emoji tapi diperbesar & dikasih sentuhan "3D"
+  return (
+    <span
+      className={`inline-block align-middle select-none ${className}`}
+      style={{
+        fontSize: size * 0.92,
+        lineHeight: 1,
+        filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.3))",
+        transform: "scale(1.05)",
+      }}
+    >
+      {e}
+    </span>
+  )
+}
+/* ───────────────────────────────────────────────────────────────────── */
+
 function toSvgPoint(x: number, y: number, W: number, H: number) {
   return { sx: (x / 100) * W, sy: (y / 100) * H }
 }
@@ -173,7 +240,7 @@ function GMapsEmbed({ loc, mode, onModeChange, onClose }: GMapsEmbedProps) {
   return (
     <div className="flex flex-col h-full bg-white rounded-3xl shadow-xl overflow-hidden">
       <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 shrink-0">
-        <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center text-xl shrink-0">{loc.emoji}</div>
+        <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center shrink-0"><Emoji3D e={loc.emoji} size={26} /></div>
         <div className="flex-1 min-w-0">
           <p className="font-black text-slate-900 text-xs truncate">{loc.name}</p>
           <p className="text-[10px] text-slate-400 font-semibold truncate">{loc.address}</p>
@@ -184,7 +251,7 @@ function GMapsEmbed({ loc, mode, onModeChange, onClose }: GMapsEmbedProps) {
         {(["search", "directions"] as const).map(m => (
           <button key={m} onClick={() => { onModeChange(m); setLoading(true) }}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-black transition-all ${mode === m ? "bg-white shadow text-violet-600" : "text-slate-400 hover:text-slate-600"}`}>
-            {m === "search" ? "🗺️ Lihat Lokasi" : "🧭 Rute Jalan"}
+            {m === "search" ? <><Emoji3D e="🗺️" size={16} /> Lihat Lokasi</> : <><Emoji3D e="🧭" size={16} /> Rute Jalan</>}
           </button>
         ))}
       </div>
@@ -200,14 +267,14 @@ function GMapsEmbed({ loc, mode, onModeChange, onClose }: GMapsEmbedProps) {
       </div>
       <div className="flex items-center justify-between px-4 py-2.5 bg-violet-50 border-t border-violet-100 shrink-0">
         <div className="flex items-center gap-2">
-          <span className="text-lg">🚶</span>
+          <Emoji3D e="🚶" size={30} />
           <div>
             <p className="text-xs font-black text-violet-800">{loc.walkTime} dari posisimu</p>
             <p className="text-[10px] text-violet-500 font-semibold">estimasi jalan kaki</p>
           </div>
         </div>
         {mode === "directions" && (
-          <div className="text-[10px] text-violet-600 font-black bg-white px-2 py-1 rounded-lg border border-violet-200">📍 Aktifkan GPS untuk rute akurat</div>
+          <div className="text-[10px] text-violet-600 font-black bg-white px-2 py-1 rounded-lg border border-violet-200 flex items-center gap-1"><Emoji3D e="📍" size={14} /> Aktifkan GPS untuk rute akurat</div>
         )}
       </div>
     </div>
@@ -258,7 +325,7 @@ function AddLocationModal({ onClose, onSubmit, userProfile }: AddLocationModalPr
       <div onClick={e => e.stopPropagation()} className="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-md space-y-4">
         <div className="flex items-center gap-3">
           <div>
-            <h3 className="font-black text-xl text-slate-900">📍 Tambah Lokasi Baru</h3>
+            <h3 className="font-black text-xl text-slate-900 flex items-center gap-2"><Emoji3D e="📍" size={26} /> Tambah Lokasi Baru</h3>
             <p className="text-xs text-slate-400 font-semibold mt-0.5">Bagikan spot favoritmu! +50 XP</p>
           </div>
         </div>
@@ -287,14 +354,14 @@ function AddLocationModal({ onClose, onSubmit, userProfile }: AddLocationModalPr
           </select>
           <label className="flex items-center gap-2 text-sm font-semibold text-slate-600 cursor-pointer">
             <input type="checkbox" checked={isSecret} onChange={e => setIsSecret(e.target.checked)} className="rounded" />
-            🤫 Ini secret spot
+            <Emoji3D e="🤫" size={20} /> Ini secret spot
           </label>
         </div>
         <div className="flex gap-3">
           <button onClick={onClose} className="flex-1 border border-slate-200 text-slate-600 rounded-2xl py-2.5 text-sm font-bold hover:bg-slate-50 transition-all">Batal</button>
           <button onClick={handleSubmit} disabled={!name.trim()}
-            className="flex-1 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white rounded-2xl py-2.5 text-sm font-black transition-all">
-            📍 Tambahkan!
+            className="flex-1 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white rounded-2xl py-2.5 text-sm font-black transition-all flex items-center justify-center gap-2">
+            <Emoji3D e="📍" size={18} /> Tambahkan!
           </button>
         </div>
       </div>
@@ -309,10 +376,10 @@ function ShareSecretModal({ onClose, onSubmit }: { onClose: () => void; onSubmit
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div onClick={e => e.stopPropagation()} className="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-md space-y-4">
         <div className="flex items-center gap-3">
-          <span className="text-4xl">🤫</span>
+          <Emoji3D e="🤫" size={44} />
           <div>
             <h3 className="font-black text-xl text-slate-900">Share Secret Spot</h3>
-            <p className="text-xs text-slate-400 font-semibold">+50 XP · Badge Explorer unlocked 🌟</p>
+            <p className="text-xs text-slate-400 font-semibold flex items-center gap-1">+50 XP · Badge Explorer unlocked <Emoji3D e="🌟" size={16} /></p>
           </div>
         </div>
         <input value={name} onChange={e => setName(e.target.value)} placeholder="Nama secret spot"
@@ -322,8 +389,8 @@ function ShareSecretModal({ onClose, onSubmit }: { onClose: () => void; onSubmit
         <div className="flex gap-3">
           <button onClick={onClose} className="flex-1 border border-slate-200 text-slate-600 rounded-2xl py-2.5 text-sm font-bold hover:bg-slate-50 transition-all">Batal</button>
           <button onClick={() => { if (name.trim()) onSubmit(name.trim(), desc.trim()) }}
-            className="flex-1 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 rounded-2xl py-2.5 text-sm font-black transition-all">
-            🌟 Bagikan!
+            className="flex-1 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 rounded-2xl py-2.5 text-sm font-black transition-all flex items-center justify-center gap-2">
+            <Emoji3D e="🌟" size={18} /> Bagikan!
           </button>
         </div>
       </div>
@@ -599,8 +666,8 @@ export default function MapsPage() {
         <div className="px-7 pt-6 pb-4 bg-white border-b border-slate-100">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-3 gap-3">
             <div>
-              <h1 className="text-3xl font-black text-slate-900 leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
-                Study Maps 🗺️
+              <h1 className="text-3xl font-black text-slate-900 leading-none flex items-center gap-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Study Maps <Emoji3D e="🗺️" size={32} />
               </h1>
               <p className="text-slate-400 text-xs mt-1 font-semibold">Lihat teman, rute, dan rekomendasi tempat belajar</p>
             </div>
@@ -608,23 +675,23 @@ export default function MapsPage() {
   <div className="flex bg-slate-100 rounded-2xl p-1 gap-1">
                 <button onClick={() => { setMapMode("custom"); setGmapsEmbedLoc(null) }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all ${mapMode === "custom" ? "bg-white text-violet-600 shadow" : "text-slate-400 hover:text-slate-600"}`}>
-                  🗺️ Custom
+                  <Emoji3D e="🗺️" size={16} /> Custom
                 </button>
                 <button onClick={() => {
                   setMapMode("gmaps")
                   if (!gmapsEmbedLoc) { setGmapsEmbedLoc(selected ?? INITIAL_LOCATIONS[0]); setGmapsMode("search") }
                 }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all ${mapMode === "gmaps" ? "bg-white text-violet-600 shadow" : "text-slate-400 hover:text-slate-600"}`}>
-                  📍 Google Maps
+                  <Emoji3D e="📍" size={16} /> Google Maps
                 </button>
               </div>
               <button onClick={() => setShowAddModal(true)}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-2xl font-black text-sm text-white shadow-lg bg-gradient-to-br from-emerald-500 to-teal-500 hover:scale-105 active:scale-95 transition-all">
-                📍 Check-in
+                <Emoji3D e="📍" size={18} /> Check-in
               </button>
               <button onClick={handleSurprise}
                 className={`flex items-center gap-2 px-3 py-2 rounded-2xl font-black text-sm text-white shadow-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 hover:scale-105 active:scale-95 transition-all shrink-0 ${surpriseAnim ? "animate-spin" : ""}`}>
-                🎲 Surprise
+                <Emoji3D e="🎲" size={18} /> Surprise
               </button>
             </div>
           </div>
@@ -632,7 +699,7 @@ export default function MapsPage() {
           {/* Search Bar */}
           <div ref={searchRef} className="relative mb-3">
             <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 focus-within:border-violet-400 transition-all">
-              <span className="text-slate-400">🔍</span>
+              <Emoji3D e="🔍" size={18} />
               <input value={search} onChange={e => handleSearch(e.target.value)}
                 onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true) }}
                 placeholder="Cari tempat belajar... (seperti Google Maps)"
@@ -642,8 +709,8 @@ export default function MapsPage() {
                   className="text-slate-400 hover:text-slate-600 text-lg leading-none">×</button>
               )}
               <button onClick={searchNearby}
-                className="text-violet-500 text-xs font-black hover:text-violet-700 transition-all whitespace-nowrap ml-1 bg-violet-50 px-2 py-1 rounded-lg">
-                📍 Sekitar Saya
+                className="text-violet-500 text-xs font-black hover:text-violet-700 transition-all whitespace-nowrap ml-1 bg-violet-50 px-2 py-1 rounded-lg flex items-center gap-1">
+                <Emoji3D e="📍" size={14} /> Sekitar Saya
               </button>
             </div>
             {showSuggestions && (
@@ -654,17 +721,17 @@ export default function MapsPage() {
                     {suggestions.map(loc => (
                       <button key={loc.id} onClick={() => selectSuggestion(loc)}
                         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-all text-left border-b border-slate-50 last:border-0">
-                        <span className="text-xl">{loc.emoji}</span>
+                        <Emoji3D e={loc.emoji} size={26} />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-black text-slate-900 truncate">{loc.name}</p>
                           <p className="text-xs text-slate-400 font-semibold truncate">{loc.address}</p>
                           {loc.addedBy && <p className="text-[10px] text-violet-500 font-bold">ditambahkan oleh {loc.addedBy.name}</p>}
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-[10px] font-bold" style={{ color: CROWD_META[loc.crowd].color }}>{CROWD_EMOJI[loc.crowd]}</span>
+                          <span className="text-[10px] font-bold" style={{ color: CROWD_META[loc.crowd].color }}><Emoji3D e={CROWD_EMOJI[loc.crowd]} size={12} /></span>
                           <button onClick={e => { e.stopPropagation(); openGMapsInPage(loc, "search") }}
-                            className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-black hover:bg-blue-100 transition-all">
-                            🗺️ Peta
+                            className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-black hover:bg-blue-100 transition-all flex items-center gap-1">
+                            <Emoji3D e="🗺️" size={12} /> Peta
                           </button>
                         </div>
                       </button>
@@ -687,35 +754,35 @@ export default function MapsPage() {
               <button key={c} onClick={() => setCrowdFilter(crowdFilter === c ? null : c)}
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-black border-2 transition-all ${crowdFilter === c ? "text-white border-transparent shadow" : "bg-white border-slate-200 text-slate-600 hover:border-slate-300"}`}
                 style={crowdFilter === c ? { backgroundColor: CROWD_META[c].color } : {}}>
-                {CROWD_EMOJI[c]} {CROWD_META[c].label}
+                <Emoji3D e={CROWD_EMOJI[c]} size={14} /> {CROWD_META[c].label}
               </button>
             ))}
             <div className="w-px h-5 bg-slate-200" />
             <button onClick={() => setShowFavOnly(!showFavOnly)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-black border-2 transition-all ${showFavOnly ? "bg-amber-400 border-amber-400 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-amber-300"}`}>
-              ⭐ Favorit
+              <Emoji3D e="⭐" size={14} /> Favorit
             </button>
             <button onClick={() => setShowSecrets(!showSecrets)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-black border-2 transition-all ${showSecrets ? "bg-violet-500 border-violet-500 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-violet-300"}`}>
-              🤫 Secret
+              <Emoji3D e="🤫" size={14} /> Secret
             </button>
             <button onClick={() => setShowBuddyFilter(!showBuddyFilter)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-black border-2 transition-all ${showBuddyFilter ? "bg-emerald-500 border-emerald-500 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-emerald-300"}`}>
-              👥 Ada Teman
+              <Emoji3D e="👥" size={14} /> Ada Teman
             </button>
             <button className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-black border-2 border-slate-200 bg-white text-slate-600 hover:border-violet-300 transition-all">
               👤 Kontribusiku ({locations.filter(l => l.addedByUser && l.addedBy?.userId === userProfile.username).length})
             </button>
             <button onClick={() => setShowSecretModal(true)}
               className="ml-auto flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-black bg-yellow-400 hover:bg-yellow-300 text-yellow-900 transition-all hover:scale-105 shadow">
-              🌟 Share Secret Spot
+              <Emoji3D e="🌟" size={14} /> Share Secret Spot
             </button>
           </div>
         </div>
 
         {surpriseMsg && (
           <div className="mx-7 mt-4 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-bold px-5 py-3 rounded-2xl flex items-center justify-between shadow-lg">
-            <span>🎲 {surpriseMsg}</span>
+            <span className="flex items-center gap-2"><Emoji3D e="🎲" size={18} /> {surpriseMsg}</span>
             <button onClick={() => setSurpriseMsg(null)} className="text-white/60 hover:text-white">✕</button>
           </div>
         )}
@@ -771,16 +838,16 @@ export default function MapsPage() {
                       className="absolute -translate-x-1/2 -translate-y-1/2 group z-20">
                       <div className={`relative transition-all duration-200 ${isSelected ? "scale-125" : "hover:scale-110"}`}>
                         {isSelected && <span className="absolute inset-0 rounded-full bg-violet-400 opacity-40 animate-ping" />}
-                        <div className="w-12 h-12 rounded-[18px] shadow-lg border-2 flex items-center justify-center text-2xl"
+                        <div className="w-14 h-14 rounded-[18px] shadow-lg border-2 flex items-center justify-center"
                           style={{ backgroundColor: isSelected ? "#5b21b6" : "#1e1557", borderColor: isSelected ? "#c4b5fd" : cm.color }}>
-                          {loc.emoji}
+                          <Emoji3D e={loc.emoji} size={34} />
                         </div>
                         <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#0f0726]" style={{ backgroundColor: cm.color }} />
-                        {favorites.has(loc.id) && <div className="absolute -top-2 -left-1 text-xs">⭐</div>}
+                        {favorites.has(loc.id) && <div className="absolute -top-2 -left-1"><Emoji3D e="⭐" size={16} /></div>}
                         {buddyCount > 0 && (
                           <div className="absolute -top-2 -right-1 bg-emerald-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center font-black border border-white">{buddyCount}</div>
                         )}
-                        {loc.isSecret && <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded-full font-black whitespace-nowrap">🤫</div>}
+                        {loc.isSecret && <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded-full font-black whitespace-nowrap flex items-center gap-0.5"><Emoji3D e="🤫" size={12} /></div>}
                         {isMyLoc && (
                           <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[8px] bg-violet-500 text-white px-1.5 py-0.5 rounded-full font-black whitespace-nowrap">
                             {loc.isSecret ? "" : "👤 Kamu"}
@@ -818,18 +885,18 @@ export default function MapsPage() {
                   <div className={`w-6 h-6 rounded-full ${userProfile.avatarColor} border-2 border-white shadow-lg flex items-center justify-center text-white text-[9px] font-black animate-pulse`}>
                     {userProfile.avatar}
                   </div>
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] text-white/80 whitespace-nowrap font-black">📍 {userProfile.name}</div>
+                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] text-white/80 whitespace-nowrap font-black flex items-center gap-1"><Emoji3D e="📍" size={12} /> {userProfile.name}</div>
                 </div>
                 <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-md border border-white/10 rounded-2xl p-3 space-y-1.5 z-20">
                   {(Object.entries(CROWD_META) as [CrowdLevel, typeof CROWD_META[CrowdLevel]][]).map(([k, v]) => (
                     <div key={k} className="flex items-center gap-2 text-[11px] text-white/70 font-semibold">
                       <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: v.color }} />
-                      {CROWD_EMOJI[k as CrowdLevel]} {v.label}
+                      <Emoji3D e={CROWD_EMOJI[k as CrowdLevel]} size={14} /> {v.label}
                     </div>
                   ))}
                   <div className="flex items-center gap-2 text-[11px] text-white/70 font-semibold border-t border-white/10 pt-1.5 mt-1">
                     <div className={`w-2.5 h-2.5 rounded-full ${userProfile.avatarColor}`} />
-                    📍 {userProfile.name}
+                    <Emoji3D e="📍" size={14} /> {userProfile.name}
                   </div>
                 </div>
                 <button onClick={() => setShowAddModal(true)}
@@ -845,7 +912,7 @@ export default function MapsPage() {
                 {filtered.length === 0 && (
                   <div className="absolute inset-0 flex items-center justify-center z-20">
                     <div className="bg-black/60 backdrop-blur-sm text-white text-sm font-bold px-6 py-4 rounded-2xl text-center">
-                      <div className="text-3xl mb-2">🔍</div>Tidak ada tempat yang cocok.
+                      <div className="mb-2 flex justify-center"><Emoji3D e="🔍" size={36} /></div>Tidak ada tempat yang cocok.
                     </div>
                   </div>
                 )}
@@ -875,12 +942,12 @@ export default function MapsPage() {
                 <div className="bg-white rounded-3xl shadow-xl w-80 overflow-hidden">
                   <div className="p-4 border-b border-slate-100">
                     <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-violet-50 flex items-center justify-center text-2xl shrink-0">{selected.emoji}</div>
+                      <div className="w-12 h-12 rounded-2xl bg-violet-50 flex items-center justify-center shrink-0"><Emoji3D e={selected.emoji} size={32} /></div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-black text-slate-900 text-[14px] leading-snug">{selected.name}</h3>
                         {selected.isSecret && (
-                          <span className="inline-block bg-yellow-100 text-yellow-700 text-[10px] font-black px-2 py-0.5 rounded-full">
-                            🤫 Secret by {selected.secretBy}
+                          <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 text-[10px] font-black px-2 py-0.5 rounded-full">
+                            <Emoji3D e="🤫" size={12} /> Secret by {selected.secretBy}
                           </span>
                         )}
                         <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{selected.address}</p>
@@ -888,14 +955,14 @@ export default function MapsPage() {
                       <button onClick={() => setSelected(null)} className="text-slate-300 hover:text-slate-500 text-lg shrink-0">✕</button>
                     </div>
                     <div className="flex items-center gap-2 mt-2.5 flex-wrap">
-                      <span className="text-sm font-black" style={{ color: cm.color }}>{CROWD_EMOJI[selected.crowd]} {cm.label}</span>
+                      <span className="text-sm font-black flex items-center gap-1" style={{ color: cm.color }}><Emoji3D e={CROWD_EMOJI[selected.crowd]} size={14} /> {cm.label}</span>
                       {selected.tags.map(t => (
                         <span key={t} className="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-bold">{t}</span>
                       ))}
                     </div>
                     {rec && (
                       <div className="mt-2 bg-violet-50 border border-violet-100 rounded-xl px-3 py-2 flex items-start gap-2">
-                        <span className="text-sm">🎯</span>
+                        <Emoji3D e="🎯" size={18} />
                         <p className="text-[10px] text-violet-700 font-bold leading-snug">{rec.reason}</p>
                       </div>
                     )}
@@ -903,8 +970,8 @@ export default function MapsPage() {
                   <div className="flex border-b border-slate-100 bg-slate-50">
                     {(["info", "rute", "buddy", "rekomendasi"] as const).map(tab => (
                       <button key={tab} onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-2.5 text-[10px] font-black uppercase tracking-wide transition-all ${activeTab === tab ? "bg-white text-violet-600 border-b-2 border-violet-500" : "text-slate-400 hover:text-slate-600"}`}>
-                        {tab === "info" ? "📋 Info" : tab === "rute" ? "🧭 Rute" : tab === "buddy" ? "👥 Teman" : "⭐ Rekomen"}
+                        className={`flex-1 py-2.5 text-[10px] font-black uppercase tracking-wide transition-all flex flex-col items-center gap-0.5 ${activeTab === tab ? "bg-white text-violet-600 border-b-2 border-violet-500" : "text-slate-400 hover:text-slate-600"}`}>
+                        {tab === "info" ? <>📋 Info</> : tab === "rute" ? <><Emoji3D e="🧭" size={14} /> Rute</> : tab === "buddy" ? <><Emoji3D e="👥" size={14} /> Teman</> : <><Emoji3D e="⭐" size={14} /> Rekomen</>}
                       </button>
                     ))}
                   </div>
@@ -923,33 +990,33 @@ export default function MapsPage() {
                           <div className="flex gap-2">
                             {(["sepi", "sedang", "ramai"] as CrowdLevel[]).map(c => (
                               <button key={c} onClick={() => updateCrowd(selected.id, c)}
-                                className="flex-1 py-1.5 rounded-xl text-[10px] font-black border-2 transition-all hover:scale-105"
+                                className="flex-1 py-1.5 rounded-xl text-[10px] font-black border-2 transition-all hover:scale-105 flex items-center justify-center gap-1"
                                 style={selected.crowd === c ? { backgroundColor: CROWD_META[c].color, color: "white", borderColor: "transparent" } : { backgroundColor: "white", borderColor: "#e2e8f0" }}>
-                                {CROWD_EMOJI[c]} {CROWD_META[c].label}
+                                <Emoji3D e={CROWD_EMOJI[c]} size={12} /> {CROWD_META[c].label}
                               </button>
                             ))}
                           </div>
                         </div>
                         <button onClick={() => toggleFav(selected.id)}
                           className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-xs font-black border-2 transition-all ${isFav ? "bg-amber-400 border-amber-400 text-white" : "border-amber-200 text-amber-600 hover:bg-amber-50"}`}>
-                          {isFav ? "⭐ Tersimpan di Favorit" : "☆ Simpan ke Favorit"}
+                          {isFav ? <><Emoji3D e="⭐" size={16} /> Tersimpan di Favorit</> : "☆ Simpan ke Favorit"}
                         </button>
                       </>
                     )}
                     {activeTab === "rute" && (
                       <div className="space-y-3">
                         <div className="bg-violet-50 border border-violet-100 rounded-2xl p-4 text-center">
-                          <div className="text-4xl mb-2">🚶</div>
+                          <div className="flex justify-center mb-2"><Emoji3D e="🚶" size={48} /></div>
                           <p className="font-black text-violet-800 text-lg">{selected.walkTime}</p>
                           <p className="text-[11px] text-violet-500 font-semibold">dari posisimu sekarang</p>
                         </div>
                         <button onClick={() => openGMapsInPage(selected, "directions")}
                           className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-black bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white hover:scale-[1.02] shadow-lg shadow-violet-100 transition-all">
-                          🧭 Tampilkan Rute di Peta
+                          <Emoji3D e="🧭" size={18} /> Tampilkan Rute di Peta
                         </button>
                         <button onClick={() => openGMapsInPage(selected, "search")}
                           className="w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-xs font-black border-2 border-blue-200 text-blue-600 hover:bg-blue-50 transition-all">
-                          🗺️ Lihat Lokasi di Peta
+                          <Emoji3D e="🗺️" size={16} /> Lihat Lokasi di Peta
                         </button>
                         <button onClick={() => { setShowRouteFor(isRouteActive ? null : selected.id); setMapMode("custom") }}
                           className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-xs font-black border-2 transition-all ${isRouteActive ? "bg-slate-200 text-slate-600 border-slate-200" : "border-violet-200 text-violet-600 hover:bg-violet-50"}`}>
@@ -985,7 +1052,7 @@ export default function MapsPage() {
                           </div>
                         ) : (
                           <div className="text-center py-4">
-                            <div className="text-3xl mb-2">👻</div>
+                            <div className="flex justify-center mb-2"><Emoji3D e="👻" size={36} /></div>
                             <p className="text-sm font-bold text-slate-400">Belum ada teman di sini</p>
                             <p className="text-xs text-slate-300 font-semibold">Jadi yang pertama!</p>
                           </div>
@@ -997,7 +1064,7 @@ export default function MapsPage() {
                             className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-violet-400" />
                           <button onClick={() => handleJoinBuddy(selected.id)}
                             className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-xs font-black transition-all ${isMyBuddy ? "bg-emerald-500 text-white" : "bg-gradient-to-r from-emerald-400 to-teal-500 text-white hover:scale-[1.02] shadow-lg"}`}>
-                            {isMyBuddy ? "✅ Lagi belajar di sini — Keluar?" : "👥 Tandai Lagi Belajar di Sini"}
+                            {isMyBuddy ? <>✅ Lagi belajar di sini — Keluar?</> : <><Emoji3D e="👥" size={16} /> Tandai Lagi Belajar di Sini</>}
                           </button>
                         </div>
                       </div>
@@ -1008,7 +1075,7 @@ export default function MapsPage() {
                         {rec ? (
                           <div className="bg-violet-50 border border-violet-100 rounded-2xl p-3.5 space-y-2">
                             <div className="flex items-center gap-2">
-                              <span className="text-xl">🎯</span>
+                              <Emoji3D e="🎯" size={22} />
                               <p className="text-xs font-black text-violet-800">{rec.reason}</p>
                             </div>
                             <div className="flex items-center gap-2">
@@ -1021,7 +1088,7 @@ export default function MapsPage() {
                           </div>
                         ) : (
                           <div className="text-center py-3">
-                            <div className="text-3xl mb-1">🤷</div>
+                            <div className="flex justify-center mb-1"><Emoji3D e="🤷" size={36} /></div>
                             <p className="text-xs text-slate-400 font-semibold">Belum ada rekomendasi khusus</p>
                           </div>
                         )}
@@ -1032,7 +1099,7 @@ export default function MapsPage() {
                           return (
                             <button key={r.locId} onClick={() => { setSelected(l); setActiveTab("info") }}
                               className="w-full flex items-center gap-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl p-3 transition-all text-left">
-                              <span className="text-xl">{l.emoji}</span>
+                              <Emoji3D e={l.emoji} size={26} />
                               <div className="flex-1 min-w-0">
                                 <p className="font-black text-slate-800 text-[12px] truncate">{l.name}</p>
                                 <p className="text-[10px] text-slate-500 font-semibold truncate">{r.reason}</p>
@@ -1074,7 +1141,7 @@ export default function MapsPage() {
         <div className="px-7 py-3 space-y-3">
           {/* Baris rekomendasi */}
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">🎯 Rekomendasi untukmu</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-1"><Emoji3D e="🎯" size={14} /> Rekomendasi untukmu</p>
             <div className="grid grid-cols-3 gap-3">
               {topRec.map(r => {
                 const l = recLoc(r.locId)
@@ -1084,9 +1151,9 @@ export default function MapsPage() {
                 return (
                   <button key={`rec-${r.locId}`} onClick={() => { setSelected(l); setActiveTab("rekomendasi") }}
                     className={`bg-gradient-to-br from-violet-50 to-fuchsia-50 rounded-2xl p-3 shadow border-2 transition-all hover:scale-[1.02] text-left relative ${selected?.id === l.id ? "border-violet-400" : "border-violet-200"}`}>
-                    <div className="absolute top-2 right-2 text-[9px] font-black text-violet-500 bg-violet-100 px-1.5 py-0.5 rounded-full">🎯 {r.score}%</div>
+                    <div className="absolute top-2 right-2 text-[9px] font-black text-violet-500 bg-violet-100 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><Emoji3D e="🎯" size={10} /> {r.score}%</div>
                     <div className="flex items-center gap-1.5 mb-1">
-                      <span className="text-xl">{l.emoji}</span>
+                      <Emoji3D e={l.emoji} size={26} />
                       <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: cm.color }} />
                       {buddyCount > 0 && <span className="text-[10px] text-emerald-600 font-black">👥{buddyCount}</span>}
                     </div>
@@ -1100,7 +1167,7 @@ export default function MapsPage() {
 
           {/* Baris semua lokasi — grid yang pas */}
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">📍 Semua Lokasi ({filtered.length})</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-1"><Emoji3D e="📍" size={14} /> Semua Lokasi ({filtered.length})</p>
             <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))" }}>
               {filtered.map(loc => {
                 const cm = CROWD_META[loc.crowd]
@@ -1109,9 +1176,9 @@ export default function MapsPage() {
                   <button key={loc.id} onClick={() => { setSelected(loc); setActiveTab("info") }}
                     className={`bg-white rounded-2xl p-3 shadow border-2 transition-all hover:scale-[1.02] text-left ${selected?.id === loc.id ? "border-violet-400" : "border-transparent"}`}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xl">{loc.emoji}</span>
+                      <Emoji3D e={loc.emoji} size={26} />
                       <div className="flex items-center gap-1">
-                        {favorites.has(loc.id) && <span className="text-xs">⭐</span>}
+                        {favorites.has(loc.id) && <Emoji3D e="⭐" size={14} />}
                         {loc.addedBy && <span className="text-[9px] text-violet-400 font-black">👤</span>}
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: cm.color }} />
                       </div>
@@ -1119,7 +1186,7 @@ export default function MapsPage() {
                     <p className="font-black text-slate-800 text-[11px] leading-snug line-clamp-2">{loc.name}</p>
                     {loc.addedBy && <p className="text-[9px] text-violet-500 font-semibold mt-0.5 truncate">oleh {loc.addedBy.name}</p>}
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] font-bold" style={{ color: cm.color }}>{CROWD_EMOJI[loc.crowd]} {cm.label}</span>
+                      <span className="text-[10px] font-bold flex items-center gap-1" style={{ color: cm.color }}><Emoji3D e={CROWD_EMOJI[loc.crowd]} size={11} /> {cm.label}</span>
                       {buddyCount > 0 && <span className="text-[10px] text-emerald-600 font-bold">👥 {buddyCount}</span>}
                     </div>
                   </button>

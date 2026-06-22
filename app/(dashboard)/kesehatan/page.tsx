@@ -2,6 +2,45 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
+// ─── 3D Emoji renderer (inline-style, no Tailwind dependency) ─────────────────
+const EMOJI_3D_BASE = 'https://cdn.jsdelivr.net/gh/ehne/fluentui-twemoji-3d/export/3D_png';
+
+function toEmojiCodepoint(emoji: string): string {
+  return Array.from(emoji)
+    .map(ch => (ch.codePointAt(0) ?? 0).toString(16))
+    .join('-');
+}
+
+function Emoji3D({ e, size = 18, style }: { e: string; size?: number; style?: React.CSSProperties }) {
+  const [failed, setFailed] = useState(false);
+  const imgStyle: React.CSSProperties = {
+    display: 'inline-block',
+    width: size,
+    height: size,
+    minWidth: size,
+    verticalAlign: 'middle',
+    userSelect: 'none',
+    ...style,
+  };
+  if (failed) {
+    return <span style={{ fontSize: size * 0.8, lineHeight: 1, ...style }}>{e}</span>;
+  }
+  return (
+    <img
+      src={`${EMOJI_3D_BASE}/${toEmojiCodepoint(e)}.png`}
+      alt={e}
+      width={size}
+      height={size}
+      draggable={false}
+      loading="lazy"
+      onError={() => setFailed(true)}
+      style={imgStyle}
+    />
+  );
+}
+
+// ─── Types & Data ──────────────────────────────────────────────────────────────
+
 interface StreakState { air: boolean; tidur: boolean; gerak: boolean; }
 
 const IDEAL_SLEEP = 8;
@@ -123,44 +162,17 @@ function useLocalStorage<T>(key: string, initialValue: T) {
   return [storedValue, setValue] as const;
 }
 
-// ── Color palette (matches Plotwist light theme) ───────────────────────────────
-// BG page:  #F0F2F5 (soft gray-white)
-// Card:     #FFFFFF with subtle shadow
-// Text:     #1A202C (near black), #4A5568 (muted), #718096 (hint)
-// Accents:  Emerald #38A169, Purple #6B46C1, Blue #3182CE, Orange #DD6B20, Red #E53E3E, Pink #D53F8C
-
 const C = {
-  pageBg: '#F0F2F5',
-  card: '#FFFFFF',
-  border: '#E8ECF0',
-  text: '#1A202C',
-  muted: '#4A5568',
-  hint: '#A0AEC0',
-  // named accents
-  green:    '#38A169',
-  greenBg:  '#F0FFF4',
-  greenBd:  '#C6F6D5',
-  purple:   '#6B46C1',
-  purpleBg: '#FAF5FF',
-  purpleBd: '#E9D8FD',
-  blue:     '#3182CE',
-  blueBg:   '#EBF8FF',
-  blueBd:   '#BEE3F8',
-  orange:   '#DD6B20',
-  orangeBg: '#FFFAF0',
-  orangeBd: '#FEEBC8',
-  red:      '#E53E3E',
-  redBg:    '#FFF5F5',
-  redBd:    '#FED7D7',
-  pink:     '#D53F8C',
-  pinkBg:   '#FFF5F7',
-  pinkBd:   '#FED7E2',
-  teal:     '#2C7A7B',
-  tealBg:   '#E6FFFA',
-  tealBd:   '#81E6D9',
-  amber:    '#B7791F',
-  amberBg:  '#FFFFF0',
-  amberBd:  '#FAF089',
+  pageBg: '#F0F2F5', card: '#FFFFFF', border: '#E8ECF0',
+  text: '#1A202C', muted: '#4A5568', hint: '#A0AEC0',
+  green: '#38A169', greenBg: '#F0FFF4', greenBd: '#C6F6D5',
+  purple: '#6B46C1', purpleBg: '#FAF5FF', purpleBd: '#E9D8FD',
+  blue: '#3182CE', blueBg: '#EBF8FF', blueBd: '#BEE3F8',
+  orange: '#DD6B20', orangeBg: '#FFFAF0', orangeBd: '#FEEBC8',
+  red: '#E53E3E', redBg: '#FFF5F5', redBd: '#FED7D7',
+  pink: '#D53F8C', pinkBg: '#FFF5F7', pinkBd: '#FED7E2',
+  teal: '#2C7A7B', tealBg: '#E6FFFA', tealBd: '#81E6D9',
+  amber: '#B7791F', amberBg: '#FFFFF0', amberBd: '#FAF089',
 };
 
 const globalStyle = `
@@ -183,7 +195,6 @@ const globalStyle = `
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
 
-  /* Badge */
   .kb { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px; letter-spacing:0.04em; }
   .kb-green  { background:${C.greenBg};  color:${C.green};  border:1px solid ${C.greenBd}; }
   .kb-purple { background:${C.purpleBg}; color:${C.purple}; border:1px solid ${C.purpleBd}; }
@@ -195,7 +206,6 @@ const globalStyle = `
   .kb-amber  { background:${C.amberBg};  color:${C.amber};  border:1px solid ${C.amberBd}; }
   .kb-gray   { background:#F7FAFC; color:#718096; border:1px solid #E2E8F0; }
 
-  /* Buttons */
   .kbtn { cursor:pointer; font-family:inherit; font-weight:700; border:none; outline:none; transition:all 0.18s; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
   .kbtn:active { transform:scale(0.97); }
   .kbtn-green  { background:${C.green};  color:#fff; }
@@ -213,21 +223,17 @@ const globalStyle = `
   .kbtn-ghost  { background:transparent; border:1px solid ${C.border}; color:${C.muted}; }
   .kbtn-ghost:hover  { background:#F7FAFC; color:${C.text}; }
 
-  /* Mood pill */
   .kmood { cursor:pointer; font-size:11px; font-weight:700; padding:5px 12px; border-radius:20px; border:1.5px solid ${C.border}; background:#F7FAFC; color:${C.muted}; transition:all 0.15s; }
   .kmood.active { background:${C.purple}; color:#fff; border-color:${C.purple}; }
   .kmood:hover:not(.active) { border-color:${C.purple}; color:${C.purple}; background:${C.purpleBg}; }
 
-  /* Streak btn */
   .kstreak { cursor:pointer; font-size:11px; font-weight:700; padding:6px 14px; border-radius:10px; border:1.5px solid ${C.border}; background:#F7FAFC; color:${C.muted}; transition:all 0.15s; display:inline-flex; align-items:center; gap:6px; font-family:inherit; }
   .kstreak.done { background:${C.greenBg}; color:${C.green}; border-color:${C.greenBd}; cursor:default; }
   .kstreak:hover:not(.done) { border-color:${C.green}; color:${C.green}; background:${C.greenBg}; }
 
-  /* Nap btn */
   .knapdur { cursor:pointer; padding:6px 0; border-radius:8px; border:1.5px solid ${C.border}; background:#F7FAFC; color:${C.muted}; font-size:11px; font-weight:700; font-family:inherit; transition:all 0.15s; flex:1; text-align:center; }
   .knapdur.active { background:${C.purple}; color:#fff; border-color:${C.purple}; }
 
-  /* Animations */
   @keyframes neckAnim { 0%,100%{transform:rotate(0deg)} 25%{transform:rotate(15deg)} 75%{transform:rotate(-15deg)} }
   @keyframes shoulderAnim { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(360deg)} }
   @keyframes wristAnim { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(360deg) scale(1.1)} }
@@ -251,14 +257,11 @@ const globalStyle = `
   @keyframes romanticGlow { 0%,100%{box-shadow:0 0 0 0 rgba(213,63,140,0.15)} 50%{box-shadow:0 4px 20px rgba(213,63,140,0.15)} }
   .romantic-glow { animation:romanticGlow 3s ease-in-out infinite; }
 
-  /* Detox overlay */
   .detox-overlay { position:fixed; inset:0; z-index:9999; background:linear-gradient(135deg,#F0FFF4,#E6FFFA); display:flex; align-items:center; justify-content:center; }
 
-  /* Grid */
   .kgrid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
   @media(max-width:860px){ .kgrid2 { grid-template-columns:1fr; } }
 
-  /* Section divider label */
   .ksect { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:${C.hint}; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
   .ksect::after { content:''; flex:1; height:1px; background:${C.border}; }
 `;
@@ -266,7 +269,6 @@ const globalStyle = `
 export default function KesehatanPage() {
   const firstName = 'Kamu';
 
-  // persisted
   const [waterCount,    setWaterCount]    = useLocalStorage('kes_waterCount', 1.2);
   const [currentMood,   setCurrentMood]   = useLocalStorage('kes_currentMood', 'Ambis');
   const [coffeeCount,   setCoffeeCount]   = useLocalStorage('kes_coffeeCount', 0);
@@ -277,7 +279,6 @@ export default function KesehatanPage() {
   const [vibeY,         setVibeY]         = useLocalStorage('kes_vibeY', 50);
   const [lastResetDate, setLastResetDate] = useLocalStorage('kes_lastResetDate', '');
 
-  // temp
   const [isSOSActive,    setIsSOSActive]    = useState(false);
   const [detoxActive,    setDetoxActive]    = useState(false);
   const [detoxCountdown, setDetoxCountdown] = useState(300);
@@ -307,7 +308,6 @@ export default function KesehatanPage() {
   const [showPosture,    setShowPosture]    = useState(false);
   const [postureFixed,   setPostureFixed]   = useState(false);
 
-  // breathing
   const [breathActive,     setBreathActive]     = useState(false);
   const [breathPhaseIdx,   setBreathPhaseIdx]   = useState(0);
   const [breathSecsLeft,   setBreathSecsLeft]   = useState(4);
@@ -343,7 +343,6 @@ export default function KesehatanPage() {
     setBreathActive(false); setBreathPhaseIdx(0); setBreathSecsLeft(4); setBreathCycleCount(0); setBreathScale(0.6);
   };
 
-  // stretch
   const [stretchActive,   setStretchActive]   = useState(false);
   const [stretchMoveIdx,  setStretchMoveIdx]  = useState(0);
   const [stretchSecsLeft, setStretchSecsLeft] = useState(stretchMoves[0].duration);
@@ -368,7 +367,6 @@ export default function KesehatanPage() {
   };
   const stopStretch = () => { clearInterval(stretchRef.current!); setStretchActive(false); setStretchMoveIdx(0); setStretchSecsLeft(stretchMoves[0].duration); setStretchDone(false); };
 
-  // romantic
   const [romanticIdx, setRomanticIdx] = useState(() => Math.floor(Math.random() * romanticMessages.length));
   useEffect(() => {
     const now = new Date();
@@ -382,21 +380,18 @@ export default function KesehatanPage() {
   }, []);
   const currentRomantic = romanticMessages[romanticIdx];
 
-  // auto-reset
   useEffect(() => {
     const today = new Date().toDateString();
     if (lastResetDate !== today) { setCoffeeCount(0); setSunDone(false); setStreakItems({ air:false, tidur:false, gerak:false }); setLastResetDate(today); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // detox
   const startDetox = () => {
     setDetoxActive(true); setDetoxCountdown(300);
     detoxRef.current = setInterval(() => setDetoxCountdown(p => { if (p <= 1) { clearInterval(detoxRef.current!); setDetoxActive(false); return 300; } return p - 1; }), 1000);
   };
   const cancelDetox = () => { clearInterval(detoxRef.current!); setDetoxActive(false); setDetoxCountdown(300); };
 
-  // nap
   const startNap = () => {
     setNapDone(false); setNapActive(true); setNapRemaining(napSeconds);
     napRef.current = setInterval(() => setNapRemaining(p => { if (p <= 1) { clearInterval(napRef.current!); setNapActive(false); setNapDone(true); return 0; } return p - 1; }), 1000);
@@ -404,7 +399,6 @@ export default function KesehatanPage() {
   const stopNap = () => { clearInterval(napRef.current!); setNapActive(false); setNapRemaining(napSeconds); setNapDone(false); };
   const selectNapDuration = (idx: number) => { setSelectedNap(idx); setNapSeconds(napDurations[idx].seconds); setNapRemaining(napDurations[idx].seconds); setNapDone(false); if (napActive) stopNap(); };
 
-  // vibe drag
   const getVibePos = useCallback((cx: number, cy: number) => {
     if (!vibeArenaRef.current) return [50, 50];
     const r = vibeArenaRef.current.getBoundingClientRect();
@@ -417,7 +411,6 @@ export default function KesehatanPage() {
     return () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
   }, [vibeDragging, getVibePos]);
 
-  // eye timer
   const toggleTimer = () => {
     if (timerRunning) { clearInterval(timerRef.current!); setTimerRunning(false); return; }
     setTimerRunning(true);
@@ -428,7 +421,6 @@ export default function KesehatanPage() {
     }, 1000);
   };
 
-  // streak
   const logStreak = (type: keyof StreakState) => {
     if (streakItems[type]) return;
     const next = { ...streakItems, [type]: true };
@@ -438,7 +430,6 @@ export default function KesehatanPage() {
 
   useEffect(() => () => { clearInterval(detoxRef.current!); clearInterval(napRef.current!); clearInterval(timerRef.current!); clearInterval(breathRef.current!); clearInterval(stretchRef.current!); }, []);
 
-  // derived
   const totalDebt      = sleepData.reduce((a, d) => a + Math.max(0, IDEAL_SLEEP - d.hours), 0);
   const sleepStatus    = totalDebt <= 2 ? { text: 'Tidur Cukup', cls: 'kb-green' } : totalDebt <= 6 ? { text: 'Zombie Ringan', cls: 'kb-orange' } : { text: 'Zombie Kampus', cls: 'kb-red' };
   const napProgress    = 1 - napRemaining / napSeconds;
@@ -456,8 +447,10 @@ export default function KesehatanPage() {
   const curStretch     = stretchMoves[stretchMoveIdx];
   const stretchProg    = stretchActive ? (1 - stretchSecsLeft / curStretch.duration) : 0;
 
-  // ── helper inline card ─────────────────────────────────────────────────────
   const sh = { boxShadow: '0 1px 4px rgba(0,0,0,0.06)' };
+
+  // Breathing face emoji per phase
+  const breathFaceEmoji = !breathActive ? '🧘' : breathPhaseIdx === 0 ? '😮' : breathPhaseIdx === 2 ? '😤' : '😌';
 
   return (
     <>
@@ -467,7 +460,7 @@ export default function KesehatanPage() {
       {detoxActive && (
         <div className="detox-overlay">
           <div style={{ textAlign:'center', maxWidth:400, padding:'0 24px' }}>
-            <div style={{ fontSize:80, marginBottom:20 }}>🌿</div>
+            <div style={{ fontSize:80, marginBottom:20, lineHeight:1 }}><Emoji3D e="🌿" size={80} /></div>
             <div style={{ fontSize:11, fontWeight:800, letterSpacing:'0.15em', color:C.teal, textTransform:'uppercase', marginBottom:8 }}>Digital Detox Aktif</div>
             <h2 style={{ fontSize:28, fontWeight:900, color:C.text, marginBottom:12 }}>Istirahat Sejenak</h2>
             <p style={{ fontSize:14, color:C.muted, lineHeight:1.7, marginBottom:24 }}>Pandangi sesuatu yang jauh — minimal 6 meter.<br/>Biarkan matamu bernapas.</p>
@@ -486,7 +479,9 @@ export default function KesehatanPage() {
           onClick={() => { setShowPosture(false); setPostureFixed(false); }}>
           <div onClick={e => e.stopPropagation()} className="kes-card slide-up" style={{ maxWidth:380, width:'100%', margin:'0 16px', border:`2px solid ${C.teal}` }}>
             <div style={{ textAlign:'center', marginBottom:16 }}>
-              <div style={{ fontSize:52, marginBottom:10, display:'inline-block', transform:postureFixed?'none':'rotate(12deg)', transition:'transform 0.7s' }}>{postureFixed?'🧍':'🦐'}</div>
+              <div style={{ fontSize:52, marginBottom:10, display:'inline-block', transform:postureFixed?'none':'rotate(12deg)', transition:'transform 0.7s', lineHeight:1 }}>
+                <Emoji3D e={postureFixed ? '🧍' : '🦐'} size={52} />
+              </div>
               <span className={`kb ${postureFixed?'kb-green':'kb-orange'}`}>{postureFixed?'✅ Postur Sudah Oke!':'⚠️ Chaos Tamers Alert!'}</span>
               <h2 style={{ fontSize:17, fontWeight:800, color:C.text, marginTop:10 }}>{postureFixed?`Mantap! Tulang punggungmu berterima kasih.`:`Punggungmu bukan udang, ${firstName}.`}</h2>
               <p style={{ fontSize:12, color:C.muted, marginTop:6, lineHeight:1.6 }}>{postureFixed?'Pertahankan posisi ini. Set pengingat 30 menit lagi!':'Tegak dikit napa! Bahu ke belakang, dagu sedikit naik.'}</p>
@@ -516,9 +511,12 @@ export default function KesehatanPage() {
 
         {/* ROMANTIC BANNER */}
         <div className="romantic-glow" style={{ background:`linear-gradient(135deg, ${C.pinkBg}, #FFF0F6)`, border:`1.5px solid ${C.pinkBd}`, borderRadius:16, padding:'14px 20px', marginBottom:20, display:'flex', alignItems:'center', gap:14, ...sh }}>
-          <span style={{ fontSize:26, flexShrink:0 }}>{currentRomantic.emoji}</span>
+          <span style={{ flexShrink:0, lineHeight:1 }}><Emoji3D e={currentRomantic.emoji} size={32} /></span>
           <div style={{ flex:1 }}>
-            <div style={{ fontSize:10, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', color:C.pink, marginBottom:4 }}>💌 Pengingat Sayang — Berganti Tiap Jam</div>
+            <div style={{ fontSize:10, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', color:C.pink, marginBottom:4 }}>
+              <Emoji3D e="💌" size={12} style={{ verticalAlign:'middle', marginRight:4 }} />
+              Pengingat Sayang — Berganti Tiap Jam
+            </div>
             <p style={{ fontSize:13, fontWeight:600, color:'#97266D', lineHeight:1.5 }}>{currentRomantic.msg}</p>
           </div>
           <button onClick={() => setRomanticIdx(i => (i+1) % romanticMessages.length)}
@@ -534,7 +532,7 @@ export default function KesehatanPage() {
               <h1 style={{ fontSize:22, fontWeight:900, color:C.text }}>Kesehatan & Keseimbangan</h1>
               <span className="kb kb-green">● Live</span>
             </div>
-            <p style={{ fontSize:13, color:C.muted }}>Hei, <span style={{ color:C.purple, fontWeight:800 }}>{firstName}</span>! Jangan biarkan tugas memadamkan semangatmu. 🌟</p>
+            <p style={{ fontSize:13, color:C.muted }}>Hei, <span style={{ color:C.purple, fontWeight:800 }}>{firstName}</span>! Jangan biarkan tugas memadamkan semangatmu. <Emoji3D e="🌟" size={16} /></p>
             <div style={{ display:'flex', gap:6, marginTop:10, flexWrap:'wrap' }}>
               {Object.keys(moodFoodMap).map(m => <button key={m} onClick={() => setCurrentMood(m)} className={`kmood ${currentMood===m?'active':''}`}>{m}</button>)}
             </div>
@@ -551,7 +549,10 @@ export default function KesehatanPage() {
 
         {/* QUOTE */}
         <div style={{ background:C.purpleBg, borderLeft:`4px solid ${C.purple}`, borderRadius:'0 14px 14px 0', padding:'14px 18px', marginBottom:20, display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, border:`1px solid ${C.purpleBd}`, borderLeftWidth:4 }}>
-          <p style={{ fontSize:13, fontWeight:600, color:'#553C9A', fontStyle:'italic', lineHeight:1.6 }}>💡 &ldquo;{healthQuotes[quoteIdx]}&rdquo;</p>
+          <p style={{ fontSize:13, fontWeight:600, color:'#553C9A', fontStyle:'italic', lineHeight:1.6 }}>
+            <Emoji3D e="💡" size={14} style={{ marginRight:6, verticalAlign:'middle' }} />
+            &ldquo;{healthQuotes[quoteIdx]}&rdquo;
+          </p>
           <button onClick={() => setQuoteIdx(i => (i+1) % healthQuotes.length)} className="kbtn kbtn-ghost" style={{ padding:'6px 12px', fontSize:11, flexShrink:0 }}>Ganti ↻</button>
         </div>
 
@@ -559,7 +560,7 @@ export default function KesehatanPage() {
         <button onClick={() => { setShowPosture(true); setPostureFixed(false); }}
           style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', gap:16, background:`linear-gradient(135deg, ${C.tealBg}, #E6FFFA)`, border:`1.5px solid ${C.tealBd}`, borderRadius:14, padding:'14px 20px', cursor:'pointer', marginBottom:20, fontFamily:'inherit', ...sh }}>
           <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-            <span style={{ fontSize:24 }}>🦴</span>
+            <Emoji3D e="🦴" size={28} />
             <div style={{ textAlign:'left' }}>
               <div style={{ fontSize:13, fontWeight:800, color:C.teal }}>Posture Police — Cek Punggungmu!</div>
               <div style={{ fontSize:11, color:'#285E61', marginTop:2 }}>Punggungmu bukan udang. Tegak dikit napa!</div>
@@ -574,10 +575,12 @@ export default function KesehatanPage() {
           <div className="kes-card" style={{ border:`1.5px solid ${C.purpleBd}`, background:C.purpleBg }}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
               <div>
-                <div style={{ fontSize:14, fontWeight:800, color:C.text }}>Vibe Check 🎯</div>
+                <div style={{ fontSize:14, fontWeight:800, color:C.text, display:'flex', alignItems:'center', gap:6 }}>
+                  Vibe Check <Emoji3D e="🎯" size={18} />
+                </div>
                 <div style={{ fontSize:11, color:C.hint, marginTop:3 }}>Drag maskot ke zona mood-mu</div>
               </div>
-              <span className={`kb`} style={{ background:currentVibe.bg, color:currentVibe.color, border:`1px solid ${currentVibe.border}`, fontSize:11 }}>{currentVibe.label}</span>
+              <span className="kb" style={{ background:currentVibe.bg, color:currentVibe.color, border:`1px solid ${currentVibe.border}`, fontSize:11 }}>{currentVibe.label}</span>
             </div>
             <div ref={vibeArenaRef} style={{ position:'relative', width:'100%', height:170, background:'#F7FAFC', borderRadius:12, border:`1px solid ${C.border}`, overflow:'hidden', cursor:'crosshair', userSelect:'none' }}
               onMouseDown={() => setVibeDragging(true)}>
@@ -590,8 +593,11 @@ export default function KesehatanPage() {
               <span style={{ position:'absolute', top:14, right:14, fontSize:9, fontWeight:800, color:C.red, pointerEvents:'none' }}>Kewalahan</span>
               <span style={{ position:'absolute', bottom:14, left:14, fontSize:9, fontWeight:800, color:C.purple, pointerEvents:'none' }}>Santai</span>
               <span style={{ position:'absolute', bottom:14, right:14, fontSize:9, fontWeight:800, color:C.muted, pointerEvents:'none' }}>Burnout</span>
-              <div style={{ position:'absolute', width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, cursor:'grab', zIndex:10, left:`${vibeX}%`, top:`${vibeY}%`, transform:'translate(-50%,-50%)' }}
-                onMouseDown={e => { e.preventDefault(); setVibeDragging(true); }}>{currentVibe.emoji}</div>
+              {/* draggable mascot using 3D emoji */}
+              <div style={{ position:'absolute', width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', cursor:'grab', zIndex:10, left:`${vibeX}%`, top:`${vibeY}%`, transform:'translate(-50%,-50%)' }}
+                onMouseDown={e => { e.preventDefault(); setVibeDragging(true); }}>
+                <Emoji3D e={currentVibe.emoji} size={30} />
+              </div>
             </div>
             <div style={{ marginTop:10, padding:12, borderRadius:10, background:currentVibe.bg, border:`1px solid ${currentVibe.border}`, fontSize:12, fontWeight:600, color:currentVibe.color, lineHeight:1.5 }}>
               💬 {currentVibe.advice}
@@ -603,17 +609,24 @@ export default function KesehatanPage() {
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
               <div>
                 <div style={{ fontSize:14, fontWeight:800, color:C.text, display:'flex', alignItems:'center', gap:8 }}>
-                  <span className={eyeIconBlink?'eye-blink':''} style={{ display:'inline-block' }}>👁️</span>Aturan 20-20-20
+                  <span className={eyeIconBlink?'eye-blink':''} style={{ display:'inline-flex' }}><Emoji3D e="👁️" size={20} /></span>
+                  Aturan 20-20-20
                 </div>
                 <div style={{ fontSize:11, color:C.hint, marginTop:3 }}>Tiap 20 menit → lihat 6m → 20 detik</div>
               </div>
               <span className={`kb ${inEyeBreak?'kb-orange':timerRunning?'kb-green':'kb-gray'}`}>
-                {inEyeBreak?'🔴 Istirahat!':timerRunning?'🟢 Aktif':'Belum mulai'}
+                {inEyeBreak ? (
+                  <><Emoji3D e="🔴" size={11} /> Istirahat!</>
+                ) : timerRunning ? (
+                  <><Emoji3D e="🟢" size={11} /> Aktif</>
+                ) : 'Belum mulai'}
               </span>
             </div>
             {inEyeBreak && (
               <div style={{ background:C.orangeBg, border:`1px solid ${C.orangeBd}`, borderRadius:10, padding:10, textAlign:'center', marginBottom:10 }}>
-                <p style={{ fontSize:12, fontWeight:800, color:C.orange }}>👀 Lihat sesuatu sejauh 6 meter selama 20 detik!</p>
+                <p style={{ fontSize:12, fontWeight:800, color:C.orange, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                  <Emoji3D e="👁️" size={16} /> Lihat sesuatu sejauh 6 meter selama 20 detik!
+                </p>
               </div>
             )}
             <div style={{ display:'flex', justifyContent:'center', padding:'8px 0' }}>
@@ -629,8 +642,12 @@ export default function KesehatanPage() {
                 </div>
               </div>
             </div>
-            <button onClick={toggleTimer} className={`kbtn ${timerRunning?'kbtn-ghost':'kbtn-blue'}`} style={{ width:'100%', padding:'10px 0', fontSize:12 }}>
-              {timerRunning?'⏸ Jeda Timer':'👁️ Mulai Timer 20-20-20'}
+            <button onClick={toggleTimer} className={`kbtn ${timerRunning?'kbtn-ghost':'kbtn-blue'}`} style={{ width:'100%', padding:'10px 0', fontSize:12, gap:6 }}>
+              {timerRunning ? (
+                <>⏸ Jeda Timer</>
+              ) : (
+                <><Emoji3D e="👁️" size={15} /> Mulai Timer 20-20-20</>
+              )}
             </button>
           </div>
         </div>
@@ -641,7 +658,9 @@ export default function KesehatanPage() {
           <div className="kes-card" style={{ border:`1.5px solid ${C.purpleBd}`, background:C.purpleBg }}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
               <div>
-                <div style={{ fontSize:14, fontWeight:800, color:C.text }}>Mindfulness & Breathing 🧘</div>
+                <div style={{ fontSize:14, fontWeight:800, color:C.text, display:'flex', alignItems:'center', gap:6 }}>
+                  Mindfulness & Breathing <Emoji3D e="🧘" size={18} />
+                </div>
                 <div style={{ fontSize:11, color:C.hint, marginTop:3 }}>Box Breathing — turunkan kecemasan instan</div>
               </div>
               {breathActive && <span className="kb kb-purple">Siklus {breathCycleCount}</span>}
@@ -657,7 +676,7 @@ export default function KesehatanPage() {
                   display:'flex', alignItems:'center', justifyContent:'center',
                   boxShadow:breathActive?`0 0 20px ${curBreath.color}30`:'none',
                 }}>
-                  <span style={{ fontSize:24 }}>{!breathActive?'🧘':breathPhaseIdx===0?'😮':breathPhaseIdx===2?'😤':'😌'}</span>
+                  <Emoji3D e={breathFaceEmoji} size={30} />
                 </div>
                 {breathActive && <div style={{ position:'absolute', bottom:8, fontSize:11, fontWeight:800, color:curBreath.color }}>{breathSecsLeft}s</div>}
               </div>
@@ -680,7 +699,7 @@ export default function KesehatanPage() {
               )}
             </div>
             <button onClick={breathActive?stopBreathing:startBreathing} className={`kbtn ${breathActive?'kbtn-ghost':'kbtn-purple'}`} style={{ width:'100%', padding:'10px 0', fontSize:12 }}>
-              {breathActive?'⏹ Stop Breathing':'🧘 Ambil Napas Sekarang'}
+              {breathActive ? '⏹ Stop Breathing' : <><Emoji3D e="🧘" size={15} /> Ambil Napas Sekarang</>}
             </button>
           </div>
 
@@ -688,21 +707,27 @@ export default function KesehatanPage() {
           <div className="kes-card" style={{ border:`1.5px solid ${C.greenBd}`, background:C.greenBg }}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
               <div>
-                <div style={{ fontSize:14, fontWeight:800, color:C.text }}>Desk Stretch Guide 🤸</div>
+                <div style={{ fontSize:14, fontWeight:800, color:C.text, display:'flex', alignItems:'center', gap:6 }}>
+                  Desk Stretch Guide <Emoji3D e="🤸" size={18} />
+                </div>
                 <div style={{ fontSize:11, color:C.hint, marginTop:3 }}>5 gerakan × 30 detik = 2.5 menit sehat</div>
               </div>
               {stretchActive && <span className="kb kb-green">{stretchMoveIdx+1}/{stretchMoves.length}</span>}
             </div>
             {stretchDone ? (
               <div style={{ textAlign:'center', padding:'20px 0' }}>
-                <div style={{ fontSize:48, marginBottom:10 }}>🎉</div>
+                <div style={{ marginBottom:10, lineHeight:1 }}><Emoji3D e="🎉" size={52} /></div>
                 <div style={{ fontSize:15, fontWeight:900, color:C.green, marginBottom:6 }}>Selesai! Keren banget!</div>
                 <div style={{ fontSize:12, color:C.muted, lineHeight:1.6 }}>Badanmu berterima kasih. Ulangi tiap 2 jam ya!</div>
                 <button onClick={stopStretch} className="kbtn kbtn-green" style={{ marginTop:14, padding:'8px 20px', fontSize:12 }}>Reset</button>
               </div>
             ) : stretchActive ? (
               <div style={{ textAlign:'center' }}>
-                <div style={{ fontSize:54, marginBottom:8 }}><span className={`anim-${curStretch.animClass}`}>{curStretch.emoji}</span></div>
+                <div style={{ marginBottom:8, lineHeight:1 }}>
+                  <span className={`anim-${curStretch.animClass}`} style={{ display:'inline-block' }}>
+                    <Emoji3D e={curStretch.emoji} size={54} />
+                  </span>
+                </div>
                 <div style={{ fontSize:15, fontWeight:900, color:C.green, marginBottom:6 }}>{curStretch.name}</div>
                 <div style={{ fontSize:12, color:C.muted, lineHeight:1.6, marginBottom:14, padding:'0 8px' }}>{curStretch.instruction}</div>
                 <div style={{ marginBottom:10 }}>
@@ -716,11 +741,10 @@ export default function KesehatanPage() {
                 </div>
                 <div style={{ display:'flex', gap:4, justifyContent:'center', marginBottom:12 }}>
                   {stretchMoves.map((m,i) => (
-                    <div key={i} style={{ width:28, height:28, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', fontSize:14,
+                    <div key={i} style={{ width:28, height:28, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center',
                       background:i<stretchMoveIdx?C.greenBg:i===stretchMoveIdx?C.green:C.card,
-                      border:`1.5px solid ${i===stretchMoveIdx?C.green:C.greenBd}`,
-                      color:i===stretchMoveIdx?'#fff':'inherit' }}>
-                      {m.emoji}
+                      border:`1.5px solid ${i===stretchMoveIdx?C.green:C.greenBd}` }}>
+                      <Emoji3D e={m.emoji} size={16} />
                     </div>
                   ))}
                 </div>
@@ -731,7 +755,7 @@ export default function KesehatanPage() {
                 <div style={{ display:'flex', flexDirection:'column', gap:6, marginBottom:14 }}>
                   {stretchMoves.map((m,i) => (
                     <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 12px', background:C.card, borderRadius:10, border:`1px solid ${C.greenBd}` }}>
-                      <span style={{ fontSize:18 }}>{m.emoji}</span>
+                      <Emoji3D e={m.emoji} size={22} />
                       <div style={{ flex:1 }}>
                         <div style={{ fontSize:12, fontWeight:700, color:C.text }}>{m.name}</div>
                         <div style={{ fontSize:10, color:C.hint }}>{m.duration} detik</div>
@@ -740,7 +764,9 @@ export default function KesehatanPage() {
                     </div>
                   ))}
                 </div>
-                <button onClick={startStretch} className="kbtn kbtn-green" style={{ width:'100%', padding:'10px 0', fontSize:12 }}>🤸 Mulai Peregangan</button>
+                <button onClick={startStretch} className="kbtn kbtn-green" style={{ width:'100%', padding:'10px 0', fontSize:12 }}>
+                  <Emoji3D e="🤸" size={15} /> Mulai Peregangan
+                </button>
               </>
             )}
           </div>
@@ -752,20 +778,29 @@ export default function KesehatanPage() {
           <div className="kes-card" style={{ border:`1.5px solid ${sunDone?C.amberBd:C.border}`, background:sunDone?C.amberBg:C.card, transition:'all 0.4s' }}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
               <div>
-                <div style={{ fontSize:14, fontWeight:800, color:C.text }}>Sunlight Tracker ☀️</div>
+                <div style={{ fontSize:14, fontWeight:800, color:C.text, display:'flex', alignItems:'center', gap:6 }}>
+                  Sunlight Tracker <Emoji3D e="☀️" size={18} />
+                </div>
                 <div style={{ fontSize:11, color:C.hint, marginTop:3 }}>Jangan jadi vampir kampus</div>
               </div>
               <span className={`kb ${sunDone?'kb-amber':'kb-gray'}`}>{sunDone?'✅ Sudah!':'Belum'}</span>
             </div>
             <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:14 }}>
-              <div onClick={() => setSunDone((d: boolean) => !d)} style={{ fontSize:60, cursor:'pointer', filter:sunDone?'none':'grayscale(0.7)', transform:sunDone?'scale(1.15)':'scale(1)', transition:'all 0.4s', userSelect:'none' }}>☀️</div>
+              <div onClick={() => setSunDone((d: boolean) => !d)}
+                style={{ cursor:'pointer', filter:sunDone?'none':'grayscale(0.7)', transform:sunDone?'scale(1.15)':'scale(1)', transition:'all 0.4s', userSelect:'none', lineHeight:1 }}>
+                <Emoji3D e="☀️" size={64} />
+              </div>
               <label style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer' }}>
                 <input type="checkbox" checked={sunDone} onChange={e => setSunDone(e.target.checked)} style={{ width:16, height:16, accentColor:C.amber, cursor:'pointer' }} />
                 <span style={{ fontSize:13, fontWeight:700, color:C.text }}>Sudah kena sinar matahari hari ini</span>
               </label>
             </div>
             <div style={{ marginTop:14, padding:12, borderRadius:10, background:sunDone?C.amberBg:C.pageBg, border:`1px solid ${sunDone?C.amberBd:C.border}`, fontSize:12, fontWeight:600, color:sunDone?C.amber:C.muted, lineHeight:1.5 }}>
-              {sunDone?'🌟 Vitamin D-mu tercukupi! Kulitmu berterima kasih, dan mood-mu juga.':'🧛 Warna kulitmu udah kayak drakula. Ayo keluar bentar sebelum jadi urban legend!'}
+              {sunDone ? (
+                <><Emoji3D e="🌟" size={14} style={{ marginRight:4 }} />Vitamin D-mu tercukupi! Kulitmu berterima kasih, dan mood-mu juga.</>
+              ) : (
+                '🧛 Warna kulitmu udah kayak drakula. Ayo keluar bentar sebelum jadi urban legend!'
+              )}
             </div>
           </div>
 
@@ -773,7 +808,9 @@ export default function KesehatanPage() {
           <div className="kes-card" style={{ border:`1.5px solid ${coffeeCount>=MAX_COFFEE?C.redBd:C.border}`, background:coffeeCount>=MAX_COFFEE?C.redBg:C.card, transition:'all 0.4s' }}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
               <div>
-                <div style={{ fontSize:14, fontWeight:800, color:C.text }}>Student Fuel Tracker ☕</div>
+                <div style={{ fontSize:14, fontWeight:800, color:C.text, display:'flex', alignItems:'center', gap:6 }}>
+                  Student Fuel Tracker <Emoji3D e="☕" size={18} />
+                </div>
                 <div style={{ fontSize:11, color:C.hint, marginTop:3 }}>Batas aman: {MAX_COFFEE} cangkir / hari</div>
               </div>
               <span className={`kb ${coffeeCount>=MAX_COFFEE?'kb-red':coffeeCount>=2?'kb-orange':'kb-gray'}`}>{coffeeCount} cangkir</span>
@@ -790,11 +827,15 @@ export default function KesehatanPage() {
               </div>
             )}
             <div style={{ display:'flex', gap:8, justifyContent:'center', marginBottom:14 }}>
-              {Array.from({ length: MAX_COFFEE }).map((_,i) => <span key={i} style={{ fontSize:24, filter:i<coffeeCount?'none':'grayscale(1) opacity(0.3)', transition:'all 0.3s' }}>☕</span>)}
+              {Array.from({ length: MAX_COFFEE }).map((_,i) => (
+                <span key={i} style={{ filter:i<coffeeCount?'none':'grayscale(1) opacity(0.3)', transition:'all 0.3s', lineHeight:1 }}>
+                  <Emoji3D e="☕" size={26} />
+                </span>
+              ))}
             </div>
             <div style={{ display:'flex', gap:8 }}>
               <button onClick={() => setCoffeeCount((c: number) => Math.min(c+1, MAX_COFFEE+1))} className={`kbtn ${coffeeCount>=MAX_COFFEE?'kbtn-ghost':'kbtn-orange'}`} style={{ flex:1, padding:'10px 0', fontSize:12 }} disabled={coffeeCount>MAX_COFFEE}>
-                ☕ Catat Kopi
+                <Emoji3D e="☕" size={15} /> Catat Kopi
               </button>
               <button onClick={() => setCoffeeCount(0)} className="kbtn kbtn-ghost" style={{ padding:'10px 14px', fontSize:12 }}>↺</button>
             </div>
@@ -805,27 +846,37 @@ export default function KesehatanPage() {
         <div className="kes-card" style={{ marginBottom:20 }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:14, fontWeight:800, color:C.text }}>Health Streak 🔥</div>
+              <div style={{ fontSize:14, fontWeight:800, color:C.text, display:'flex', alignItems:'center', gap:6 }}>
+                Health Streak <Emoji3D e="🔥" size={18} />
+              </div>
               <div style={{ fontSize:11, color:C.hint, marginTop:3 }}>Konsisten tiap hari → maskot makin stylish</div>
             </div>
-            <span className="kb kb-orange">{streakDays} hari 🔥</span>
+            <span className="kb kb-orange" style={{ display:'inline-flex', alignItems:'center', gap:4 }}>
+              {streakDays} hari <Emoji3D e="🔥" size={13} />
+            </span>
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:20, flexWrap:'wrap' }}>
             <div style={{ textAlign:'center', minWidth:80 }}>
-              <div style={{ position:'relative', display:'inline-block', fontSize:48, lineHeight:1 }}>
-                🐧
-                {streakLevel>0 && <span style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', fontSize:20 }}>{mascotAccessories[streakLevel]}</span>}
+              <div style={{ position:'relative', display:'inline-block', lineHeight:1 }}>
+                <Emoji3D e="🐧" size={52} />
+                {streakLevel > 0 && (
+                  <span style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', fontSize:20, lineHeight:1 }}>
+                    <Emoji3D e={mascotAccessories[streakLevel]} size={22} />
+                  </span>
+                )}
               </div>
               <div style={{ fontSize:10, fontWeight:700, color:C.hint, marginTop:8 }}>{mascotNames[streakLevel]}</div>
             </div>
             <div style={{ flex:1, minWidth:200 }}>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:12 }}>
                 {(['air','tidur','gerak'] as (keyof StreakState)[]).map(key => {
-                  const icons:Record<keyof StreakState,string>  = { air:'💧', tidur:'🌙', gerak:'🏃' };
-                  const labels:Record<keyof StreakState,string> = { air:'Air Cukup', tidur:'Tidur Cukup', gerak:'Sudah Gerak' };
+                  const icons: Record<keyof StreakState, string>  = { air:'💧', tidur:'🌙', gerak:'🏃' };
+                  const labels: Record<keyof StreakState, string> = { air:'Air Cukup', tidur:'Tidur Cukup', gerak:'Sudah Gerak' };
                   return (
                     <button key={key} disabled={streakItems[key]} onClick={() => logStreak(key)} className={`kstreak ${streakItems[key]?'done':''}`}>
-                      {icons[key]} {labels[key]} {streakItems[key]&&'✓'}
+                      <Emoji3D e={icons[key]} size={14} />
+                      {labels[key]}
+                      {streakItems[key] && ' ✓'}
                     </button>
                   );
                 })}
@@ -833,9 +884,9 @@ export default function KesehatanPage() {
               <div style={{ fontSize:12, color:C.muted, fontWeight:600, marginBottom:10, lineHeight:1.5 }}>
                 {streakDays===0&&streakCount<3&&`Selesaikan ${3-streakCount} tantangan lagi untuk mulai streak!`}
                 {streakDays===0&&streakCount===3&&'Streak hari ini dicatat! Besok lagi ya.'}
-                {streakDays===1&&'Streak 1 hari! Terus konsisten untuk upgrade maskot. 🕶️'}
-                {streakDays===2&&'Streak 2 hari! Hampir dapet mahkota juara! 🎧'}
-                {streakDays>=3&&'STREAK LEGENDA! Biru sudah fully equipped. 👑'}
+                {streakDays===1&&<>Streak 1 hari! Terus konsisten untuk upgrade maskot. <Emoji3D e="🕶️" size={14} /></>}
+                {streakDays===2&&<>Streak 2 hari! Hampir dapet mahkota juara! <Emoji3D e="🎧" size={14} /></>}
+                {streakDays>=3&&<>STREAK LEGENDA! Biru sudah fully equipped. <Emoji3D e="👑" size={14} /></>}
               </div>
               <div style={{ display:'flex', gap:6 }}>
                 {[1,2,3].map(day => <div key={day} style={{ height:6, flex:1, borderRadius:3, background:streakDays>=day?C.orange:C.border, transition:'background 0.4s' }} />)}
@@ -844,7 +895,9 @@ export default function KesehatanPage() {
           </div>
           {streakUnlocked && (
             <div style={{ marginTop:14, padding:12, background:C.greenBg, border:`1px solid ${C.greenBd}`, borderRadius:10, textAlign:'center' }}>
-              <p style={{ fontSize:12, fontWeight:800, color:C.green }}>🎉 3 tantangan selesai! Streak hari ini dicatat. Besok lagi ya buat naik level!</p>
+              <p style={{ fontSize:12, fontWeight:800, color:C.green, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                <Emoji3D e="🎉" size={16} /> 3 tantangan selesai! Streak hari ini dicatat. Besok lagi ya buat naik level!
+              </p>
             </div>
           )}
         </div>
@@ -855,7 +908,9 @@ export default function KesehatanPage() {
 
           {/* WATER */}
           <div className="kes-card" style={{ border:`1.5px solid ${C.blueBd}`, background:C.blueBg }}>
-            <div style={{ fontSize:14, fontWeight:800, color:C.text, marginBottom:4 }}>Water Intake 💧</div>
+            <div style={{ fontSize:14, fontWeight:800, color:C.text, marginBottom:4, display:'flex', alignItems:'center', gap:6 }}>
+              Water Intake <Emoji3D e="💧" size={18} />
+            </div>
             <div style={{ fontSize:11, color:C.hint, marginBottom:14 }}>Target: 2.5 L / Hari</div>
             <div style={{ display:'flex', alignItems:'center', gap:16 }}>
               <div style={{ width:40, height:110, background:C.card, borderRadius:20, position:'relative', overflow:'hidden', border:`1.5px solid ${C.blueBd}`, flexShrink:0 }}>
@@ -864,8 +919,14 @@ export default function KesehatanPage() {
               <div>
                 <div style={{ fontSize:30, fontWeight:900, color:C.text, fontVariantNumeric:'tabular-nums' }}>{waterCount.toFixed(1)} <span style={{ fontSize:14, color:C.hint }}>L</span></div>
                 <div style={{ fontSize:11, color:C.hint, marginBottom:10 }}>dari 2.5 L target</div>
-                <button onClick={() => setWaterCount((p: number) => Math.min(p+0.2,2.5))} className="kbtn kbtn-blue" style={{ padding:'7px 16px', fontSize:12 }}>+ 200ml</button>
-                {waterCount>=2.5 && <div style={{ fontSize:11, fontWeight:800, color:C.blue, marginTop:6 }}>💧 Goal Tercapai!</div>}
+                <button onClick={() => setWaterCount((p: number) => Math.min(p+0.2,2.5))} className="kbtn kbtn-blue" style={{ padding:'7px 16px', fontSize:12 }}>
+                  <Emoji3D e="💧" size={14} /> +200ml
+                </button>
+                {waterCount>=2.5 && (
+                  <div style={{ fontSize:11, fontWeight:800, color:C.blue, marginTop:6, display:'flex', alignItems:'center', gap:4 }}>
+                    <Emoji3D e="💧" size={14} /> Goal Tercapai!
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -874,7 +935,9 @@ export default function KesehatanPage() {
           <div className="kes-card">
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
               <div>
-                <div style={{ fontSize:14, fontWeight:800, color:C.text }}>Sleep Debt 🌙</div>
+                <div style={{ fontSize:14, fontWeight:800, color:C.text, display:'flex', alignItems:'center', gap:6 }}>
+                  Sleep Debt <Emoji3D e="🌙" size={18} />
+                </div>
                 <div style={{ fontSize:11, color:C.hint, marginTop:3 }}>Ideal: {IDEAL_SLEEP} jam/hari</div>
               </div>
               <span className={`kb ${sleepStatus.cls}`}>{sleepStatus.text}</span>
@@ -904,8 +967,8 @@ export default function KesehatanPage() {
               <span style={{ fontWeight:900, fontSize:13, color:totalDebt>6?C.red:totalDebt>2?C.orange:C.green }}>−{totalDebt.toFixed(1)} jam</span>
             </div>
             {totalDebt>4 && (
-              <div style={{ marginTop:10, padding:10, background:C.redBg, border:`1px solid ${C.redBd}`, borderRadius:10, fontSize:11, fontWeight:600, color:C.red, lineHeight:1.5 }}>
-                🛌 Utang tidurmu {totalDebt.toFixed(1)} jam. Butuh kasur, bukan kopi!
+              <div style={{ marginTop:10, padding:10, background:C.redBg, border:`1px solid ${C.redBd}`, borderRadius:10, fontSize:11, fontWeight:600, color:C.red, lineHeight:1.5, display:'flex', alignItems:'center', gap:6 }}>
+                <Emoji3D e="🛌" size={16} /> Utang tidurmu {totalDebt.toFixed(1)} jam. Butuh kasur, bukan kopi!
               </div>
             )}
           </div>
@@ -914,32 +977,43 @@ export default function KesehatanPage() {
           <div className="ksidecol" style={{ display:'flex', flexDirection:'column', gap:14 }}>
             {/* SOS */}
             <div className="kes-card" style={{ border:`1.5px solid ${isSOSActive?C.redBd:C.border}`, background:isSOSActive?C.redBg:C.card, transition:'all 0.4s' }}>
-              <div style={{ fontSize:14, fontWeight:800, color:C.text, marginBottom:6 }}>SOS Panic Button 🆘</div>
+              <div style={{ fontSize:14, fontWeight:800, color:C.text, marginBottom:6, display:'flex', alignItems:'center', gap:6 }}>
+                SOS Panic Button <Emoji3D e="🆘" size={18} />
+              </div>
               <p style={{ fontSize:12, color:C.muted, marginBottom:12, lineHeight:1.5 }}>Terlalu berat? Aktifkan protokol darurat emosional.</p>
               {isSOSActive && (
-                <div style={{ padding:10, background:C.redBg, border:`1px solid ${C.redBd}`, borderRadius:10, fontSize:12, color:C.red, fontWeight:600, lineHeight:1.5, marginBottom:12 }}>
-                  📌 Musik lofi diputar. Semua deadline disembunyikan 15 menit. Napas dulu...
+                <div style={{ padding:10, background:C.redBg, border:`1px solid ${C.redBd}`, borderRadius:10, fontSize:12, color:C.red, fontWeight:600, lineHeight:1.5, marginBottom:12, display:'flex', alignItems:'flex-start', gap:6 }}>
+                  <Emoji3D e="📌" size={14} style={{ marginTop:2 }} />
+                  Musik lofi diputar. Semua deadline disembunyikan 15 menit. Napas dulu...
                 </div>
               )}
               <button onClick={() => setIsSOSActive(!isSOSActive)} className={`kbtn ${isSOSActive?'kbtn-red sos-pulse':'kbtn-ghost'}`}
                 style={{ width:'100%', padding:'10px 0', fontSize:13, borderColor:isSOSActive?undefined:C.redBd, color:isSOSActive?undefined:C.red }}>
-                {isSOSActive?'🔴 MATIKAN SOS':'🆘 AKTIFKAN SOS'}
+                {isSOSActive ? (
+                  <><Emoji3D e="🔴" size={15} /> MATIKAN SOS</>
+                ) : (
+                  <><Emoji3D e="🆘" size={15} /> AKTIFKAN SOS</>
+                )}
               </button>
             </div>
 
             {/* DETOX */}
             <div className="kes-card" style={{ border:`1.5px solid ${C.tealBd}`, background:C.tealBg }}>
-              <div style={{ fontSize:11, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', color:C.teal, marginBottom:4 }}>🌿 Saatnya Kabur</div>
+              <div style={{ fontSize:11, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', color:C.teal, marginBottom:4, display:'flex', alignItems:'center', gap:4 }}>
+                <Emoji3D e="🌿" size={14} /> Saatnya Kabur
+              </div>
               <div style={{ fontSize:14, fontWeight:800, color:C.text, marginBottom:6 }}>Digital Detox Timer</div>
               <p style={{ fontSize:11, color:C.muted, lineHeight:1.5, marginBottom:12 }}>Layar PC nggak bakal lari, tapi matamu bisa.</p>
               <button onClick={startDetox} disabled={detoxActive} className="kbtn kbtn-teal" style={{ width:'100%', padding:'10px 0', fontSize:12 }}>
-                🌿 Kabur Sejenak (5 menit)
+                <Emoji3D e="🌿" size={15} /> Kabur Sejenak (5 menit)
               </button>
             </div>
 
             {/* NAP */}
             <div className="kes-card" style={{ border:`1.5px solid ${C.purpleBd}`, background:C.purpleBg }}>
-              <div style={{ fontSize:14, fontWeight:800, color:C.text, marginBottom:4 }}>Victory Nap ⚡</div>
+              <div style={{ fontSize:14, fontWeight:800, color:C.text, marginBottom:4, display:'flex', alignItems:'center', gap:6 }}>
+                Victory Nap <Emoji3D e="⚡" size={18} />
+              </div>
               <div style={{ fontSize:11, color:C.hint, marginBottom:12 }}>Power nap = cheat code hidup</div>
               <div style={{ display:'flex', gap:6, marginBottom:14 }}>
                 {napDurations.map((d,i) => <button key={i} onClick={() => selectNapDuration(i)} className={`knapdur ${selectedNap===i?'active':''}`}>{d.label}</button>)}
@@ -952,7 +1026,9 @@ export default function KesehatanPage() {
                       strokeDasharray={napCirc} strokeDashoffset={napCirc*(1-napProgress)} style={{ transition:'stroke-dashoffset 1s linear' }} />
                   </svg>
                   <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
-                    {napDone?<span style={{ fontSize:22 }}>🎉</span>:(
+                    {napDone ? (
+                      <Emoji3D e="🎉" size={26} />
+                    ) : (
                       <>
                         <span style={{ fontSize:18, fontWeight:900, color:C.text, fontVariantNumeric:'tabular-nums' }}>{formatTime(napRemaining)}</span>
                         <span style={{ fontSize:9, color:C.hint, fontWeight:700 }}>{napActive?'Zzz...':'Siap tidur?'}</span>
@@ -961,16 +1037,18 @@ export default function KesehatanPage() {
                   </div>
                 </div>
               </div>
-              {napDone?(
+              {napDone ? (
                 <div style={{ padding:10, background:C.greenBg, border:`1px solid ${C.greenBd}`, borderRadius:10, textAlign:'center', marginBottom:10 }}>
-                  <div style={{ fontSize:12, fontWeight:800, color:C.green }}>⚡ Level energi dipulihkan!</div>
+                  <div style={{ fontSize:12, fontWeight:800, color:C.green, display:'flex', alignItems:'center', justifyContent:'center', gap:4 }}>
+                    <Emoji3D e="⚡" size={14} /> Level energi dipulihkan!
+                  </div>
                   <div style={{ fontSize:11, color:C.muted, marginTop:4 }}>Siap bantai tugas lagi?</div>
                   <button onClick={() => { setNapDone(false); setNapRemaining(napSeconds); }} style={{ marginTop:8, fontSize:11, fontWeight:700, color:C.green, background:'none', border:'none', cursor:'pointer', textDecoration:'underline', fontFamily:'inherit' }}>Reset Timer</button>
                 </div>
-              ):(
+              ) : (
                 <button onClick={napActive?stopNap:startNap} className={`kbtn ${napActive?'kbtn-ghost':'kbtn-purple'}`}
                   style={{ width:'100%', padding:'10px 0', fontSize:12, borderColor:napActive?C.redBd:undefined, color:napActive?C.red:undefined }}>
-                  {napActive?'⏹ Stop Nap':'😴 Mulai Victory Nap'}
+                  {napActive ? '⏹ Stop Nap' : <><Emoji3D e="😴" size={15} /> Mulai Victory Nap</>}
                 </button>
               )}
             </div>
@@ -978,12 +1056,14 @@ export default function KesehatanPage() {
             {/* MOOD FOOD */}
             <div className="kes-card">
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
-                <div style={{ fontSize:14, fontWeight:800, color:C.text }}>Mood-Food 🍽️</div>
+                <div style={{ fontSize:14, fontWeight:800, color:C.text, display:'flex', alignItems:'center', gap:6 }}>
+                  Mood-Food <Emoji3D e="🍽️" size={18} />
+                </div>
                 <span className="kb kb-purple">Mood: {currentMood}</span>
               </div>
               <div style={{ padding:14, background:C.purpleBg, borderRadius:12, border:`1px solid ${C.purpleBd}`, marginBottom:10 }}>
                 <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
-                  <span style={{ fontSize:32 }}>{currentFood.emoji}</span>
+                  <Emoji3D e={currentFood.emoji} size={36} />
                   <div>
                     <div style={{ fontSize:12, fontWeight:800, color:C.text }}>{currentFood.title}</div>
                     <div style={{ fontSize:11, color:'#553C9A', marginTop:2, lineHeight:1.4 }}>{currentFood.desc}</div>

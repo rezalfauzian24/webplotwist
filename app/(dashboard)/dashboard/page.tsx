@@ -150,12 +150,12 @@ const RABBIT_HOLE_QUOTE_TEMPLATES = [
 ];
 
 const MICRO_ADVENTURES = [
-  "Push-up 10 kali sekarang! Tubuhmu butuh itu. 💪",
-  "Minum segelas air putih dalam 5 detik! Hydration check! 💧",
-  "Tarik napas dalam 4 detik, tahan 4, buang 4. Reset mode. 🧘",
-  "Berdiri dan stretch selama 30 detik. Punggungmu berterima kasih. 🤸",
-  "Tatap jendela atau jarak jauh selama 20 detik. Mata perlu istirahat. 👁️",
-  "Tersenyum ke cermin sekarang. Serius. 30 detik. 😄",
+  "Push-up 10 kali sekarang! Tubuhmu butuh itu.",
+  "Minum segelas air putih dalam 5 detik! Hydration check!",
+  "Tarik napas dalam 4 detik, tahan 4, buang 4. Reset mode.",
+  "Berdiri dan stretch selama 30 detik. Punggungmu berterima kasih.",
+  "Tatap jendela atau jarak jauh selama 20 detik. Mata perlu istirahat.",
+  "Tersenyum ke cermin sekarang. Serius. 30 detik.",
 ];
 
 function EnergyWave({ energy, warMode }: { energy: number; warMode: boolean }) {
@@ -437,7 +437,7 @@ export default function Dashboard() {
 
       {warMode && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-red-600/90 backdrop-blur-sm text-white text-center py-2 text-sm font-bold tracking-widest uppercase animate-pulse">
-          ⚔️ WAR MODE ACTIVE — Get to work, {displayName}! The chaos is winning! ⚔️
+          WAR MODE ACTIVE — Get to work, {displayName}! The chaos is winning!
         </div>
       )}
 
@@ -463,7 +463,7 @@ export default function Dashboard() {
                 backgroundClip: "text",
               }}
             >
-              Hello {userAccount.name} 👋
+              Hello {userAccount.name}
             </h1>
           </div>
           <button
@@ -474,7 +474,7 @@ export default function Dashboard() {
                 : "bg-white/60 text-purple-700 hover:bg-purple-100 border border-purple-200"
             }`}
           >
-            {warMode ? "🕊️ Peace Mode" : "⚔️ War Mode"}
+            {warMode ? "Peace Mode" : "War Mode"}
           </button>
         </div>
 
@@ -512,7 +512,7 @@ export default function Dashboard() {
             <StatBar label="Focus" value={heroStats.focus} color="linear-gradient(90deg,#a78bfa,#818cf8)" />
             <StatBar label="Consistency" value={heroStats.consistency} color="linear-gradient(90deg,#f472b6,#fb7185)" />
             <StatBar label="Willpower" value={heroStats.willpower} color="linear-gradient(90deg,#34d399,#06b6d4)" />
-            <p className="text-xs text-white/40 mt-2 italic">+{userAccount.xpToday} XP hari ini · Streak {userAccount.streakDays} hari 🔥</p>
+            <p className="text-xs text-white/40 mt-2 italic">+{userAccount.xpToday} XP hari ini · Streak {userAccount.streakDays} hari</p>
           </div>
 
           {/* Now Playing — full width on mobile sm, spans both cols on tablet, 1 col on desktop */}
@@ -526,7 +526,7 @@ export default function Dashboard() {
             />
             <div className="relative z-10">
               <p className={`text-xs font-bold tracking-widest uppercase ${textSecondary} mb-1`}>Now Playing</p>
-              <p className={`text-base md:text-lg font-black ${textPrimary} mb-3`}>Productivity Audio 🎵</p>
+              <p className={`text-base md:text-lg font-black ${textPrimary} mb-3`}>Productivity Audio</p>
               <div className="flex items-center gap-3 mb-4">
                 <div
                   className="relative shrink-0"
@@ -543,7 +543,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-black truncate ${textPrimary}`}>🎵 lagu.mp3</p>
+                  <p className={`text-sm font-black truncate ${textPrimary}`}>lagu.mp3</p>
                   <p className={`text-xs ${warMode ? "text-red-400" : "text-purple-500"} font-semibold`}>
                     {playing ? "Sedang diputar..." : "Dijeda"}
                   </p>
@@ -572,11 +572,11 @@ export default function Dashboard() {
                   playing ? "bg-purple-600 text-white hover:bg-purple-700" : "bg-white/60 text-purple-700 border border-purple-200 hover:bg-purple-50"
                 }`}
               >
-                <span className="text-base">{playing ? "⏸" : "▶"}</span>
+                <span className="text-base">{playing ? "||" : ">"}</span>
                 <span>{playing ? "Pause" : "Play"}</span>
               </button>
               <div className="flex items-center gap-2">
-                <span className="text-xs">{volume === 0 ? "🔇" : volume < 0.5 ? "🔉" : "🔊"}</span>
+                <span className="text-xs">{volume === 0 ? "Mute" : volume < 0.5 ? "Low" : "High"}</span>
                 <input
                   type="range" min={0} max={1} step={0.01} value={volume} onChange={(e) => setVolume(Number(e.target.value))}
                   className="flex-1 h-1.5 rounded-full appearance-none cursor-pointer"
@@ -600,10 +600,9 @@ export default function Dashboard() {
               <p className={`text-xs font-bold tracking-widest uppercase ${textSecondary}`}>Jadwal</p>
               <a href="/calendar" className={`text-xs font-semibold underline underline-offset-2 ${textSecondary} hover:opacity-70 transition`}>Lihat semua →</a>
             </div>
-            <p className={`text-lg md:text-xl font-black ${textPrimary} mb-4`}>Hari Ini 📅</p>
+            <p className={`text-lg md:text-xl font-black ${textPrimary} mb-4`}>Hari Ini</p>
             {jadwalHariIni.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 gap-2">
-                <p className="text-3xl">📭</p>
                 <p className={`text-sm text-center ${warMode ? "text-red-300/60" : "text-gray-400"}`}>Tidak ada kuliah hari ini.</p>
                 <a href="/calendar" className="mt-1 text-xs bg-purple-100 text-purple-600 px-3 py-1.5 rounded-xl font-bold hover:bg-purple-200 transition">+ Tambah di Kalender</a>
               </div>
@@ -633,10 +632,9 @@ export default function Dashboard() {
               <p className={`text-xs font-bold tracking-widest uppercase ${textSecondary}`}>Deadline Tugas</p>
               <a href="/tugas" className={`text-xs font-semibold underline underline-offset-2 ${textSecondary} hover:opacity-70 transition`}>Lihat semua →</a>
             </div>
-            <p className={`text-lg md:text-xl font-black ${textPrimary} mb-4`}>Jangan Lupa ⏰</p>
+            <p className={`text-lg md:text-xl font-black ${textPrimary} mb-4`}>Jangan Lupa</p>
             {deadlineTasks.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 gap-2">
-                <p className="text-3xl">✅</p>
                 <p className={`text-sm text-center ${warMode ? "text-red-300/60" : "text-gray-400"}`}>Semua tugas beres! Good job!</p>
                 <a href="/tugas" className="mt-1 text-xs bg-purple-100 text-purple-600 px-3 py-1.5 rounded-xl font-bold hover:bg-purple-200 transition">+ Tambah Tugas</a>
               </div>
@@ -684,7 +682,7 @@ export default function Dashboard() {
           >
             <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-purple-300/20 blur-2xl" />
             <div className="absolute -bottom-6 -left-6 w-20 h-20 rounded-full bg-pink-300/20 blur-xl" />
-            <p className={`text-xs font-bold tracking-widest uppercase ${textSecondary} mb-1 relative z-10`}>🐇 Rabbit Hole Prevention</p>
+            <p className={`text-xs font-bold tracking-widest uppercase ${textSecondary} mb-1 relative z-10`}>Rabbit Hole Prevention</p>
             <p className={`text-lg md:text-xl font-black ${textPrimary} mb-4 relative z-10`}>Reality Check</p>
             <div className={`p-4 rounded-2xl relative z-10 ${warMode ? "bg-pink-50/60" : "bg-white/50"}`}>
               <p className="text-sm font-semibold leading-relaxed italic text-gray-700" key={quoteIdx} style={{ animation: "fade-in 0.5s ease" }}>
@@ -704,13 +702,13 @@ export default function Dashboard() {
         style={{ background: "linear-gradient(135deg, #7c3aed, #db2777)", boxShadow: "0 8px 32px rgba(124,58,237,0.4)" }}
         title="Klik untuk Micro-Adventure!"
       >
-        ❓
+        ?
       </button>
 
       {adventure && (
         <div className="fixed bottom-24 right-4 md:right-8 max-w-[280px] md:max-w-xs z-50 p-4 md:p-5 rounded-3xl shadow-2xl" style={{ background: "linear-gradient(135deg, #4f1d96, #831843)", animation: "slide-up 0.3s ease" }}>
           <div className="flex justify-between items-start mb-2">
-            <p className="text-xs font-bold tracking-widest uppercase text-purple-300">⚡ Micro-Adventure!</p>
+            <p className="text-xs font-bold tracking-widest uppercase text-purple-300">Micro-Adventure!</p>
             <span className="text-xs text-white/50 font-mono">{adventureTimer}s</span>
           </div>
           <p className="text-white font-bold text-sm leading-relaxed">{adventure}</p>

@@ -1,14 +1,656 @@
 "use client";
 import { useState, useEffect, useRef, useReducer } from "react";
 
+// ════════════════════════════════════════════════════════════════════════════
+// ICON3D — set ikon SVG bergaya glossy/3D (gradient + highlight + shadow)
+// Menggantikan semua emoji standar OS di seluruh halaman ini.
+// Pakai seperti: <Icon3D name="xp" size={20} />
+// ════════════════════════════════════════════════════════════════════════════
+
+type IconName =
+  | "seed" | "book" | "rocket" | "trophy" | "crown" | "diamond"
+  | "happy" | "neutral" | "sleepy" | "dizzy"
+  | "fire" | "coin" | "heart" | "lightning" | "medal" | "energy"
+  | "lock" | "unlock" | "check" | "cross" | "pin" | "target"
+  | "graduate" | "laptop" | "wizard-hat" | "sword"
+  | "tree" | "wave" | "city" | "castle" | "tower" | "vortex"
+  | "die" | "leaf" | "egg"
+  | "note" | "puzzle" | "stopwatch" | "money" | "map" | "brain"
+  | "chart" | "calendar" | "calculator" | "send" | "trash" | "edit"
+  | "save" | "refresh" | "rewind" | "play" | "pause"
+  | "folder" | "file-pdf" | "file-image" | "file-text" | "swap"
+  | "robot" | "user" | "sparkle" | "compass" | "flag"
+  | "drink" | "game" | "movie" | "car" | "cart"
+  | "wave-hand";
+
+const grad = (id: string, c1: string, c2: string) => (
+  <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stopColor={c1} />
+    <stop offset="100%" stopColor={c2} />
+  </linearGradient>
+);
+
+function Shell({
+  id,
+  c1,
+  c2,
+  children,
+  size,
+}: {
+  id: string;
+  c1: string;
+  c2: string;
+  children: React.ReactNode;
+  size: number;
+}) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" style={{ display: "inline-block", flexShrink: 0, verticalAlign: "middle" }}>
+      <defs>
+        {grad(id, c1, c2)}
+        <radialGradient id={`${id}-hl`} cx="35%" cy="25%" r="65%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </radialGradient>
+        <filter id={`${id}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1.5" stdDeviation="1.4" floodColor="#1e1b4b" floodOpacity="0.28" />
+        </filter>
+      </defs>
+      <g filter={`url(#${id}-shadow)`}>{children}</g>
+    </svg>
+  );
+}
+
+function Icon3D({ name, size = 18 }: { name: IconName; size?: number }) {
+  const id = `i3d-${name}`;
+
+  switch (name) {
+    case "seed":
+      return (
+        <Shell id={id} c1="#86efac" c2="#16a34a" size={size}>
+          <ellipse cx="24" cy="27" rx="13" ry="15" fill={`url(#${id})`} />
+          <path d="M24 14c-3 3-3 8 0 11" stroke="#15803d" strokeWidth="2" fill="none" strokeLinecap="round" />
+          <ellipse cx="20" cy="21" rx="6" ry="9" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "book":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#2563eb" size={size}>
+          <path d="M24 13 9 18v19l15-5 15 5V18z" fill={`url(#${id})`} />
+          <path d="M24 13v24" stroke="#1d4ed8" strokeWidth="1.6" />
+          <path d="M9 18l15-5v6l-15 5z" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "rocket":
+      return (
+        <Shell id={id} c1="#c4b5fd" c2="#7c3aed" size={size}>
+          <path d="M24 8c5 4 7 11 6 19l-6 6-6-6c-1-8 1-15 6-19z" fill={`url(#${id})`} />
+          <circle cx="24" cy="20" r="3.4" fill="#fff" opacity="0.85" />
+          <path d="M16 30l-4 8 8-3M32 30l4 8-8-3" fill="#fbbf24" />
+          <path d="M19 12c2-2 6-2 8 0" stroke="#fff" strokeOpacity="0.5" strokeWidth="2" fill="none" strokeLinecap="round" />
+        </Shell>
+      );
+    case "trophy":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#d97706" size={size}>
+          <path d="M16 11h16v9c0 6-4 10-8 10s-8-4-8-10z" fill={`url(#${id})`} />
+          <path d="M16 13h-5v3c0 4 2 6 5 6" stroke="#b45309" strokeWidth="2" fill="none" />
+          <path d="M32 13h5v3c0 4-2 6-5 6" stroke="#b45309" strokeWidth="2" fill="none" />
+          <rect x="20" y="30" width="8" height="5" fill="#b45309" />
+          <rect x="16" y="35" width="16" height="4" rx="1.5" fill="#92400e" />
+          <ellipse cx="20" cy="16" rx="4" ry="5" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "crown":
+      return (
+        <Shell id={id} c1="#fef08a" c2="#ca8a04" size={size}>
+          <path d="M10 32l3-15 6 7 5-10 5 10 6-7 3 15z" fill={`url(#${id})`} />
+          <rect x="10" y="32" width="28" height="4" rx="1" fill="#a16207" />
+          <circle cx="24" cy="14" r="2.6" fill="#f87171" />
+          <circle cx="14" cy="20" r="2" fill="#60a5fa" />
+          <circle cx="34" cy="20" r="2" fill="#60a5fa" />
+          <path d="M14 22l4 4 6-9 6 9 4-4" fill={`url(#${id}-hl)`} opacity="0.6" />
+        </Shell>
+      );
+    case "diamond":
+      return (
+        <Shell id={id} c1="#a5f3fc" c2="#0891b2" size={size}>
+          <path d="M14 18h20l5 6-15 14-15-14z" fill={`url(#${id})`} />
+          <path d="M14 18l5-6h10l5 6" fill="#67e8f9" />
+          <path d="M19 18l5 20 5-20" stroke="#0e7490" strokeWidth="1.3" fill="none" />
+          <path d="M16 19h8l-4-6z" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "happy":
+      return (
+        <Shell id={id} c1="#fef08a" c2="#f59e0b" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M17 22q1-3 4-3M27 22q1-3 4-3" stroke="#92400e" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <path d="M16 27q8 8 16 0" stroke="#92400e" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <ellipse cx="18" cy="17" rx="5" ry="4" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "neutral":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#d97706" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <circle cx="18" cy="21" r="2" fill="#92400e" />
+          <circle cx="30" cy="21" r="2" fill="#92400e" />
+          <path d="M17 29h14" stroke="#92400e" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <ellipse cx="18" cy="17" rx="5" ry="4" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "sleepy":
+      return (
+        <Shell id={id} c1="#c7d2fe" c2="#4f46e5" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M16 21q3-2 6 0M26 21q3-2 6 0" stroke="#312e81" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <path d="M18 29q6 4 12 0" stroke="#312e81" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <path d="M34 15c2 1 3 3 2 5" stroke="#a5b4fc" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+          <ellipse cx="18" cy="17" rx="5" ry="4" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "dizzy":
+      return (
+        <Shell id={id} c1="#fecaca" c2="#dc2626" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M15 19l5 5M20 19l-5 5" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+          <path d="M28 19l5 5M33 19l-5 5" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+          <path d="M17 30q7 6 14 0" stroke="#7f1d1d" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <ellipse cx="18" cy="16" rx="5" ry="4" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "fire":
+      return (
+        <Shell id={id} c1="#fdba74" c2="#dc2626" size={size}>
+          <path d="M24 8c5 6 9 10 9 17a9 9 0 11-18 0c0-3 1-5 3-7 0 3 1 5 3 5-1-7 1-11 3-15z" fill={`url(#${id})`} />
+          <path d="M24 20c2 3 3 5 3 8a3 3 0 11-6 0c0-1 1-2 1-3 0 1 1 2 2 2-1-3 0-5 0-7z" fill="#fef3c7" />
+          <ellipse cx="20" cy="18" rx="3" ry="5" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "coin":
+      return (
+        <Shell id={id} c1="#fef08a" c2="#ca8a04" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <circle cx="24" cy="24" r="10.5" fill="none" stroke="#a16207" strokeWidth="1.6" />
+          <text x="24" y="29" textAnchor="middle" fontSize="13" fontWeight="700" fill="#854d0e">Rp</text>
+          <ellipse cx="18" cy="16" rx="5" ry="4" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "heart":
+      return (
+        <Shell id={id} c1="#6ee7b7" c2="#059669" size={size}>
+          <path d="M24 35c-9-6-14-11-14-17a8 8 0 0114-5 8 8 0 0114 5c0 6-5 11-14 17z" fill={`url(#${id})`} />
+          <path d="M14 18c1-3 3-5 6-5" stroke="#fff" strokeOpacity="0.5" strokeWidth="2" fill="none" strokeLinecap="round" />
+        </Shell>
+      );
+    case "lightning":
+    case "energy":
+      return (
+        <Shell id={id} c1="#fde047" c2="#ea580c" size={size}>
+          <path d="M26 7 14 27h8l-3 14 15-22h-9z" fill={`url(#${id})`} />
+          <path d="M23 11l-6 11h5" stroke="#fff" strokeOpacity="0.45" strokeWidth="1.6" fill="none" />
+        </Shell>
+      );
+    case "medal":
+      return (
+        <Shell id={id} c1="#fda4af" c2="#be123c" size={size}>
+          <path d="M17 8h14l-5 12-2-1-2 1z" fill="#94a3b8" />
+          <circle cx="24" cy="28" r="11" fill={`url(#${id})`} />
+          <circle cx="24" cy="28" r="6.5" fill="none" stroke="#fff" strokeOpacity="0.6" strokeWidth="1.6" />
+          <ellipse cx="19" cy="23" rx="3.5" ry="3" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "lock":
+      return (
+        <Shell id={id} c1="#c4b5fd" c2="#6d28d9" size={size}>
+          <rect x="14" y="21" width="20" height="16" rx="3" fill={`url(#${id})`} />
+          <path d="M18 21v-4a6 6 0 0112 0v4" stroke="#5b21b6" strokeWidth="3" fill="none" />
+          <circle cx="24" cy="29" r="2.6" fill="#5b21b6" />
+        </Shell>
+      );
+    case "unlock":
+      return (
+        <Shell id={id} c1="#bbf7d0" c2="#15803d" size={size}>
+          <rect x="14" y="21" width="20" height="16" rx="3" fill={`url(#${id})`} />
+          <path d="M18 21v-4a6 6 0 0111.5-2.4" stroke="#166534" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <circle cx="24" cy="29" r="2.6" fill="#166534" />
+        </Shell>
+      );
+    case "check":
+      return (
+        <Shell id={id} c1="#86efac" c2="#15803d" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M17 25l5 5 10-11" stroke="#fff" strokeWidth="3.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </Shell>
+      );
+    case "cross":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#b91c1c" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M18 18l12 12M30 18l-12 12" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" />
+        </Shell>
+      );
+    case "pin":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#dc2626" size={size}>
+          <path d="M24 8a11 11 0 00-11 11c0 8 11 21 11 21s11-13 11-21A11 11 0 0024 8z" fill={`url(#${id})`} />
+          <circle cx="24" cy="19" r="4.5" fill="#fff" />
+        </Shell>
+      );
+    case "target":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#b91c1c" size={size}>
+          <circle cx="24" cy="24" r="14" fill={`url(#${id})`} />
+          <circle cx="24" cy="24" r="9" fill="#fff" />
+          <circle cx="24" cy="24" r="4.5" fill="#b91c1c" />
+        </Shell>
+      );
+    case "graduate":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1d4ed8" size={size}>
+          <path d="M24 12 6 19l18 7 18-7z" fill={`url(#${id})`} />
+          <path d="M14 22v8c0 3 5 5 10 5s10-2 10-5v-8" stroke="#1e3a8a" strokeWidth="2" fill="none" />
+          <path d="M40 19v9" stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="40" cy="30" r="1.8" fill="#1e3a8a" />
+        </Shell>
+      );
+    case "laptop":
+      return (
+        <Shell id={id} c1="#cbd5e1" c2="#334155" size={size}>
+          <rect x="11" y="13" width="26" height="17" rx="2" fill={`url(#${id})`} />
+          <rect x="13" y="15" width="22" height="13" fill="#0f172a" />
+          <path d="M8 32h32l3 5H5z" fill="#475569" />
+          <rect x="17" y="18" width="14" height="2" fill="#22d3ee" opacity="0.8" />
+        </Shell>
+      );
+    case "wizard-hat":
+      return (
+        <Shell id={id} c1="#c4b5fd" c2="#5b21b6" size={size}>
+          <path d="M24 8l9 24H15z" fill={`url(#${id})`} />
+          <ellipse cx="24" cy="34" rx="13" ry="3.5" fill="#5b21b6" />
+          <circle cx="24" cy="16" r="2" fill="#fde047" />
+          <path d="M20 24l2-3 2 3-2 3z" fill="#fde047" />
+        </Shell>
+      );
+    case "sword":
+      return (
+        <Shell id={id} c1="#e2e8f0" c2="#64748b" size={size}>
+          <rect x="22.5" y="8" width="3" height="22" fill={`url(#${id})`} />
+          <rect x="16" y="27" width="16" height="3" rx="1" fill="#475569" />
+          <rect x="22" y="30" width="4" height="9" rx="1.5" fill="#92400e" />
+        </Shell>
+      );
+    case "tree":
+      return (
+        <Shell id={id} c1="#86efac" c2="#15803d" size={size}>
+          <circle cx="24" cy="18" r="11" fill={`url(#${id})`} />
+          <circle cx="16" cy="23" r="8" fill={`url(#${id})`} />
+          <circle cx="32" cy="23" r="8" fill={`url(#${id})`} />
+          <rect x="21.5" y="27" width="5" height="11" fill="#854d0e" />
+          <ellipse cx="19" cy="14" rx="4" ry="3" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "wave":
+      return (
+        <Shell id={id} c1="#7dd3fc" c2="#0369a1" size={size}>
+          <path d="M6 26q6-6 12 0t12 0 12 0v10H6z" fill={`url(#${id})`} />
+          <path d="M6 20q6-6 12 0t12 0 12 0" stroke="#bae6fd" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+        </Shell>
+      );
+    case "city":
+      return (
+        <Shell id={id} c1="#c4b5fd" c2="#4c1d95" size={size}>
+          <rect x="8" y="20" width="9" height="18" fill={`url(#${id})`} />
+          <rect x="19" y="12" width="10" height="26" fill={`url(#${id})`} />
+          <rect x="31" y="17" width="9" height="21" fill={`url(#${id})`} />
+          <rect x="22" y="16" width="2.5" height="2.5" fill="#fde68a" />
+          <rect x="26" y="16" width="2.5" height="2.5" fill="#fde68a" />
+          <rect x="22" y="21" width="2.5" height="2.5" fill="#fde68a" />
+        </Shell>
+      );
+    case "castle":
+      return (
+        <Shell id={id} c1="#fdba74" c2="#9a3412" size={size}>
+          <rect x="10" y="22" width="9" height="16" fill={`url(#${id})`} />
+          <rect x="29" y="22" width="9" height="16" fill={`url(#${id})`} />
+          <rect x="18" y="14" width="12" height="24" fill={`url(#${id})`} />
+          <path d="M10 22h9M29 22h9" stroke="#7c2d12" strokeWidth="1" />
+          <rect x="22" y="27" width="4" height="11" fill="#7c2d12" />
+        </Shell>
+      );
+    case "tower":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#991b1b" size={size}>
+          <path d="M20 38V18l4-10 4 10v20z" fill={`url(#${id})`} />
+          <rect x="17" y="14" width="14" height="4" fill="#7f1d1d" />
+          <rect x="19" y="36" width="10" height="2.5" fill="#7f1d1d" />
+        </Shell>
+      );
+    case "vortex":
+      return (
+        <Shell id={id} c1="#a5b4fc" c2="#4338ca" size={size}>
+          <path d="M24 10a14 14 0 110 28 10 10 0 110-20 6 6 0 110 12" stroke={`url(#${id})`} strokeWidth="4" fill="none" strokeLinecap="round" />
+        </Shell>
+      );
+    case "die":
+      return (
+        <Shell id={id} c1="#fda4af" c2="#9d174d" size={size}>
+          <rect x="11" y="11" width="26" height="26" rx="5" fill={`url(#${id})`} />
+          <circle cx="18" cy="18" r="2" fill="#fff" />
+          <circle cx="30" cy="18" r="2" fill="#fff" />
+          <circle cx="24" cy="24" r="2" fill="#fff" />
+          <circle cx="18" cy="30" r="2" fill="#fff" />
+          <circle cx="30" cy="30" r="2" fill="#fff" />
+        </Shell>
+      );
+    case "egg":
+      return (
+        <Shell id={id} c1="#fef3c7" c2="#d97706" size={size}>
+          <ellipse cx="24" cy="25" rx="11" ry="14" fill={`url(#${id})`} />
+          <ellipse cx="20" cy="18" rx="3.5" ry="5" fill={`url(#${id}-hl)`} />
+        </Shell>
+      );
+    case "leaf":
+      return (
+        <Shell id={id} c1="#86efac" c2="#15803d" size={size}>
+          <path d="M14 34c-2-12 4-22 20-22-2 14-8 22-20 22z" fill={`url(#${id})`} />
+          <path d="M16 32c4-8 8-13 16-18" stroke="#14532d" strokeWidth="1.6" fill="none" />
+        </Shell>
+      );
+    case "note":
+      return (
+        <Shell id={id} c1="#fef08a" c2="#ca8a04" size={size}>
+          <rect x="11" y="9" width="22" height="26" rx="2" fill={`url(#${id})`} />
+          <rect x="29" y="29" width="8" height="8" fill="#fde68a" />
+          <path d="M29 29l8 8" stroke="#ca8a04" strokeWidth="1" />
+          <rect x="15" y="15" width="14" height="2" fill="#854d0e" opacity="0.6" />
+          <rect x="15" y="20" width="14" height="2" fill="#854d0e" opacity="0.6" />
+          <rect x="15" y="25" width="9" height="2" fill="#854d0e" opacity="0.6" />
+        </Shell>
+      );
+    case "puzzle":
+      return (
+        <Shell id={id} c1="#67e8f9" c2="#0e7490" size={size}>
+          <path d="M14 14h9a3 3 0 116 0h9v9a3 3 0 010 6v9h-9a3 3 0 11-6 0h-9v-9a3 3 0 010-6z" fill={`url(#${id})`} />
+        </Shell>
+      );
+    case "stopwatch":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#b91c1c" size={size}>
+          <circle cx="24" cy="26" r="13" fill={`url(#${id})`} />
+          <rect x="21" y="8" width="6" height="4" rx="1.5" fill="#7f1d1d" />
+          <path d="M24 26V18" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
+          <path d="M33 13l3 3" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+        </Shell>
+      );
+    case "money":
+      return (
+        <Shell id={id} c1="#86efac" c2="#15803d" size={size}>
+          <rect x="9" y="16" width="30" height="20" rx="3" fill={`url(#${id})`} />
+          <circle cx="24" cy="26" r="5" fill="#fff" opacity="0.85" />
+          <rect x="9" y="16" width="30" height="5" fill="#14532d" opacity="0.4" />
+        </Shell>
+      );
+    case "map":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#b45309" size={size}>
+          <path d="M9 13l10-3 9 3 9-3v25l-9 3-9-3-10 3z" fill={`url(#${id})`} />
+          <path d="M19 10v25M28 13v25" stroke="#92400e" strokeWidth="1" strokeDasharray="3 2" />
+          <circle cx="24" cy="22" r="2.6" fill="#dc2626" />
+        </Shell>
+      );
+    case "brain":
+      return (
+        <Shell id={id} c1="#f9a8d4" c2="#a21caf" size={size}>
+          <path d="M18 12a6 6 0 00-6 8 6 6 0 002 11 6 6 0 0010 3 6 6 0 0010-3 6 6 0 002-11 6 6 0 00-6-8 6 6 0 00-12 0z" fill={`url(#${id})`} />
+          <path d="M24 13v21" stroke="#86198f" strokeWidth="1.3" />
+        </Shell>
+      );
+    case "chart":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1e40af" size={size}>
+          <rect x="10" y="24" width="7" height="14" fill={`url(#${id})`} />
+          <rect x="20" y="16" width="7" height="22" fill={`url(#${id})`} />
+          <rect x="30" y="9" width="7" height="29" fill={`url(#${id})`} />
+        </Shell>
+      );
+    case "calendar":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#b91c1c" size={size}>
+          <rect x="9" y="12" width="30" height="25" rx="3" fill={`url(#${id})`} />
+          <rect x="9" y="12" width="30" height="7" fill="#7f1d1d" />
+          <rect x="15" y="8" width="3" height="7" rx="1.5" fill="#7f1d1d" />
+          <rect x="30" y="8" width="3" height="7" rx="1.5" fill="#7f1d1d" />
+          <rect x="14" y="24" width="5" height="5" fill="#fff" opacity="0.8" />
+          <rect x="22" y="24" width="5" height="5" fill="#fff" opacity="0.8" />
+        </Shell>
+      );
+    case "calculator":
+      return (
+        <Shell id={id} c1="#cbd5e1" c2="#334155" size={size}>
+          <rect x="13" y="8" width="22" height="32" rx="3" fill={`url(#${id})`} />
+          <rect x="16" y="12" width="16" height="7" fill="#0f172a" />
+          <circle cx="18" cy="25" r="2" fill="#94a3b8" />
+          <circle cx="24" cy="25" r="2" fill="#94a3b8" />
+          <circle cx="30" cy="25" r="2" fill="#f97316" />
+          <circle cx="18" cy="32" r="2" fill="#94a3b8" />
+          <circle cx="24" cy="32" r="2" fill="#94a3b8" />
+          <circle cx="30" cy="32" r="2" fill="#94a3b8" />
+        </Shell>
+      );
+    case "send":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1d4ed8" size={size}>
+          <path d="M8 24l32-14-12 32-5-12z" fill={`url(#${id})`} />
+          <path d="M40 10L23 30" stroke="#bfdbfe" strokeWidth="1.4" />
+        </Shell>
+      );
+    case "trash":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#b91c1c" size={size}>
+          <rect x="13" y="16" width="22" height="21" rx="2" fill={`url(#${id})`} />
+          <rect x="10" y="12" width="28" height="4" rx="1.5" fill="#991b1b" />
+          <rect x="19" y="8" width="10" height="4" rx="1.5" fill="#991b1b" />
+          <rect x="19" y="20" width="2.5" height="13" fill="#fff" opacity="0.6" />
+          <rect x="26" y="20" width="2.5" height="13" fill="#fff" opacity="0.6" />
+        </Shell>
+      );
+    case "edit":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#b45309" size={size}>
+          <path d="M14 30l-2 8 8-2 20-20-6-6z" fill={`url(#${id})`} />
+          <path d="M30 12l6 6" stroke="#92400e" strokeWidth="2" />
+        </Shell>
+      );
+    case "save":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1e3a8a" size={size}>
+          <path d="M12 9h19l8 8v22H12z" fill={`url(#${id})`} />
+          <rect x="17" y="24" width="14" height="11" fill="#fff" opacity="0.85" />
+          <rect x="17" y="11" width="10" height="7" fill="#1e3a8a" opacity="0.4" />
+        </Shell>
+      );
+    case "refresh":
+      return (
+        <Shell id={id} c1="#86efac" c2="#15803d" size={size}>
+          <path d="M14 18a11 11 0 0118-5M34 30a11 11 0 01-18 5" stroke={`url(#${id})`} strokeWidth="4.5" fill="none" strokeLinecap="round" />
+          <path d="M32 9l1 7-7-1M16 39l-1-7 7 1" fill="#15803d" />
+        </Shell>
+      );
+    case "rewind":
+      return (
+        <Shell id={id} c1="#c4b5fd" c2="#5b21b6" size={size}>
+          <path d="M26 24l13-9v18z" fill={`url(#${id})`} />
+          <path d="M11 24l13-9v18z" fill={`url(#${id})`} />
+        </Shell>
+      );
+    case "play":
+      return (
+        <Shell id={id} c1="#86efac" c2="#15803d" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M19 16l14 8-14 8z" fill="#fff" />
+        </Shell>
+      );
+    case "pause":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#b45309" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <rect x="18" y="16" width="4" height="16" rx="1" fill="#fff" />
+          <rect x="26" y="16" width="4" height="16" rx="1" fill="#fff" />
+        </Shell>
+      );
+    case "folder":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#b45309" size={size}>
+          <path d="M8 16h11l3 4h18v17H8z" fill={`url(#${id})`} />
+          <path d="M8 16l2-4h9l2 4" fill="#fcd34d" />
+        </Shell>
+      );
+    case "file-pdf":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#b91c1c" size={size}>
+          <path d="M12 6h16l8 8v28H12z" fill={`url(#${id})`} />
+          <path d="M28 6v8h8" fill="#fecaca" />
+          <text x="24" y="30" textAnchor="middle" fontSize="9" fontWeight="700" fill="#fff">PDF</text>
+        </Shell>
+      );
+    case "file-image":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1e40af" size={size}>
+          <path d="M12 6h16l8 8v28H12z" fill={`url(#${id})`} />
+          <path d="M28 6v8h8" fill="#bfdbfe" />
+          <circle cx="19" cy="26" r="2.4" fill="#fde68a" />
+          <path d="M15 35l6-7 5 5 4-5 6 7z" fill="#1e40af" opacity="0.6" />
+        </Shell>
+      );
+    case "file-text":
+      return (
+        <Shell id={id} c1="#cbd5e1" c2="#334155" size={size}>
+          <path d="M12 6h16l8 8v28H12z" fill={`url(#${id})`} />
+          <path d="M28 6v8h8" fill="#e2e8f0" />
+          <rect x="16" y="24" width="16" height="2" fill="#475569" />
+          <rect x="16" y="29" width="16" height="2" fill="#475569" />
+          <rect x="16" y="34" width="10" height="2" fill="#475569" />
+        </Shell>
+      );
+    case "swap":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1d4ed8" size={size}>
+          <path d="M10 18h22l-6-6M38 30H16l6 6" stroke={`url(#${id})`} strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </Shell>
+      );
+    case "robot":
+      return (
+        <Shell id={id} c1="#a5b4fc" c2="#4338ca" size={size}>
+          <rect x="12" y="17" width="24" height="19" rx="4" fill={`url(#${id})`} />
+          <rect x="22" y="8" width="4" height="7" fill="#4338ca" />
+          <circle cx="24" cy="8" r="2.4" fill="#fbbf24" />
+          <circle cx="19" cy="26" r="3" fill="#fff" />
+          <circle cx="29" cy="26" r="3" fill="#fff" />
+          <rect x="18" y="32" width="12" height="2.4" rx="1.2" fill="#fff" opacity="0.8" />
+        </Shell>
+      );
+    case "user":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#b45309" size={size}>
+          <circle cx="24" cy="18" r="8" fill={`url(#${id})`} />
+          <path d="M10 38c0-8 6-13 14-13s14 5 14 13z" fill={`url(#${id})`} />
+        </Shell>
+      );
+    case "sparkle":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#d97706" size={size}>
+          <path d="M24 7l4 11 11 4-11 4-4 11-4-11-11-4 11-4z" fill={`url(#${id})`} />
+        </Shell>
+      );
+    case "compass":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1e3a8a" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M29 19l-3 8-8 3 3-8z" fill="#fff" />
+          <path d="M29 19l-8 11" stroke="#dc2626" strokeWidth="1" />
+        </Shell>
+      );
+    case "flag":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#b91c1c" size={size}>
+          <rect x="13" y="8" width="3" height="32" fill="#7f1d1d" />
+          <path d="M16 10h20l-5 6 5 6H16z" fill={`url(#${id})`} />
+        </Shell>
+      );
+    case "drink":
+      return (
+        <Shell id={id} c1="#fdba74" c2="#9a3412" size={size}>
+          <path d="M16 12h16l-2 24a4 4 0 01-4 4h-4a4 4 0 01-4-4z" fill={`url(#${id})`} />
+          <path d="M14 12h20" stroke="#7c2d12" strokeWidth="2.4" strokeLinecap="round" />
+        </Shell>
+      );
+    case "game":
+      return (
+        <Shell id={id} c1="#a5b4fc" c2="#4338ca" size={size}>
+          <rect x="8" y="17" width="32" height="16" rx="8" fill={`url(#${id})`} />
+          <rect x="15" y="23" width="6" height="2" fill="#fff" />
+          <rect x="17" y="21" width="2" height="6" fill="#fff" />
+          <circle cx="31" cy="22" r="1.8" fill="#fff" />
+          <circle cx="35" cy="26" r="1.8" fill="#fff" />
+        </Shell>
+      );
+    case "movie":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#991b1b" size={size}>
+          <rect x="8" y="14" width="32" height="22" rx="2" fill={`url(#${id})`} />
+          <rect x="8" y="14" width="32" height="5" fill="#7f1d1d" />
+          <rect x="11" y="14" width="2.4" height="5" fill="#fecaca" />
+          <rect x="17" y="14" width="2.4" height="5" fill="#fecaca" />
+          <rect x="23" y="14" width="2.4" height="5" fill="#fecaca" />
+          <rect x="29" y="14" width="2.4" height="5" fill="#fecaca" />
+          <rect x="35" y="14" width="2.4" height="5" fill="#fecaca" />
+        </Shell>
+      );
+    case "car":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1e40af" size={size}>
+          <path d="M10 28l3-9a4 4 0 014-3h14a4 4 0 014 3l3 9z" fill={`url(#${id})`} />
+          <rect x="8" y="28" width="32" height="6" rx="2" fill="#1e3a8a" />
+          <circle cx="16" cy="35" r="3" fill="#1e293b" />
+          <circle cx="32" cy="35" r="3" fill="#1e293b" />
+        </Shell>
+      );
+    case "cart":
+      return (
+        <Shell id={id} c1="#86efac" c2="#15803d" size={size}>
+          <path d="M10 12h5l4 18h16l4-13H17" stroke={`url(#${id})`} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="20" cy="36" r="2.6" fill="#15803d" />
+          <circle cx="33" cy="36" r="2.6" fill="#15803d" />
+        </Shell>
+      );
+    case "wave-hand":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#b45309" size={size}>
+          <path d="M18 38V20a3 3 0 016 0v8M24 28v-9a3 3 0 016 0v9M30 28v-6a3 3 0 016 0v10c0 7-5 12-11 12h-3c-5 0-8-2-10-6l-4-7a2.5 2.5 0 014-3l3 4" fill={`url(#${id})`} />
+        </Shell>
+      );
+    default:
+      return (
+        <Shell id={id} c1="#cbd5e1" c2="#475569" size={size}>
+          <circle cx="24" cy="24" r="14" fill={`url(#${id})`} />
+        </Shell>
+      );
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// DATA & STATE
+// ════════════════════════════════════════════════════════════════════════════
+
 const RANKS = ["Beginner","Learner","Explorer","Researcher","Mastermind","Legend"];
 const RANK_XP = [0,100,300,600,1000,1800];
-const RANK_ICONS = ["🌱","📚","🚀","🏆","👑","💎"];
-const MOODS = [
-  {key:"semangat",label:"😊 Semangat",rec:"Waktu terbaik belajar! Selesaikan Daily Quest sekarang."},
-  {key:"biasa",label:"😐 Biasa",rec:"Coba timer 25 menit, pas buat warmup ringan."},
-  {key:"lelah",label:"😴 Lelah",rec:"Istirahat 10 menit. Minum air, lalu lanjut flashcard saja."},
-  {key:"burnout",label:"😵 Burnout",rec:"Kamu butuh jeda. Buka Mystery Box sebagai reward!"},
+const RANK_ICON_NAMES: IconName[] = ["seed","book","rocket","trophy","crown","diamond"];
+const MOODS: { key: string; label: string; icon: IconName; rec: string }[] = [
+  {key:"semangat",label:"Semangat",icon:"happy",rec:"Waktu terbaik belajar! Selesaikan Daily Quest sekarang."},
+  {key:"biasa",label:"Biasa",icon:"neutral",rec:"Coba timer 25 menit, pas buat warmup ringan."},
+  {key:"lelah",label:"Lelah",icon:"sleepy",rec:"Istirahat 10 menit. Minum air, lalu lanjut flashcard saja."},
+  {key:"burnout",label:"Burnout",icon:"dizzy",rec:"Kamu butuh jeda. Buka Mystery Box sebagai reward!"},
 ];
 const FLASHCARDS = [
   {q:"Apa itu pointer di C++?",a:"Variabel yang menyimpan alamat memori dari variabel lain. Dideklarasikan dengan *."},
@@ -17,53 +659,53 @@ const FLASHCARDS = [
   {q:"Perbedaan Stack vs Queue?",a:"Stack: LIFO (Last In First Out). Queue: FIFO (First In First Out)."},
   {q:"Apa itu recursion?",a:"Fungsi yang memanggil dirinya sendiri dengan base case untuk menghentikan proses."},
 ];
-const COSTUMES = [
-  {key:"default",label:"Default",icon:"🎓",unlock:0},
-  {key:"hacker",label:"Hacker",icon:"💻",unlock:200},
-  {key:"wizard",label:"Wizard",icon:"🧙",unlock:500},
-  {key:"knight",label:"Knight",icon:"⚔️",unlock:1000},
+const COSTUMES: { key: string; label: string; icon: IconName; unlock: number }[] = [
+  {key:"default",label:"Default",icon:"graduate",unlock:0},
+  {key:"hacker",label:"Hacker",icon:"laptop",unlock:200},
+  {key:"wizard",label:"Wizard",icon:"wizard-hat",unlock:500},
+  {key:"knight",label:"Knight",icon:"sword",unlock:1000},
 ];
-const MAP_AREAS = [
-  {key:"Hutan Fokus",icon:"🌲",desc:"Latih konsentrasi & deep work",color:"#16a34a",unlockLevel:1},
-  {key:"Danau Konsisten",icon:"🌊",desc:"Bangun kebiasaan belajar harian",color:"#0284c7",unlockLevel:2},
-  {key:"Kota Prestasi",icon:"🏙️",desc:"Raih achievement & rank baru",color:"#7c3aed",unlockLevel:3},
-  {key:"Kastil Master",icon:"🏰",desc:"Area eksklusif Level 5 (Mastermind)",color:"#b45309",unlockLevel:5},
-  {key:"Menara Legenda",icon:"🗼",desc:"Hanya untuk para Legend",color:"#dc2626",unlockLevel:6},
-  {key:"Dimensi Chaos",icon:"🌀",desc:"Rahasia — unlock 1800 XP",color:"#6366f1",unlockLevel:7},
+const MAP_AREAS: { key: string; icon: IconName; desc: string; color: string; unlockLevel: number }[] = [
+  {key:"Hutan Fokus",icon:"tree",desc:"Latih konsentrasi & deep work",color:"#16a34a",unlockLevel:1},
+  {key:"Danau Konsisten",icon:"wave",desc:"Bangun kebiasaan belajar harian",color:"#0284c7",unlockLevel:2},
+  {key:"Kota Prestasi",icon:"city",desc:"Raih achievement & rank baru",color:"#7c3aed",unlockLevel:3},
+  {key:"Kastil Master",icon:"castle",desc:"Area eksklusif Level 5 (Mastermind)",color:"#b45309",unlockLevel:5},
+  {key:"Menara Legenda",icon:"tower",desc:"Hanya untuk para Legend",color:"#dc2626",unlockLevel:6},
+  {key:"Dimensi Chaos",icon:"vortex",desc:"Rahasia — unlock 1800 XP",color:"#6366f1",unlockLevel:7},
 ];
-const MYSTERY_REWARDS = [
-  {type:"xp",label:"+ 50 XP Bonus!",icon:"⚡",amount:50},
-  {type:"coin",label:"+ 30 Koin!",icon:"🪙",amount:30},
-  {type:"badge",label:"Badge: Pemburu XP!",icon:"🏅"},
-  {type:"energy",label:"+ 20 Energi!",icon:"💚",amount:20},
+const MYSTERY_REWARDS: { type: string; label: string; icon: IconName; amount?: number }[] = [
+  {type:"xp",label:"+ 50 XP Bonus!",icon:"lightning",amount:50},
+  {type:"coin",label:"+ 30 Koin!",icon:"coin",amount:30},
+  {type:"badge",label:"Badge: Pemburu XP!",icon:"medal"},
+  {type:"energy",label:"+ 20 Energi!",icon:"heart",amount:20},
 ];
-const ALL_ACHIEVEMENTS = [
-  {key:"Mulai Perjalanan",icon:"🌱",desc:"Login pertama kali",check:(s:any)=>true},
-  {key:"7 Hari Konsisten",icon:"🔥",desc:"Streak 7 hari berturut-turut",check:(s:any)=>s.streak>=7},
-  {key:"Raja Catatan",icon:"📝",desc:"Buat 5 catatan",check:(s:any)=>s.noteCount>=5},
-  {key:"Master Fokus",icon:"⏱",desc:"Selesaikan 5 sesi Focus Mode",check:(s:any)=>s.focusSessions>=5},
-  {key:"Pemburu XP",icon:"⚡",desc:"Kumpulkan 500 XP",check:(s:any)=>s.totalXpEarned>=500},
-  {key:"Produktif Level Dewa",icon:"🚀",desc:"Selesaikan 10 Daily Quest",check:(s:any)=>s.totalQuestsDone>=10},
-  {key:"Raja Flashcard",icon:"🃏",desc:"Review 20 flashcard",check:(s:any)=>s.flashcardViewed>=20},
-  {key:"Money Saver",icon:"💰",desc:"Catat 10 transaksi",check:(s:any)=>s.transactions.length>=10},
-  {key:"Explorer",icon:"🗺️",desc:"Kunjungi 3 area Study Map",check:(s:any)=>s.mapVisited.length>=3},
-  {key:"Peneliti Muda",icon:"🔬",desc:"Gunakan AI Belajar Kilat 3 kali",check:(s:any)=>s.aiAnalyzeCount>=3},
+const ALL_ACHIEVEMENTS: { key: string; icon: IconName; desc: string; check: (s: any) => boolean }[] = [
+  {key:"Mulai Perjalanan",icon:"seed",desc:"Login pertama kali",check:(s:any)=>true},
+  {key:"7 Hari Konsisten",icon:"fire",desc:"Streak 7 hari berturut-turut",check:(s:any)=>s.streak>=7},
+  {key:"Raja Catatan",icon:"note",desc:"Buat 5 catatan",check:(s:any)=>s.noteCount>=5},
+  {key:"Master Fokus",icon:"stopwatch",desc:"Selesaikan 5 sesi Focus Mode",check:(s:any)=>s.focusSessions>=5},
+  {key:"Pemburu XP",icon:"lightning",desc:"Kumpulkan 500 XP",check:(s:any)=>s.totalXpEarned>=500},
+  {key:"Produktif Level Dewa",icon:"rocket",desc:"Selesaikan 10 Daily Quest",check:(s:any)=>s.totalQuestsDone>=10},
+  {key:"Raja Flashcard",icon:"puzzle",desc:"Review 20 flashcard",check:(s:any)=>s.flashcardViewed>=20},
+  {key:"Money Saver",icon:"money",desc:"Catat 10 transaksi",check:(s:any)=>s.transactions.length>=10},
+  {key:"Explorer",icon:"map",desc:"Kunjungi 3 area Study Map",check:(s:any)=>s.mapVisited.length>=3},
+  {key:"Peneliti Muda",icon:"brain",desc:"Gunakan AI Belajar Kilat 3 kali",check:(s:any)=>s.aiAnalyzeCount>=3},
 ];
-const CAT_ICONS={Jajan:"🍜",Kopi:"☕",Game:"🎮",Hiburan:"🎬",Pendidikan:"📚",Transportasi:"🚗",Belanja:"🛒",Lainnya:"💰"};
-const TABS=[
-  {key:"dashboard",label:"Life Dashboard",icon:"🌈"},
-  {key:"quest",label:"Daily Quest",icon:"🎯"},
-  {key:"companion",label:"Plot & Twist",icon:"🐾"},
-  {key:"map",label:"Study Maps",icon:"🗺️"},
-  {key:"focus",label:"Focus Arena",icon:"🔥"},
-  {key:"mystery",label:"Mystery Box",icon:"🎲"},
-  {key:"achievement",label:"Achievement",icon:"🏆"},
-  {key:"mood",label:"Mood Tracker",icon:"📈"},
-  {key:"skill",label:"Skill Collection",icon:"🚀"},
-  {key:"journey",label:"Learning Journey",icon:"🌟"},
-  {key:"rank",label:"Rank System",icon:"🎖️"},
-  {key:"money",label:"Money Tracker",icon:"💰"},
-  {key:"calc",label:"Smart Calculator",icon:"🧮"},
+const CAT_ICONS: Record<string, IconName> = {Jajan:"drink",Kopi:"drink",Game:"game",Hiburan:"movie",Pendidikan:"book",Transportasi:"car",Belanja:"cart",Lainnya:"money"};
+const TABS: { key: string; label: string; icon: IconName }[] = [
+  {key:"dashboard",label:"Life Dashboard",icon:"sparkle"},
+  {key:"quest",label:"Daily Quest",icon:"target"},
+  {key:"companion",label:"Plot & Twist",icon:"user"},
+  {key:"map",label:"Study Maps",icon:"map"},
+  {key:"focus",label:"Focus Arena",icon:"fire"},
+  {key:"mystery",label:"Mystery Box",icon:"die"},
+  {key:"achievement",label:"Achievement",icon:"trophy"},
+  {key:"mood",label:"Mood Tracker",icon:"chart"},
+  {key:"skill",label:"Skill Collection",icon:"rocket"},
+  {key:"journey",label:"Learning Journey",icon:"sparkle"},
+  {key:"rank",label:"Rank System",icon:"medal"},
+  {key:"money",label:"Money Tracker",icon:"money"},
+  {key:"calc",label:"Smart Calculator",icon:"calculator"},
 ];
 
 const INIT={
@@ -73,10 +715,10 @@ const INIT={
   achievements:["Mulai Perjalanan"],
   mapVisited:["Hutan Fokus"],studyMapArea:"Hutan Fokus",
   dailyQuests:[
-    {id:1,label:"Baca materi 15 menit",xp:30,coin:10,done:false,icon:"📖",type:"read"},
-    {id:2,label:"Buat 1 catatan",xp:20,coin:8,done:false,icon:"✍️",type:"note"},
-    {id:3,label:"Kerjakan 5 soal",xp:50,coin:15,done:false,icon:"🧩",type:"quiz"},
-    {id:4,label:"Buka Focus Mode 25 min",xp:40,coin:12,done:false,icon:"🔥",type:"focus"},
+    {id:1,label:"Baca materi 15 menit",xp:30,coin:10,done:false,icon:"book" as IconName,type:"read"},
+    {id:2,label:"Buat 1 catatan",xp:20,coin:8,done:false,icon:"edit" as IconName,type:"note"},
+    {id:3,label:"Kerjakan 5 soal",xp:50,coin:15,done:false,icon:"puzzle" as IconName,type:"quiz"},
+    {id:4,label:"Buka Focus Mode 25 min",xp:40,coin:12,done:false,icon:"fire" as IconName,type:"focus"},
   ],
   transactions:[],
   savingTarget:8000000,savingNow:0,savingMonthly:500000,
@@ -162,7 +804,7 @@ function reducer(state,action){
 }
 
 // ── CLAUDE API ────────────────────────────────────────────────────────────────
-async function callClaude(messages, system="Kamu adalah AI Mentor belajar yang membantu pelajar Indonesia. Jawab dengan bahasa Indonesia yang ramah, jelas, dan semangat. Gunakan emoji sesekali.") {
+async function callClaude(messages, system="Kamu adalah AI Mentor belajar yang membantu pelajar Indonesia. Jawab dengan bahasa Indonesia yang ramah, jelas, dan semangat.") {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -181,7 +823,6 @@ async function callClaude(messages, system="Kamu adalah AI Mentor belajar yang m
   return data.content?.map(c => c.text || "").join("") || "Maaf, tidak bisa menjawab sekarang.";
 }
 
-// Membaca file sebagai teks (untuk TXT, source code, dll.)
 function readFileAsText(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -191,7 +832,6 @@ function readFileAsText(file) {
   });
 }
 
-// Membaca file sebagai base64 (untuk PDF, gambar, dll.)
 function readFileAsBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -205,7 +845,7 @@ function Mascot({evo,costume,mood,size=56}){
   const c=COSTUMES.find(c=>c.key===(costume||"default"))||COSTUMES[0];
   const evoBorder={baby:"#fca5a5",teen:"#818cf8",adult:"#c4b5fd",legend:"#fcd34d"};
   const border=evoBorder[evo]||"#818cf8";
-  const moodEmoji={semangat:"⚡",biasa:"😊",lelah:"😴",burnout:"😵"};
+  const moodIcon=(MOODS.find(m=>m.key===mood)||MOODS[0]).icon;
   return(
     <div style={{userSelect:"none",display:"flex",flexDirection:"column",alignItems:"center",position:"relative"}}>
       <div style={{width:size,height:size,borderRadius:"50%",border:`3px solid ${border}`,overflow:"hidden",position:"relative",flexShrink:0,
@@ -215,16 +855,15 @@ function Mascot({evo,costume,mood,size=56}){
           onError={e=>{
             e.target.style.display="none";
             e.target.parentNode.style.background=`radial-gradient(circle at 35% 35%, ${border}88, ${border})`;
-            e.target.parentNode.innerHTML=`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:${size*0.38}px">🎭</div>`;
           }}/>
       </div>
-      <span style={{position:"absolute",bottom:-4,right:-4,fontSize:Math.max(10,size*0.22),lineHeight:1,
-        background:"#fff",borderRadius:"50%",padding:1,boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>
-        {moodEmoji[mood]||"😊"}
+      <span style={{position:"absolute",bottom:-4,right:-4,lineHeight:1,
+        background:"#fff",borderRadius:"50%",padding:2,boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>
+        <Icon3D name={moodIcon} size={Math.max(14,size*0.3)} />
       </span>
-      {c.key!=="default"&&<span style={{position:"absolute",top:-4,right:-4,fontSize:Math.max(8,size*0.18),lineHeight:1,
-        background:"#fff",borderRadius:"50%",padding:1,boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>
-        {c.icon}
+      {c.key!=="default"&&<span style={{position:"absolute",top:-4,right:-4,lineHeight:1,
+        background:"#fff",borderRadius:"50%",padding:2,boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>
+        <Icon3D name={c.icon} size={Math.max(12,size*0.24)} />
       </span>}
     </div>
   );
@@ -235,8 +874,8 @@ function XPBar({xp}){
   const pct=Math.min(100,Math.round(((xp-cur)/(nxt-cur))*100));
   return(
     <div style={{background:"#eef2ff",borderRadius:12,padding:"10px 14px",width:"100%"}}>
-      <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-        <span style={{fontSize:11,fontWeight:800,color:"#6366f1"}}>{RANK_ICONS[i]} {RANKS[i]}</span>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+        <span style={{fontSize:11,fontWeight:800,color:"#6366f1",display:"flex",alignItems:"center",gap:4}}><Icon3D name={RANK_ICON_NAMES[i]} size={14}/> {RANKS[i]}</span>
         <span style={{fontSize:10,color:"#94a3b8",fontWeight:700}}>{xp} XP</span>
       </div>
       <div style={{background:"#e0e7ff",borderRadius:8,height:6,overflow:"hidden"}}>
@@ -255,7 +894,7 @@ function FlipCard({card}){
       <div style={{position:"relative",width:"100%",height:"100%",transformStyle:"preserve-3d",transition:"transform 0.45s",transform:flipped?"rotateY(180deg)":"rotateY(0deg)"}}>
         <div style={{position:"absolute",inset:0,backfaceVisibility:"hidden",background:"linear-gradient(135deg,#eef2ff,#e0e7ff)",borderRadius:16,padding:"14px 16px",display:"flex",flexDirection:"column",justifyContent:"space-between",border:"1.5px solid #c7d2fe"}}>
           <p style={{fontSize:12,fontWeight:800,color:"#4338ca",margin:0}}>{card.q}</p>
-          <p style={{fontSize:10,color:"#818cf8",fontWeight:700,margin:0}}>Klik untuk lihat jawaban 🔄</p>
+          <p style={{fontSize:10,color:"#818cf8",fontWeight:700,margin:0,display:"flex",alignItems:"center",gap:4}}><Icon3D name="refresh" size={12}/> Klik untuk lihat jawaban</p>
         </div>
         <div style={{position:"absolute",inset:0,backfaceVisibility:"hidden",transform:"rotateY(180deg)",background:"linear-gradient(135deg,#f0fdf4,#d1fae5)",borderRadius:16,padding:"14px 16px",display:"flex",alignItems:"center",border:"1.5px solid #6ee7b7"}}>
           <p style={{fontSize:11,fontWeight:700,color:"#065f46",margin:0,lineHeight:1.5}}>{card.a}</p>
@@ -278,7 +917,6 @@ function MindMapSVG(){
   );
 }
 
-// ── DOTS LOADING ─────────────────────────────────────────────────────────────
 function LoadingDots(){
   return(
     <div style={{display:"flex",gap:6,justifyContent:"center",padding:16}}>
@@ -294,6 +932,14 @@ function TabDashboard({s,d,setTab}){
   const ri=getRankIdx(s.xp);
   const mo=MOODS.find(m=>m.key===s.mood)||MOODS[0];
   const qd=s.dailyQuests.filter(q=>q.done).length;
+  const statCards: { icon: IconName; lb: string; vl: number | string }[] = [
+    {icon:"lightning",lb:"Total XP",vl:s.xp},
+    {icon:"coin",lb:"Koin",vl:s.coins},
+    {icon:"fire",lb:"Streak",vl:s.streak},
+    {icon:"note",lb:"Catatan",vl:s.noteCount},
+    {icon:"stopwatch",lb:"Sesi Fokus",vl:s.focusSessions},
+    {icon:"brain",lb:"AI Analisis",vl:s.aiAnalyzeCount},
+  ];
   return(
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
       <div style={{background:"linear-gradient(135deg,#1e1b4b,#312e81)",borderRadius:24,padding:20,display:"flex",flexDirection:"column",alignItems:"center",gap:12}}>
@@ -302,24 +948,24 @@ function TabDashboard({s,d,setTab}){
         <p style={{margin:0,fontSize:11,color:"#818cf8"}}>Level {s.mascotLevel} · {s.mascotEvo}</p>
         <XPBar xp={s.xp}/>
         <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center"}}>
-          <span style={{background:"rgba(255,255,255,.12)",color:"#fbbf24",fontSize:10,fontWeight:800,padding:"4px 10px",borderRadius:8}}>🪙 {s.coins}</span>
-          <span style={{background:"rgba(255,255,255,.12)",color:"#f87171",fontSize:10,fontWeight:800,padding:"4px 10px",borderRadius:8}}>🔥 {s.streak}</span>
-          <span style={{background:"rgba(255,255,255,.12)",color:"#6ee7b7",fontSize:10,fontWeight:800,padding:"4px 10px",borderRadius:8}}>💚 {s.energy}</span>
+          <span style={{background:"rgba(255,255,255,.12)",color:"#fbbf24",fontSize:10,fontWeight:800,padding:"4px 10px",borderRadius:8,display:"flex",alignItems:"center",gap:4}}><Icon3D name="coin" size={13}/> {s.coins}</span>
+          <span style={{background:"rgba(255,255,255,.12)",color:"#f87171",fontSize:10,fontWeight:800,padding:"4px 10px",borderRadius:8,display:"flex",alignItems:"center",gap:4}}><Icon3D name="fire" size={13}/> {s.streak}</span>
+          <span style={{background:"rgba(255,255,255,.12)",color:"#6ee7b7",fontSize:10,fontWeight:800,padding:"4px 10px",borderRadius:8,display:"flex",alignItems:"center",gap:4}}><Icon3D name="heart" size={13}/> {s.energy}</span>
         </div>
       </div>
       <Card>
-        <p style={{margin:"0 0 8px",fontSize:13,fontWeight:900,color:"#1e1b4b"}}>📈 Mood Hari Ini</p>
-        <p style={{margin:"0 0 4px",fontSize:28}}>{mo.label.split(" ")[0]}</p>
-        <p style={{margin:"0 0 10px",fontSize:13,fontWeight:800,color:"#1e1b4b"}}>{mo.label.split(" ").slice(1).join(" ")}</p>
+        <p style={{margin:"0 0 8px",fontSize:13,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:6}}><Icon3D name="chart" size={16}/> Mood Hari Ini</p>
+        <div style={{margin:"0 0 4px"}}><Icon3D name={mo.icon} size={32}/></div>
+        <p style={{margin:"0 0 10px",fontSize:13,fontWeight:800,color:"#1e1b4b"}}>{mo.label}</p>
         <div style={{background:"#f0fdf4",borderRadius:12,padding:"10px 12px",border:"1px solid #bbf7d0",marginBottom:10}}>
-          <p style={{margin:0,fontSize:11,color:"#065f46",fontWeight:700,lineHeight:1.6}}>🤖 {mo.rec}</p>
+          <p style={{margin:0,fontSize:11,color:"#065f46",fontWeight:700,lineHeight:1.6,display:"flex",alignItems:"flex-start",gap:6}}><Icon3D name="robot" size={14}/> <span>{mo.rec}</span></p>
         </div>
         <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-          {MOODS.map(m=><button key={m.key}onClick={()=>d({type:"SET_MOOD",mood:m.key})}style={{background:s.mood===m.key?"#6366f1":"#f1f5ff",color:s.mood===m.key?"#fff":"#4f46e5",border:"none",borderRadius:10,padding:"5px 10px",fontSize:11,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>{m.label.split(" ")[0]}</button>)}
+          {MOODS.map(m=><button key={m.key}onClick={()=>d({type:"SET_MOOD",mood:m.key})}style={{background:s.mood===m.key?"#6366f1":"#f1f5ff",color:s.mood===m.key?"#fff":"#4f46e5",border:"none",borderRadius:10,padding:"5px 10px",fontSize:11,fontWeight:800,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:5}}><Icon3D name={m.icon} size={14}/></button>)}
         </div>
       </Card>
       <Card>
-        <p style={{margin:"0 0 12px",fontSize:13,fontWeight:900,color:"#1e1b4b"}}>💰 Keuangan</p>
+        <p style={{margin:"0 0 12px",fontSize:13,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:6}}><Icon3D name="money" size={16}/> Keuangan</p>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
           <div style={{background:"#f0fdf4",borderRadius:12,padding:"10px 12px",border:"1px solid #bbf7d0"}}><p style={{margin:0,fontSize:9,color:"#16a34a",fontWeight:800}}>MASUK</p><p style={{margin:0,fontSize:15,fontWeight:900,color:"#166534"}}>Rp{(totalIn/1000).toFixed(0)}rb</p></div>
           <div style={{background:"#fef2f2",borderRadius:12,padding:"10px 12px",border:"1px solid #fecaca"}}><p style={{margin:0,fontSize:9,color:"#dc2626",fontWeight:800}}>KELUAR</p><p style={{margin:0,fontSize:15,fontWeight:900,color:"#991b1b"}}>Rp{(totalOut/1000).toFixed(0)}rb</p></div>
@@ -328,7 +974,7 @@ function TabDashboard({s,d,setTab}){
       </Card>
       <Card>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-          <p style={{margin:0,fontSize:13,fontWeight:900,color:"#1e1b4b"}}>🎯 Daily Quest</p>
+          <p style={{margin:0,fontSize:13,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:6}}><Icon3D name="target" size={16}/> Daily Quest</p>
           <button onClick={()=>setTab("quest")}style={{background:"#eef2ff",color:"#4f46e5",border:"none",borderRadius:10,padding:"4px 10px",fontSize:10,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>Lihat →</button>
         </div>
         <div style={{background:"#e0e7ff",borderRadius:8,height:7,overflow:"hidden",marginBottom:8}}>
@@ -343,15 +989,15 @@ function TabDashboard({s,d,setTab}){
         ))}
       </Card>
       <div style={{background:"linear-gradient(135deg,#f0f9ff,#e0f2fe)",borderRadius:20,padding:16,border:"1.5px solid #bae6fd"}}>
-        <p style={{margin:"0 0 6px",fontSize:13,fontWeight:900,color:"#0c4a6e"}}>🎖️ Rank Saat Ini</p>
-        <p style={{margin:"0 0 2px",fontSize:36}}>{RANK_ICONS[ri]}</p>
+        <p style={{margin:"0 0 6px",fontSize:13,fontWeight:900,color:"#0c4a6e",display:"flex",alignItems:"center",gap:6}}><Icon3D name="medal" size={16}/> Rank Saat Ini</p>
+        <div style={{margin:"0 0 2px"}}><Icon3D name={RANK_ICON_NAMES[ri]} size={40}/></div>
         <p style={{margin:"0 0 10px",fontSize:18,fontWeight:900,color:"#0369a1"}}>{RANKS[ri]}</p>
         <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-          {s.achievements.slice(-3).map(a=><span key={a}style={{background:"#fff",color:"#0369a1",fontSize:9,fontWeight:800,padding:"3px 8px",borderRadius:8,border:"1px solid #bae6fd"}}>🏅 {a}</span>)}
+          {s.achievements.slice(-3).map(a=><span key={a}style={{background:"#fff",color:"#0369a1",fontSize:9,fontWeight:800,padding:"3px 8px",borderRadius:8,border:"1px solid #bae6fd",display:"flex",alignItems:"center",gap:4}}><Icon3D name="medal" size={11}/> {a}</span>)}
         </div>
       </div>
       <Card>
-        <p style={{margin:"0 0 10px",fontSize:13,fontWeight:900,color:"#1e1b4b"}}>💚 Energi & Belajar</p>
+        <p style={{margin:"0 0 10px",fontSize:13,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:6}}><Icon3D name="heart" size={16}/> Energi & Belajar</p>
         <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{fontSize:11,fontWeight:800,color:"#16a34a"}}>Energi</span><span style={{fontSize:11,fontWeight:800,color:"#166534"}}>{s.energy}/{s.maxEnergy}</span></div>
         <div style={{background:"#dcfce7",borderRadius:8,height:8,overflow:"hidden",marginBottom:12}}>
           <div style={{height:"100%",width:`${Math.round(s.energy/s.maxEnergy*100)}%`,background:"linear-gradient(90deg,#6ee7b7,#22c55e)",borderRadius:8,transition:"width .5s"}}/>
@@ -362,11 +1008,11 @@ function TabDashboard({s,d,setTab}){
         </div>
       </Card>
       <div style={{gridColumn:"1/4",background:"#fff",borderRadius:20,padding:16,border:"1.5px solid #e8eaf2"}}>
-        <p style={{margin:"0 0 12px",fontSize:13,fontWeight:900,color:"#1e1b4b"}}>📊 Statistik Global</p>
+        <p style={{margin:"0 0 12px",fontSize:13,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:6}}><Icon3D name="chart" size={16}/> Statistik Global</p>
         <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:10}}>
-          {[["⚡","Total XP",s.xp],["🪙","Koin",s.coins],["🔥","Streak",s.streak],["📝","Catatan",s.noteCount],["⏱","Sesi Fokus",s.focusSessions],["🧠","AI Analisis",s.aiAnalyzeCount]].map(([ic,lb,vl])=>(
+          {statCards.map(({icon,lb,vl})=>(
             <div key={lb}style={{background:"#f8faff",borderRadius:14,padding:"10px 12px",textAlign:"center",border:"1px solid #e0e7ff"}}>
-              <p style={{margin:0,fontSize:18}}>{ic}</p>
+              <div style={{display:"flex",justifyContent:"center",marginBottom:2}}><Icon3D name={icon} size={22}/></div>
               <p style={{margin:0,fontSize:16,fontWeight:900,color:"#1e1b4b"}}>{vl}</p>
               <p style={{margin:0,fontSize:9,color:"#94a3b8",fontWeight:700}}>{lb}</p>
             </div>
@@ -380,15 +1026,13 @@ function TabDashboard({s,d,setTab}){
 // ── TAB: DAILY QUEST ─────────────────────────────────────────────────────────
 function TabQuest({s,d}){
   const[active,setActive]=useState(null);
-  // --- Baca Materi state ---
   const[readFileName,setReadFileName]=useState(null);
-  const[readFileURL,setReadFileURL]=useState(null);   // blob URL untuk preview
-  const[readFileType,setReadFileType]=useState(null); // "pdf" | "image" | "text"
-  const[readFileText,setReadFileText]=useState(null); // isi teks kalau .txt
+  const[readFileURL,setReadFileURL]=useState(null);
+  const[readFileType,setReadFileType]=useState(null);
+  const[readFileText,setReadFileText]=useState(null);
   const[readTimer,setReadTimer]=useState(0);
   const[readRunning,setReadRunning]=useState(false);
   const readRef=useRef(null);
-  // cleanup blob URL saat unmount
   useEffect(()=>()=>{if(readFileURL)URL.revokeObjectURL(readFileURL);},[readFileURL]);
 
   const[noteFile,setNoteFile]=useState(null);
@@ -407,7 +1051,6 @@ function TabQuest({s,d}){
   const handleReadFile = async (e) => {
     const file = e.target.files[0];
     if(!file) return;
-    // Hapus blob URL lama kalau ada
     if(readFileURL) URL.revokeObjectURL(readFileURL);
     const url = URL.createObjectURL(file);
     setReadFileName(file.name);
@@ -420,7 +1063,6 @@ function TabQuest({s,d}){
     } else if(file.type.startsWith("image/")){
       setReadFileType("image");
     } else {
-      // teks biasa: baca isinya
       setReadFileType("text");
       try{const txt=await file.text();setReadFileText(txt);}
       catch{setReadFileText("[Tidak bisa membaca isi file ini]");}
@@ -428,10 +1070,9 @@ function TabQuest({s,d}){
   };
 
   const completeRead=()=>{
-    if(readTimer>=300){ // minimal 5 menit membaca
+    if(readTimer>=300){
       d({type:"COMPLETE_QUEST",id:1});
       setActive(null);
-      // bersihkan
       if(readFileURL)URL.revokeObjectURL(readFileURL);
       setReadFileURL(null);setReadFileName(null);setReadFileType(null);setReadFileText(null);
     }
@@ -469,11 +1110,9 @@ function TabQuest({s,d}){
 
   if(active===1)return(
     <div style={{maxWidth:"100%"}}>
-      {/* Top bar */}
       <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14,flexWrap:"wrap"}}>
         <button onClick={()=>{setActive(null);setReadRunning(false);if(readFileURL){URL.revokeObjectURL(readFileURL);setReadFileURL(null);}setReadFileName(null);setReadFileType(null);setReadTimer(0);}}style={backBtnStyle}>← Kembali</button>
-        <h2 style={{margin:0,fontSize:15,fontWeight:900,color:"#1e1b4b",flex:1}}>📖 Baca Materi</h2>
-        {/* Timer pill */}
+        <h2 style={{margin:0,fontSize:15,fontWeight:900,color:"#1e1b4b",flex:1,display:"flex",alignItems:"center",gap:8}}><Icon3D name="book" size={18}/> Baca Materi</h2>
         <div style={{display:"flex",alignItems:"center",gap:8,background:"#1e1b4b",borderRadius:14,padding:"8px 16px"}}>
           <div style={{position:"relative",width:36,height:36}}>
             <svg width={36}height={36}viewBox="0 0 36 36">
@@ -493,52 +1132,47 @@ function TabQuest({s,d}){
           </div>
           <div style={{display:"flex",gap:6,marginLeft:8}}>
             <button onClick={()=>setReadRunning(r=>!r)}disabled={!readFileURL}
-              style={{background:readRunning?"#f59e0b":"#6366f1",color:"#fff",border:"none",borderRadius:10,padding:"5px 12px",fontSize:11,fontWeight:900,cursor:readFileURL?"pointer":"not-allowed",fontFamily:"inherit",opacity:readFileURL?1:0.5}}>
-              {readRunning?"⏸":"▶"}
+              style={{background:readRunning?"#f59e0b":"#6366f1",color:"#fff",border:"none",borderRadius:10,padding:"5px 12px",fontSize:11,fontWeight:900,cursor:readFileURL?"pointer":"not-allowed",fontFamily:"inherit",opacity:readFileURL?1:0.5,display:"flex",alignItems:"center"}}>
+              <Icon3D name={readRunning?"pause":"play"} size={14}/>
             </button>
             <button onClick={()=>{setReadRunning(false);setReadTimer(0);}}
-              style={{background:"rgba(255,255,255,.1)",color:"#c7d2fe",border:"none",borderRadius:10,padding:"5px 10px",fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>↩</button>
+              style={{background:"rgba(255,255,255,.1)",color:"#c7d2fe",border:"none",borderRadius:10,padding:"5px 10px",fontSize:11,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center"}}><Icon3D name="rewind" size={13}/></button>
           </div>
           {readTimer>=300&&(
-            <button onClick={completeRead}style={{background:"#22c55e",color:"#fff",border:"none",borderRadius:10,padding:"5px 14px",fontSize:11,fontWeight:900,cursor:"pointer",fontFamily:"inherit",marginLeft:4}}>
-              ✅ Klaim XP!
+            <button onClick={completeRead}style={{background:"#22c55e",color:"#fff",border:"none",borderRadius:10,padding:"5px 14px",fontSize:11,fontWeight:900,cursor:"pointer",fontFamily:"inherit",marginLeft:4,display:"flex",alignItems:"center",gap:5}}>
+              <Icon3D name="check" size={13}/> Klaim XP!
             </button>
           )}
         </div>
       </div>
 
-      {/* Upload area atau viewer */}
       {!readFileURL ? (
-        /* Belum ada file — tampilkan upload zone */
         <div style={{background:"#fff",borderRadius:20,border:"1.5px solid #e8eaf2",padding:32,textAlign:"center"}}>
-          <p style={{fontSize:48,margin:"0 0 12px"}}>📄</p>
+          <div style={{display:"flex",justifyContent:"center",margin:"0 0 12px"}}><Icon3D name="file-text" size={48}/></div>
           <p style={{fontSize:14,fontWeight:900,color:"#1e1b4b",margin:"0 0 6px"}}>Upload file materi kamu</p>
           <p style={{fontSize:11,color:"#94a3b8",margin:"0 0 20px"}}>PDF, gambar (JPG/PNG), atau file teks — akan ditampilkan langsung di sini untuk kamu baca</p>
           <label style={{display:"inline-flex",alignItems:"center",gap:10,padding:"12px 28px",borderRadius:14,border:"2px dashed #6366f1",cursor:"pointer",background:"#eef2ff"}}>
-            <span style={{fontSize:20}}>📁</span>
+            <Icon3D name="folder" size={20}/>
             <span style={{fontSize:13,fontWeight:800,color:"#4f46e5"}}>Pilih File Materi</span>
             <input type="file" style={{display:"none"}} onChange={handleReadFile} accept=".pdf,.png,.jpg,.jpeg,.txt,.md"/>
           </label>
-          <p style={{margin:"12px 0 0",fontSize:10,color:"#94a3b8"}}>Timer belajar akan mulai setelah kamu upload file dan klik ▶ Mulai</p>
+          <p style={{margin:"12px 0 0",fontSize:10,color:"#94a3b8",display:"flex",alignItems:"center",justifyContent:"center",gap:5}}>Timer belajar akan mulai setelah kamu upload file dan klik <Icon3D name="play" size={12}/> Mulai</p>
         </div>
       ) : (
-        /* Ada file — tampilkan viewer + opsi ganti file */
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
-          {/* Header file */}
           <div style={{display:"flex",alignItems:"center",gap:10,background:"#fff",borderRadius:14,padding:"10px 14px",border:"1.5px solid #e0e7ff"}}>
-            <span style={{fontSize:20}}>{readFileType==="pdf"?"📄":readFileType==="image"?"🖼️":"📝"}</span>
+            <Icon3D name={readFileType==="pdf"?"file-pdf":readFileType==="image"?"file-image":"file-text"} size={22}/>
             <span style={{fontSize:12,fontWeight:800,color:"#1e1b4b",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{readFileName}</span>
             <label style={{display:"flex",alignItems:"center",gap:6,background:"#eef2ff",color:"#4f46e5",borderRadius:10,padding:"5px 12px",fontSize:10,fontWeight:800,cursor:"pointer"}}>
-              🔄 Ganti File
+              <Icon3D name="refresh" size={13}/> Ganti File
               <input type="file" style={{display:"none"}} onChange={handleReadFile} accept=".pdf,.png,.jpg,.jpeg,.txt,.md"/>
             </label>
           </div>
 
-          {/* PDF Viewer */}
           {readFileType==="pdf"&&(
             <div style={{background:"#1e1b4b",borderRadius:16,overflow:"hidden",border:"1.5px solid #312e81"}}>
               <div style={{padding:"8px 14px",display:"flex",alignItems:"center",gap:8,borderBottom:"1px solid #312e81"}}>
-                <span style={{fontSize:12}}>📄</span>
+                <Icon3D name="file-pdf" size={16}/>
                 <span style={{fontSize:11,fontWeight:800,color:"#c7d2fe",flex:1}}>{readFileName}</span>
                 <a href={readFileURL} target="_blank" rel="noopener noreferrer"
                   style={{background:"#6366f1",color:"#fff",borderRadius:8,padding:"3px 10px",fontSize:9,fontWeight:800,textDecoration:"none"}}>
@@ -553,7 +1187,6 @@ function TabQuest({s,d}){
             </div>
           )}
 
-          {/* Image Viewer */}
           {readFileType==="image"&&(
             <div style={{background:"#1e1b4b",borderRadius:16,overflow:"hidden",border:"1.5px solid #312e81",padding:12,textAlign:"center"}}>
               <img src={readFileURL} alt={readFileName}
@@ -561,11 +1194,10 @@ function TabQuest({s,d}){
             </div>
           )}
 
-          {/* Text Viewer */}
           {readFileType==="text"&&(
             <div style={{background:"#0f172a",borderRadius:16,border:"1.5px solid #312e81",overflow:"hidden"}}>
               <div style={{padding:"8px 14px",borderBottom:"1px solid #312e81",display:"flex",alignItems:"center",gap:8}}>
-                <span style={{fontSize:12}}>📝</span>
+                <Icon3D name="file-text" size={16}/>
                 <span style={{fontSize:11,fontWeight:800,color:"#c7d2fe"}}>{readFileName}</span>
               </div>
               <pre style={{margin:0,padding:16,fontSize:12,color:"#e2e8f0",lineHeight:1.8,overflowY:"auto",maxHeight:"70vh",whiteSpace:"pre-wrap",wordBreak:"break-word",fontFamily:"'JetBrains Mono', monospace"}}>
@@ -576,8 +1208,8 @@ function TabQuest({s,d}){
 
           <p style={{margin:0,fontSize:10,color:"#94a3b8",textAlign:"center"}}>
             {readTimer<300
-              ? `⏱ Baca minimal 5 menit untuk klaim XP · Sudah ${Math.floor(readTimer/60)} menit ${readTimer%60} detik`
-              : "✅ Sudah 5 menit! Klik tombol Klaim XP di atas."}
+              ? `Baca minimal 5 menit untuk klaim XP · Sudah ${Math.floor(readTimer/60)} menit ${readTimer%60} detik`
+              : "Sudah 5 menit! Klik tombol Klaim XP di atas."}
           </p>
         </div>
       )}
@@ -587,11 +1219,11 @@ function TabQuest({s,d}){
     <div style={{maxWidth:520}}>
       <button onClick={()=>setActive(null)}style={backBtnStyle}>← Kembali</button>
       <Card>
-        <p style={{margin:"0 0 14px",fontSize:15,fontWeight:900,color:"#1e1b4b"}}>✍️ Buat 1 Catatan</p>
+        <p style={{margin:"0 0 14px",fontSize:15,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:8}}><Icon3D name="edit" size={18}/> Buat 1 Catatan</p>
         <div style={{marginBottom:14}}>
           <p style={{margin:"0 0 6px",fontSize:11,fontWeight:800,color:"#64748b"}}>Upload referensi (opsional):</p>
           <label style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderRadius:14,border:"2px dashed #c7d2fe",cursor:"pointer",background:"#f8faff"}}>
-            <span style={{fontSize:20}}>📁</span>
+            <Icon3D name="folder" size={20}/>
             <span style={{fontSize:12,fontWeight:700,color:"#4f46e5"}}>{noteFile||"Klik untuk upload referensi"}</span>
             <input type="file"style={{display:"none"}}onChange={e=>doFile(e,setNoteFile)}accept=".pdf,.png,.jpg,.docx,.txt"/>
           </label>
@@ -599,7 +1231,7 @@ function TabQuest({s,d}){
         <textarea value={noteInput}onChange={e=>setNoteInput(e.target.value)}placeholder="Tulis catatan kamu di sini (minimal 10 karakter)..."style={{width:"100%",height:150,padding:"12px 14px",borderRadius:14,border:"1.5px solid #e0e7ff",fontSize:12,fontWeight:700,outline:"none",resize:"none",fontFamily:"inherit",marginBottom:12}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <span style={{fontSize:10,color:"#94a3b8"}}>{noteInput.length} karakter</span>
-          <button onClick={completeNote}disabled={noteInput.trim().length<10}style={{background:noteInput.trim().length>=10?"#6366f1":"#e0e7ff",color:noteInput.trim().length>=10?"#fff":"#94a3b8",border:"none",borderRadius:12,padding:"8px 20px",fontSize:12,fontWeight:900,cursor:noteInput.trim().length>=10?"pointer":"not-allowed",fontFamily:"inherit"}}>💾 Simpan & Klaim XP</button>
+          <button onClick={completeNote}disabled={noteInput.trim().length<10}style={{background:noteInput.trim().length>=10?"#6366f1":"#e0e7ff",color:noteInput.trim().length>=10?"#fff":"#94a3b8",border:"none",borderRadius:12,padding:"8px 20px",fontSize:12,fontWeight:900,cursor:noteInput.trim().length>=10?"pointer":"not-allowed",fontFamily:"inherit",display:"flex",alignItems:"center",gap:6}}><Icon3D name="save" size={14}/> Simpan & Klaim XP</button>
         </div>
       </Card>
     </div>
@@ -609,8 +1241,8 @@ function TabQuest({s,d}){
       <button onClick={()=>{setActive(null);setQuizData(null);setQuizAnswers({});setQuizScore(null);}}style={backBtnStyle}>← Kembali</button>
       <Card>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <p style={{margin:0,fontSize:15,fontWeight:900,color:"#1e1b4b"}}>🧩 Kerjakan 5 Soal AI</p>
-          {!quizData&&!quizLoading&&<button onClick={loadQuiz}style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:12,padding:"8px 18px",fontSize:12,fontWeight:900,cursor:"pointer",fontFamily:"inherit"}}>🤖 Generate Soal</button>}
+          <p style={{margin:0,fontSize:15,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:8}}><Icon3D name="puzzle" size={18}/> Kerjakan 5 Soal AI</p>
+          {!quizData&&!quizLoading&&<button onClick={loadQuiz}style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:12,padding:"8px 18px",fontSize:12,fontWeight:900,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:6}}><Icon3D name="robot" size={15}/> Generate Soal</button>}
         </div>
         {quizLoading&&<div style={{textAlign:"center",padding:32}}><p style={{color:"#6366f1",fontWeight:800}}>AI sedang membuat soal...</p><LoadingDots/></div>}
         {quizData&&quizScore===null&&(
@@ -633,11 +1265,11 @@ function TabQuest({s,d}){
         )}
         {quizScore!==null&&(
           <div style={{textAlign:"center",padding:24}}>
-            <p style={{fontSize:48,margin:"0 0 10px"}}>{quizScore>=4?"🎉":quizScore>=3?"😊":"😅"}</p>
+            <div style={{display:"flex",justifyContent:"center",margin:"0 0 10px"}}><Icon3D name={quizScore>=4?"trophy":quizScore>=3?"happy":"sleepy"} size={48}/></div>
             <p style={{fontSize:24,fontWeight:900,color:"#1e1b4b",margin:"0 0 6px"}}>{quizScore}/5 Benar</p>
             <p style={{fontSize:12,color:"#64748b",margin:"0 0 14px"}}>{quizScore>=3?"Quest selesai! XP diklaim.":"Butuh minimal 3 benar. Coba lagi!"}</p>
-            {quizScore>=3&&<p style={{fontSize:13,fontWeight:800,color:"#22c55e"}}>✅ +{quizScore*5} XP Bonus!</p>}
-            {quizScore<3&&<button onClick={()=>{setQuizData(null);setQuizAnswers({});setQuizScore(null);}}style={{background:"#6366f1",color:"#fff",border:"none",borderRadius:12,padding:"10px 20px",fontSize:12,fontWeight:900,cursor:"pointer",fontFamily:"inherit"}}>🔄 Coba Lagi</button>}
+            {quizScore>=3&&<p style={{fontSize:13,fontWeight:800,color:"#22c55e",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}><Icon3D name="check" size={15}/> +{quizScore*5} XP Bonus!</p>}
+            {quizScore<3&&<button onClick={()=>{setQuizData(null);setQuizAnswers({});setQuizScore(null);}}style={{background:"#6366f1",color:"#fff",border:"none",borderRadius:12,padding:"10px 20px",fontSize:12,fontWeight:900,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:6,margin:"0 auto"}}><Icon3D name="refresh" size={14}/> Coba Lagi</button>}
           </div>
         )}
       </Card>
@@ -646,22 +1278,22 @@ function TabQuest({s,d}){
   return(
     <div style={{maxWidth:580}}>
       <div style={{background:"linear-gradient(135deg,#1e1b4b,#312e81)",borderRadius:24,padding:"18px 22px",marginBottom:20}}>
-        <p style={{margin:0,fontWeight:900,color:"#c7d2fe",fontSize:17}}>🎯 Daily Quest</p>
+        <p style={{margin:0,fontWeight:900,color:"#c7d2fe",fontSize:17,display:"flex",alignItems:"center",gap:8}}><Icon3D name="target" size={20}/> Daily Quest</p>
         <p style={{margin:"4px 0 0",fontSize:12,color:"#818cf8"}}>Selesaikan misi harian untuk dapat XP & Koin!</p>
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:14}}>
         {s.dailyQuests.map(q=>(
           <div key={q.id}style={{background:"#fff",borderRadius:20,padding:"16px 20px",border:`1.5px solid ${q.done?"#86efac":"#e0e7ff"}`,display:"flex",alignItems:"center",gap:14}}>
-            <span style={{fontSize:28}}>{q.icon}</span>
+            <Icon3D name={q.icon} size={30}/>
             <div style={{flex:1}}>
               <p style={{margin:0,fontWeight:800,color:q.done?"#94a3b8":"#1e1b4b",fontSize:13,textDecoration:q.done?"line-through":"none"}}>{q.label}</p>
               <div style={{display:"flex",gap:6,marginTop:4}}>
                 <span style={{background:"#eef2ff",color:"#4f46e5",fontSize:10,fontWeight:800,padding:"2px 8px",borderRadius:8}}>+{q.xp} XP</span>
-                <span style={{background:"#fef3c7",color:"#92400e",fontSize:10,fontWeight:800,padding:"2px 8px",borderRadius:8}}>🪙 +{q.coin}</span>
+                <span style={{background:"#fef3c7",color:"#92400e",fontSize:10,fontWeight:800,padding:"2px 8px",borderRadius:8,display:"flex",alignItems:"center",gap:3}}><Icon3D name="coin" size={11}/> +{q.coin}</span>
               </div>
             </div>
             {q.done
-              ?<span style={{background:"#f0fdf4",color:"#16a34a",padding:"6px 14px",borderRadius:12,fontSize:12,fontWeight:900}}>✅ Done</span>
+              ?<span style={{background:"#f0fdf4",color:"#16a34a",padding:"6px 14px",borderRadius:12,fontSize:12,fontWeight:900,display:"flex",alignItems:"center",gap:5}}><Icon3D name="check" size={14}/> Done</span>
               :<button onClick={()=>setActive(q.id)}style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:14,padding:"8px 16px",fontSize:11,fontWeight:900,cursor:"pointer",fontFamily:"inherit"}}>Mulai →</button>
             }
           </div>
@@ -681,12 +1313,18 @@ function TabQuest({s,d}){
 }
 
 const backBtnStyle={marginBottom:16,background:"#eef2ff",border:"none",borderRadius:12,padding:"8px 16px",fontSize:12,fontWeight:800,color:"#4f46e5",cursor:"pointer",fontFamily:"inherit"};
-const focusBtnStyle={background:"#6366f1",color:"#fff",border:"none",borderRadius:14,padding:"10px 24px",fontSize:12,fontWeight:900,cursor:"pointer",fontFamily:"inherit"};
-const focusGhostBtnStyle={background:"rgba(255,255,255,.1)",color:"#c7d2fe",border:"none",borderRadius:14,padding:"10px 18px",fontSize:12,fontWeight:900,cursor:"pointer",fontFamily:"inherit"};
-const claimBtnStyle={background:"#22c55e",color:"#fff",border:"none",borderRadius:14,padding:"10px 24px",fontSize:13,fontWeight:900,cursor:"pointer",fontFamily:"inherit"};
+const focusBtnStyle={background:"#6366f1",color:"#fff",border:"none",borderRadius:14,padding:"10px 24px",fontSize:12,fontWeight:900,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:6};
+const focusGhostBtnStyle={background:"rgba(255,255,255,.1)",color:"#c7d2fe",border:"none",borderRadius:14,padding:"10px 18px",fontSize:12,fontWeight:900,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:6};
+const claimBtnStyle={background:"#22c55e",color:"#fff",border:"none",borderRadius:14,padding:"10px 24px",fontSize:13,fontWeight:900,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:6};
 
 // ── TAB: COMPANION ───────────────────────────────────────────────────────────
 function TabCompanion({s,d}){
+  const evoSteps: { key: string; label: string; icon: IconName; req: number }[] = [
+    {key:"baby",label:"Baby",icon:"egg",req:0},
+    {key:"teen",label:"Teen",icon:"leaf",req:100},
+    {key:"adult",label:"Adult",icon:"tree",req:300},
+    {key:"legend",label:"Legend",icon:"sparkle",req:1000},
+  ];
   return(
     <div style={{maxWidth:680,display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
       <div style={{background:"linear-gradient(135deg,#1e1b4b,#312e81)",borderRadius:24,padding:28,display:"flex",flexDirection:"column",alignItems:"center",gap:14}}>
@@ -695,11 +1333,11 @@ function TabCompanion({s,d}){
         <p style={{margin:0,fontSize:12,color:"#818cf8"}}>Level {s.mascotLevel} · Evo: {s.mascotEvo}</p>
         <XPBar xp={s.xp}/>
         <div style={{display:"flex",gap:10,flexWrap:"wrap",justifyContent:"center"}}>
-          <span style={{background:"rgba(255,255,255,.12)",color:"#c7d2fe",fontSize:11,fontWeight:800,padding:"5px 12px",borderRadius:10}}>🔥 {s.streak} hari</span>
-          <span style={{background:"rgba(255,255,255,.12)",color:"#fbbf24",fontSize:11,fontWeight:800,padding:"5px 12px",borderRadius:10}}>🪙 {s.coins}</span>
+          <span style={{background:"rgba(255,255,255,.12)",color:"#c7d2fe",fontSize:11,fontWeight:800,padding:"5px 12px",borderRadius:10,display:"flex",alignItems:"center",gap:5}}><Icon3D name="fire" size={14}/> {s.streak} hari</span>
+          <span style={{background:"rgba(255,255,255,.12)",color:"#fbbf24",fontSize:11,fontWeight:800,padding:"5px 12px",borderRadius:10,display:"flex",alignItems:"center",gap:5}}><Icon3D name="coin" size={14}/> {s.coins}</span>
         </div>
         <div style={{width:"100%",background:"rgba(255,255,255,.1)",borderRadius:10,padding:"10px 14px"}}>
-          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><p style={{margin:0,fontSize:9,color:"#818cf8",fontWeight:800}}>💚 ENERGI</p><span style={{fontSize:9,color:"#6ee7b7",fontWeight:800}}>{s.energy}/{s.maxEnergy}</span></div>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><p style={{margin:0,fontSize:9,color:"#818cf8",fontWeight:800,display:"flex",alignItems:"center",gap:4}}><Icon3D name="heart" size={12}/> ENERGI</p><span style={{fontSize:9,color:"#6ee7b7",fontWeight:800}}>{s.energy}/{s.maxEnergy}</span></div>
           <div style={{background:"rgba(255,255,255,.15)",borderRadius:8,height:8,overflow:"hidden"}}>
             <div style={{height:"100%",width:`${Math.round(s.energy/s.maxEnergy*100)}%`,background:"linear-gradient(90deg,#6ee7b7,#22c55e)",borderRadius:8,transition:"width .5s"}}/>
           </div>
@@ -707,25 +1345,25 @@ function TabCompanion({s,d}){
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:14}}>
         <Card>
-          <p style={{margin:"0 0 10px",fontWeight:900,color:"#1e1b4b",fontSize:13}}>🔄 Jalur Evolusi</p>
-          {[{key:"baby",label:"Baby",icon:"🐣",req:0},{key:"teen",label:"Teen",icon:"🌱",req:100},{key:"adult",label:"Adult",icon:"🌳",req:300},{key:"legend",label:"Legend",icon:"🌟",req:1000}].map(e=>(
+          <p style={{margin:"0 0 10px",fontWeight:900,color:"#1e1b4b",fontSize:13,display:"flex",alignItems:"center",gap:6}}><Icon3D name="refresh" size={15}/> Jalur Evolusi</p>
+          {evoSteps.map(e=>(
             <div key={e.key}style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,padding:"6px 10px",borderRadius:10,background:s.mascotEvo===e.key?"#eef2ff":"transparent",border:s.mascotEvo===e.key?"1px solid #c7d2fe":"1px solid transparent"}}>
-              <span style={{fontSize:18}}>{e.icon}</span>
+              <Icon3D name={e.icon} size={20}/>
               <span style={{fontSize:11,fontWeight:800,color:s.xp>=e.req?"#1e1b4b":"#94a3b8"}}>{e.label}</span>
               <span style={{marginLeft:"auto",fontSize:9,color:"#94a3b8"}}>{e.req} XP</span>
-              {s.xp>=e.req&&<span style={{fontSize:10,color:"#16a34a",fontWeight:800}}>✓</span>}
+              {s.xp>=e.req&&<Icon3D name="check" size={13}/>}
             </div>
           ))}
         </Card>
         <Card style={{flex:1}}>
-          <p style={{margin:"0 0 10px",fontWeight:900,color:"#1e1b4b",fontSize:13}}>👕 Kostum</p>
+          <p style={{margin:"0 0 10px",fontWeight:900,color:"#1e1b4b",fontSize:13}}>Kostum</p>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
             {COSTUMES.map(c=>{
               const owned=s.xp>=c.unlock||c.key==="default";
               return(
                 <button key={c.key}onClick={()=>owned&&d({type:"SET_COSTUME",costume:c.key})}
                   style={{background:(s.mascotCostume||"default")===c.key?"#eef2ff":"#f8faff",border:`1.5px solid ${(s.mascotCostume||"default")===c.key?"#6366f1":"#e0e7ff"}`,borderRadius:14,padding:"10px 8px",cursor:owned?"pointer":"not-allowed",opacity:owned?1:0.5,fontFamily:"inherit"}}>
-                  <p style={{margin:0,fontSize:22}}>{c.icon}</p>
+                  <div style={{display:"flex",justifyContent:"center",marginBottom:4}}><Icon3D name={c.icon} size={26}/></div>
                   <p style={{margin:0,fontSize:10,fontWeight:800,color:"#1e1b4b"}}>{c.label}</p>
                   {!owned&&<p style={{margin:0,fontSize:9,color:"#94a3b8"}}>{c.unlock} XP</p>}
                 </button>
@@ -739,26 +1377,24 @@ function TabCompanion({s,d}){
 }
 
 // ── TAB: AI BELAJAR KILAT ────────────────────────────────────────────────────
-// Perbaikan utama: file benar-benar dibaca & dikirim ke Claude untuk dirangkum
 function TabAI({s,d}){
-  const[step,setStep]=useState(null); // null | "loading" | "done" | "error"
+  const[step,setStep]=useState(null);
   const[result,setResult]=useState(null);
   const[view,setView]=useState("summary");
   const[quizAns,setQuizAns]=useState(null);
   const[quizIdx,setQuizIdx]=useState(0);
-  const[uploadedFile,setUploadedFile]=useState(null);      // nama file
-  const[uploadedFileObj,setUploadedFileObj]=useState(null); // File object asli
-  const[topicInput,setTopicInput]=useState("");             // input topik manual
+  const[uploadedFile,setUploadedFile]=useState(null);
+  const[uploadedFileObj,setUploadedFileObj]=useState(null);
+  const[topicInput,setTopicInput]=useState("");
   const[errorMsg,setErrorMsg]=useState("");
-  const[aiFlashcards,setAiFlashcards]=useState(null);      // flashcard dari AI
-  const[aiQuiz,setAiQuiz]=useState(null);                  // quiz dari AI
+  const[aiFlashcards,setAiFlashcards]=useState(null);
+  const[aiQuiz,setAiQuiz]=useState(null);
 
   const handleFile = (e) => {
     const f = e.target.files[0];
     if(!f) return;
     setUploadedFile(f.name);
     setUploadedFileObj(f);
-    // Reset hasil sebelumnya
     setStep(null);
     setResult(null);
     setAiFlashcards(null);
@@ -780,7 +1416,6 @@ function TabAI({s,d}){
         const fileName = uploadedFileObj.name;
 
         if (fileType === "application/pdf") {
-          // Kirim PDF sebagai dokumen base64
           const base64Data = await readFileAsBase64(uploadedFileObj);
           messages = [{
             role: "user",
@@ -793,17 +1428,16 @@ function TabAI({s,d}){
                 type: "text",
                 text: `Tolong analisis dan rangkum materi dari dokumen PDF ini. Berikan:
 
-1. **RINGKASAN UTAMA** (3-5 poin penting, padat & jelas)
-2. **KONSEP KUNCI** (daftar istilah/konsep penting beserta penjelasan singkat)
-3. **POIN BELAJAR** (apa yang harus dipahami dan dihafalkan)
-4. **TIPS BELAJAR** (cara terbaik mempelajari materi ini)
+1. RINGKASAN UTAMA (3-5 poin penting, padat & jelas)
+2. KONSEP KUNCI (daftar istilah/konsep penting beserta penjelasan singkat)
+3. POIN BELAJAR (apa yang harus dipahami dan dihafalkan)
+4. TIPS BELAJAR (cara terbaik mempelajari materi ini)
 
-Gunakan bahasa Indonesia yang mudah dipahami. Gunakan emoji untuk poin-poin utama agar lebih menarik!`
+Gunakan bahasa Indonesia yang mudah dipahami dan format dengan markdown (bold, list).`
               }
             ]
           }];
         } else if (fileType.startsWith("image/")) {
-          // Kirim gambar
           const base64Data = await readFileAsBase64(uploadedFileObj);
           const mediaType = fileType;
           messages = [{
@@ -817,52 +1451,47 @@ Gunakan bahasa Indonesia yang mudah dipahami. Gunakan emoji untuk poin-poin utam
                 type: "text",
                 text: `Tolong analisis gambar/materi ini. Berikan:
 
-1. **RINGKASAN** apa yang ada di gambar ini
-2. **KONSEP KUNCI** yang perlu dipahami
-3. **POIN BELAJAR** penting
-4. **TIPS BELAJAR** untuk materi ini
+1. RINGKASAN apa yang ada di gambar ini
+2. KONSEP KUNCI yang perlu dipahami
+3. POIN BELAJAR penting
+4. TIPS BELAJAR untuk materi ini
 
-Gunakan bahasa Indonesia yang mudah dipahami dengan emoji!`
+Gunakan bahasa Indonesia yang mudah dipahami.`
               }
             ]
           }];
         } else {
-          // File teks: TXT, DOCX source text, kode, dll.
           let textContent;
           try {
             textContent = await readFileAsText(uploadedFileObj);
-            textContent = textContent.slice(0, 8000); // batasi token
+            textContent = textContent.slice(0, 8000);
           } catch {
             textContent = `[File: ${fileName} — tidak bisa dibaca sebagai teks]`;
           }
           messages = [{
             role: "user",
-            content: `Berikut adalah isi file "${fileName}":\n\n${textContent}\n\n---\nTolong analisis dan rangkum materi ini. Berikan:\n\n1. **RINGKASAN UTAMA** (3-5 poin penting)\n2. **KONSEP KUNCI** dengan penjelasan singkat\n3. **POIN BELAJAR** yang harus dipahami\n4. **TIPS BELAJAR** untuk materi ini\n\nGunakan bahasa Indonesia yang mudah dipahami dengan emoji!`
+            content: `Berikut adalah isi file "${fileName}":\n\n${textContent}\n\n---\nTolong analisis dan rangkum materi ini. Berikan:\n\n1. RINGKASAN UTAMA (3-5 poin penting)\n2. KONSEP KUNCI dengan penjelasan singkat\n3. POIN BELAJAR yang harus dipahami\n4. TIPS BELAJAR untuk materi ini\n\nGunakan bahasa Indonesia yang mudah dipahami.`
           }];
         }
       } else if (topicInput.trim()) {
-        // Topik manual
         messages = [{
           role: "user",
-          content: `Tolong buatkan rangkuman belajar untuk topik: "${topicInput}"\n\nBerikan:\n1. **RINGKASAN UTAMA** (3-5 poin penting)\n2. **KONSEP KUNCI** dengan penjelasan singkat\n3. **POIN BELAJAR** yang harus dipahami\n4. **CONTOH NYATA** untuk mempermudah pemahaman\n5. **TIPS BELAJAR** untuk topik ini\n\nGunakan bahasa Indonesia yang mudah dipahami dengan emoji!`
+          content: `Tolong buatkan rangkuman belajar untuk topik: "${topicInput}"\n\nBerikan:\n1. RINGKASAN UTAMA (3-5 poin penting)\n2. KONSEP KUNCI dengan penjelasan singkat\n3. POIN BELAJAR yang harus dipahami\n4. CONTOH NYATA untuk mempermudah pemahaman\n5. TIPS BELAJAR untuk topik ini\n\nGunakan bahasa Indonesia yang mudah dipahami.`
         }];
       } else {
-        // Default: topik umum
         messages = [{
           role: "user",
-          content: `Buatkan rangkuman belajar tentang Struktur Data - Linked List untuk mahasiswa Computer Science.\n\n1. **RINGKASAN UTAMA** (5 poin)\n2. **KONSEP KUNCI** beserta penjelasan\n3. **POIN BELAJAR** penting\n4. **CONTOH KODE** sederhana\n5. **TIPS BELAJAR**\n\nGunakan bahasa Indonesia dengan emoji!`
+          content: `Buatkan rangkuman belajar tentang Struktur Data - Linked List untuk mahasiswa Computer Science.\n\n1. RINGKASAN UTAMA (5 poin)\n2. KONSEP KUNCI beserta penjelasan\n3. POIN BELAJAR penting\n4. CONTOH KODE sederhana\n5. TIPS BELAJAR\n\nGunakan bahasa Indonesia.`
         }];
       }
 
       const summary = await callClaude(
         messages,
-        "Kamu adalah tutor AI untuk pelajar/mahasiswa Indonesia. Buat rangkuman belajar yang jelas, padat, mudah dipahami. Selalu gunakan bahasa Indonesia. Gunakan emoji di setiap poin utama. Format dengan markdown (bold, list)."
+        "Kamu adalah tutor AI untuk pelajar/mahasiswa Indonesia. Buat rangkuman belajar yang jelas, padat, mudah dipahami. Selalu gunakan bahasa Indonesia. Format dengan markdown (bold, list)."
       );
       setResult(summary);
 
-      // Generate flashcard AI dari hasil rangkuman
       generateAiFlashcards(summary);
-      // Generate quiz AI dari hasil rangkuman
       generateAiQuiz(summary);
 
       setStep("done");
@@ -910,24 +1539,22 @@ Gunakan bahasa Indonesia yang mudah dipahami dengan emoji!`
   return(
     <div style={{maxWidth:700}}>
       <Card style={{marginBottom:16}}>
-        <p style={{margin:"0 0 4px",fontSize:15,fontWeight:900,color:"#1e1b4b"}}>🧠 AI Belajar Kilat</p>
+        <p style={{margin:"0 0 4px",fontSize:15,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:8}}><Icon3D name="brain" size={18}/> AI Belajar Kilat</p>
         <p style={{margin:"0 0 14px",fontSize:11,color:"#94a3b8"}}>Upload file materi (PDF/gambar/teks) atau ketik topik, lalu AI akan merangkumnya untukmu!</p>
 
-        {/* Upload File */}
         <div style={{marginBottom:12}}>
-          <p style={{margin:"0 0 6px",fontSize:11,fontWeight:800,color:"#64748b"}}>📁 Upload file materi (PDF, gambar, TXT):</p>
+          <p style={{margin:"0 0 6px",fontSize:11,fontWeight:800,color:"#64748b",display:"flex",alignItems:"center",gap:5}}><Icon3D name="folder" size={13}/> Upload file materi (PDF, gambar, TXT):</p>
           <label style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",borderRadius:14,border:`2px dashed ${uploadedFile?"#6366f1":"#c7d2fe"}`,cursor:"pointer",background:uploadedFile?"#eef2ff":"#f8faff",transition:"all .2s"}}>
-            <span style={{fontSize:24}}>{uploadedFile?"📄":"📁"}</span>
+            <Icon3D name={uploadedFile?"file-text":"folder"} size={26}/>
             <div>
               <p style={{margin:0,fontSize:12,fontWeight:800,color:"#4f46e5"}}>{uploadedFile||"Klik untuk upload file"}</p>
               <p style={{margin:0,fontSize:9,color:"#94a3b8"}}>PDF, PNG, JPG, TXT, DOCX — maks ~8MB</p>
             </div>
-            {uploadedFile&&<span style={{marginLeft:"auto",fontSize:18}}>✅</span>}
+            {uploadedFile&&<span style={{marginLeft:"auto"}}><Icon3D name="check" size={18}/></span>}
             <input type="file" style={{display:"none"}} onChange={handleFile} accept=".pdf,.txt,.docx,.png,.jpg,.jpeg,.md"/>
           </label>
         </div>
 
-        {/* Atau topik manual */}
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
           <div style={{flex:1,height:1,background:"#e0e7ff"}}/>
           <span style={{fontSize:10,color:"#94a3b8",fontWeight:700,whiteSpace:"nowrap"}}>atau ketik topik</span>
@@ -942,52 +1569,47 @@ Gunakan bahasa Indonesia yang mudah dipahami dengan emoji!`
             onKeyDown={e=>e.key==="Enter"&&analyze()}
           />
           <button onClick={analyze} disabled={step==="loading"}
-            style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:14,padding:"10px 20px",fontSize:12,fontWeight:900,cursor:step==="loading"?"not-allowed":"pointer",opacity:step==="loading"?0.7:1,fontFamily:"inherit",whiteSpace:"nowrap"}}>
-            {step==="loading"?"⏳ Menganalisis...":"🤖 Analisis AI"}
+            style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:14,padding:"10px 20px",fontSize:12,fontWeight:900,cursor:step==="loading"?"not-allowed":"pointer",opacity:step==="loading"?0.7:1,fontFamily:"inherit",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:6}}>
+            <Icon3D name={step==="loading"?"stopwatch":"robot"} size={15}/> {step==="loading"?"Menganalisis...":"Analisis AI"}
           </button>
         </div>
 
-        {/* Loading state */}
         {step==="loading"&&(
           <div style={{textAlign:"center",padding:32,background:"#f8faff",borderRadius:16,border:"1.5px solid #e0e7ff"}}>
-            <p style={{color:"#6366f1",fontWeight:800,margin:"0 0 8px",fontSize:13}}>🤖 AI sedang membaca & merangkum materi kamu...</p>
+            <p style={{color:"#6366f1",fontWeight:800,margin:"0 0 8px",fontSize:13,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}><Icon3D name="robot" size={16}/> AI sedang membaca & merangkum materi kamu...</p>
             <p style={{color:"#94a3b8",fontSize:10,margin:"0 0 12px"}}>Ini mungkin butuh 10–30 detik tergantung panjang file</p>
             <LoadingDots/>
           </div>
         )}
 
-        {/* Error state */}
         {step==="error"&&(
           <div style={{background:"#fef2f2",borderRadius:14,padding:"14px 16px",border:"1.5px solid #fca5a5"}}>
-            <p style={{margin:"0 0 4px",fontSize:12,fontWeight:800,color:"#dc2626"}}>❌ Gagal Menganalisis</p>
+            <p style={{margin:"0 0 4px",fontSize:12,fontWeight:800,color:"#dc2626",display:"flex",alignItems:"center",gap:6}}><Icon3D name="cross" size={14}/> Gagal Menganalisis</p>
             <p style={{margin:"0 0 10px",fontSize:11,color:"#991b1b"}}>{errorMsg}</p>
             <button onClick={()=>setStep(null)}style={{background:"#dc2626",color:"#fff",border:"none",borderRadius:10,padding:"6px 16px",fontSize:11,fontWeight:900,cursor:"pointer",fontFamily:"inherit"}}>Coba Lagi</button>
           </div>
         )}
 
-        {/* Done state */}
         {step==="done"&&result&&(
           <>
-            {/* Tab selector */}
             <div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap"}}>
-              {["summary","flashcard","quiz","mindmap"].map(v=>(
-                <button key={v}onClick={()=>setView(v)}style={{background:view===v?"#6366f1":"#eef2ff",color:view===v?"#fff":"#4f46e5",border:"none",borderRadius:12,padding:"6px 14px",fontSize:11,fontWeight:900,cursor:"pointer",fontFamily:"inherit"}}>
-                  {v==="summary"?"📝 Ringkasan":v==="flashcard"?"⚡ Flashcard":v==="quiz"?"❓ Kuis":"🧠 Mindmap"}
+              {(["summary","flashcard","quiz","mindmap"] as const).map(v=>(
+                <button key={v}onClick={()=>setView(v)}style={{background:view===v?"#6366f1":"#eef2ff",color:view===v?"#fff":"#4f46e5",border:"none",borderRadius:12,padding:"6px 14px",fontSize:11,fontWeight:900,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:5}}>
+                  <Icon3D name={v==="summary"?"note":v==="flashcard"?"lightning":v==="quiz"?"puzzle":"brain"} size={13}/>
+                  {v==="summary"?"Ringkasan":v==="flashcard"?"Flashcard":v==="quiz"?"Kuis":"Mindmap"}
                 </button>
               ))}
             </div>
 
-            {/* Ringkasan */}
             {view==="summary"&&(
               <div style={{background:"#0f172a",borderRadius:16,padding:20,maxHeight:400,overflowY:"auto"}}>
-                <p style={{margin:"0 0 10px",fontSize:11,color:"#818cf8",fontWeight:800}}>💡 RANGKUMAN AI — +20 XP diraih!</p>
+                <p style={{margin:"0 0 10px",fontSize:11,color:"#818cf8",fontWeight:800,display:"flex",alignItems:"center",gap:6}}><Icon3D name="lightning" size={13}/> RANGKUMAN AI — +20 XP diraih!</p>
                 <div style={{fontSize:12,color:"#e2e8f0",lineHeight:1.9,whiteSpace:"pre-wrap",fontFamily:"'JetBrains Mono', monospace"}}>
                   {result}
                 </div>
               </div>
             )}
 
-            {/* Flashcard dari AI */}
             {view==="flashcard"&&(
               <div>
                 {aiFlashcards
@@ -999,11 +1621,10 @@ Gunakan bahasa Indonesia yang mudah dipahami dengan emoji!`
                   <span style={{flex:1,textAlign:"center",fontSize:11,fontWeight:800,color:"#94a3b8"}}>{(s.flashcardIdx%activeFlashcards.length)+1}/{activeFlashcards.length}</span>
                   <button onClick={()=>d({type:"NEXT_FC"})}style={{background:"#eef2ff",border:"none",borderRadius:10,padding:"6px 14px",fontSize:11,fontWeight:800,color:"#4338ca",cursor:"pointer",fontFamily:"inherit"}}>Next →</button>
                 </div>
-                <p style={{margin:"8px 0 0",fontSize:9,color:"#94a3b8",textAlign:"center"}}>Flashcard dibuat otomatis dari materi yang kamu upload 🤖</p>
+                <p style={{margin:"8px 0 0",fontSize:9,color:"#94a3b8",textAlign:"center"}}>Flashcard dibuat otomatis dari materi yang kamu upload</p>
               </div>
             )}
 
-            {/* Quiz dari AI */}
             {view==="quiz"&&(
               <div style={{background:"#f8faff",borderRadius:16,padding:16,border:"1.5px solid #e0e7ff"}}>
                 {!aiQuiz&&<div style={{textAlign:"center",padding:16}}><p style={{color:"#94a3b8",fontSize:11}}>Membuat soal dari materi...</p><LoadingDots/></div>}
@@ -1017,11 +1638,11 @@ Gunakan bahasa Indonesia yang mudah dipahami dengan emoji!`
                     </div>
                     {quizAns!==null&&(
                       <div style={{marginTop:10,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                        <p style={{margin:0,fontSize:11,fontWeight:800,color:quizAns===qz[quizIdx%qz.length].ans?"#16a34a":"#dc2626"}}>{quizAns===qz[quizIdx%qz.length].ans?"✅ Benar!":"❌ Kurang tepat"}</p>
+                        <p style={{margin:0,fontSize:11,fontWeight:800,color:quizAns===qz[quizIdx%qz.length].ans?"#16a34a":"#dc2626",display:"flex",alignItems:"center",gap:5}}><Icon3D name={quizAns===qz[quizIdx%qz.length].ans?"check":"cross"} size={13}/> {quizAns===qz[quizIdx%qz.length].ans?"Benar!":"Kurang tepat"}</p>
                         <button onClick={()=>{setQuizIdx(i=>(i+1)%qz.length);setQuizAns(null);}}style={{background:"#6366f1",color:"#fff",border:"none",borderRadius:12,padding:"8px 16px",fontSize:11,fontWeight:900,cursor:"pointer",fontFamily:"inherit"}}>Soal Berikutnya →</button>
                       </div>
                     )}
-                    <p style={{margin:"10px 0 0",fontSize:9,color:"#94a3b8",textAlign:"center"}}>Soal dibuat otomatis berdasarkan materi kamu 🤖 · {quizIdx%qz.length+1}/{qz.length}</p>
+                    <p style={{margin:"10px 0 0",fontSize:9,color:"#94a3b8",textAlign:"center"}}>Soal dibuat otomatis berdasarkan materi kamu · {quizIdx%qz.length+1}/{qz.length}</p>
                   </>
                 )}
               </div>
@@ -1041,8 +1662,8 @@ function TabMap({s,d}){
   return(
     <div style={{maxWidth:680}}>
       <div style={{background:"linear-gradient(135deg,#f0f9ff,#e0f7ef)",borderRadius:24,padding:18,marginBottom:20,border:"1.5px solid #bae6fd"}}>
-        <p style={{margin:"0 0 4px",fontSize:16,fontWeight:900,color:"#0c4a6e"}}>🗺️ Study Maps</p>
-        <p style={{margin:0,fontSize:11,color:"#0369a1"}}>Level kamu: {RANK_ICONS[userLevel-1]} {RANKS[userLevel-1]} (Level {userLevel}). Area unlock otomatis seiring naik rank!</p>
+        <p style={{margin:"0 0 4px",fontSize:16,fontWeight:900,color:"#0c4a6e",display:"flex",alignItems:"center",gap:8}}><Icon3D name="map" size={20}/> Study Maps</p>
+        <p style={{margin:0,fontSize:11,color:"#0369a1",display:"flex",alignItems:"center",gap:5}}>Level kamu: <Icon3D name={RANK_ICON_NAMES[userLevel-1]} size={15}/> {RANKS[userLevel-1]} (Level {userLevel}). Area unlock otomatis seiring naik rank!</p>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
         {MAP_AREAS.map(area=>{
@@ -1050,14 +1671,14 @@ function TabMap({s,d}){
           return(
             <div key={area.key}onClick={()=>unlocked&&d({type:"SET_MAP_AREA",area:area.key})}
               style={{background:"#fff",borderRadius:20,padding:20,border:`2px solid ${s.studyMapArea===area.key?area.color:unlocked?"#e8eaf2":"#f1f5ff"}`,cursor:unlocked?"pointer":"default",opacity:unlocked?1:0.55,transition:"all .2s",position:"relative"}}>
-              {s.studyMapArea===area.key&&<div style={{position:"absolute",top:10,right:10,background:area.color,color:"#fff",fontSize:9,fontWeight:900,padding:"3px 8px",borderRadius:8}}>📍 Aktif</div>}
-              <p style={{margin:"0 0 8px",fontSize:34}}>{area.icon}</p>
+              {s.studyMapArea===area.key&&<div style={{position:"absolute",top:10,right:10,background:area.color,color:"#fff",fontSize:9,fontWeight:900,padding:"3px 8px",borderRadius:8,display:"flex",alignItems:"center",gap:4}}><Icon3D name="pin" size={11}/> Aktif</div>}
+              <div style={{margin:"0 0 8px"}}><Icon3D name={area.icon} size={36}/></div>
               <p style={{margin:"0 0 4px",fontSize:14,fontWeight:900,color:"#1e1b4b"}}>{area.key}</p>
               <p style={{margin:"0 0 10px",fontSize:11,color:"#64748b"}}>{area.desc}</p>
               {!unlocked
-                ?<span style={{background:"#fef3c7",color:"#92400e",fontSize:9,fontWeight:800,padding:"3px 10px",borderRadius:8}}>🔒 Butuh Level {area.unlockLevel} ({RANKS[Math.min(area.unlockLevel-1,RANKS.length-1)]})</span>
+                ?<span style={{background:"#fef3c7",color:"#92400e",fontSize:9,fontWeight:800,padding:"3px 10px",borderRadius:8,display:"inline-flex",alignItems:"center",gap:4}}><Icon3D name="lock" size={11}/> Butuh Level {area.unlockLevel} ({RANKS[Math.min(area.unlockLevel-1,RANKS.length-1)]})</span>
                 :s.mapVisited.includes(area.key)
-                  ?<span style={{background:"#f0fdf4",color:"#16a34a",fontSize:9,fontWeight:800,padding:"3px 10px",borderRadius:8}}>✅ Sudah dikunjungi</span>
+                  ?<span style={{background:"#f0fdf4",color:"#16a34a",fontSize:9,fontWeight:800,padding:"3px 10px",borderRadius:8,display:"inline-flex",alignItems:"center",gap:4}}><Icon3D name="check" size={11}/> Sudah dikunjungi</span>
                   :<span style={{background:"#eef2ff",color:"#4f46e5",fontSize:9,fontWeight:800,padding:"3px 10px",borderRadius:8}}>Klik untuk kunjungi</span>
               }
             </div>
@@ -1087,7 +1708,7 @@ function TabFocus({s,d}){
   return(
     <div style={{maxWidth:500}}>
       <div style={{background:"linear-gradient(135deg,#1e1b4b,#312e81)",borderRadius:28,padding:32,display:"flex",flexDirection:"column",alignItems:"center",gap:20}}>
-        <p style={{margin:0,fontSize:18,fontWeight:900,color:"#c7d2fe"}}>🔥 Focus Arena</p>
+        <p style={{margin:0,fontSize:18,fontWeight:900,color:"#c7d2fe",display:"flex",alignItems:"center",gap:8}}><Icon3D name="fire" size={22}/> Focus Arena</p>
         <div style={{display:"flex",gap:8}}>
           {Object.entries(LABELS).map(([k,l])=>(
             <button key={k}onClick={()=>{if(!running){setMode(k);setSecs(MODES[k]);setDone(false);}}}style={{background:mode===k?"#6366f1":"rgba(255,255,255,.1)",color:"#fff",border:"none",borderRadius:12,padding:"6px 14px",fontSize:11,fontWeight:900,cursor:"pointer",fontFamily:"inherit"}}>{l}</button>
@@ -1101,22 +1722,22 @@ function TabFocus({s,d}){
               strokeLinecap="round"transform="rotate(-90 90 90)"style={{transition:"stroke-dashoffset 1s"}}/>
           </svg>
           <div style={{position:"absolute",textAlign:"center"}}>
-            <p style={{margin:0,fontSize:36,fontWeight:900,color:done?"#22c55e":"#fff",fontFamily:"monospace"}}>{done?"✅":String(mins).padStart(2,"0")+":"+String(secR).padStart(2,"0")}</p>
+            {done?<Icon3D name="check" size={36}/>:<p style={{margin:0,fontSize:36,fontWeight:900,color:"#fff",fontFamily:"monospace"}}>{String(mins).padStart(2,"0")}:{String(secR).padStart(2,"0")}</p>}
             <p style={{margin:0,fontSize:11,color:"#818cf8"}}>{done?"Selesai!":pct+"% done"}</p>
           </div>
         </div>
         {done
-          ?<button onClick={claim}style={claimBtnStyle}>🏆 Klaim +40 XP &amp; +15 Koin!</button>
+          ?<button onClick={claim}style={claimBtnStyle}><Icon3D name="trophy" size={16}/> Klaim +40 XP &amp; +15 Koin!</button>
           :<div style={{display:"flex",gap:10}}>
-            <button onClick={()=>setRunning(r=>!r)}style={focusBtnStyle}>{running?"⏸ Pause":"▶ Mulai"}</button>
-            <button onClick={()=>{setRunning(false);setSecs(MODES[mode]);setDone(false);}}style={focusGhostBtnStyle}>↩ Reset</button>
+            <button onClick={()=>setRunning(r=>!r)}style={focusBtnStyle}><Icon3D name={running?"pause":"play"} size={15}/> {running?"Pause":"Mulai"}</button>
+            <button onClick={()=>{setRunning(false);setSecs(MODES[mode]);setDone(false);}}style={focusGhostBtnStyle}><Icon3D name="rewind" size={14}/> Reset</button>
           </div>
         }
         <div style={{display:"flex",gap:10,width:"100%"}}>
-          {[["XP","⚡","+40"],["Koin","🪙","+15"],["Sesi","⏱",s.focusSessions]].map(([l,i,v])=>(
+          {([["XP","lightning" as IconName,"+40"],["Koin","coin" as IconName,"+15"],["Sesi","stopwatch" as IconName,s.focusSessions]] as const).map(([l,i,v])=>(
             <div key={l}style={{flex:1,background:"rgba(255,255,255,.08)",borderRadius:14,padding:"10px 12px",textAlign:"center"}}>
               <p style={{margin:0,fontSize:9,color:"#818cf8",fontWeight:800}}>{l}</p>
-              <p style={{margin:0,fontSize:18,fontWeight:900,color:"#c7d2fe"}}>{i} {v}</p>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:5}}><Icon3D name={i} size={16}/><span style={{fontSize:16,fontWeight:900,color:"#c7d2fe"}}>{v}</span></div>
             </div>
           ))}
         </div>
@@ -1142,12 +1763,12 @@ function TabMystery({s,d}){
   return(
     <div style={{maxWidth:500,display:"flex",flexDirection:"column",alignItems:"center",gap:20}}>
       <div style={{background:"linear-gradient(135deg,#7c3aed,#a855f7)",borderRadius:28,padding:32,width:"100%",textAlign:"center"}}>
-        <div style={{fontSize:80,marginBottom:16,display:"inline-block",animation:spinning?"spin 0.5s linear infinite":opened?"none":"float 3s ease-in-out infinite alternate"}}>{opened?reward?.icon:"🎲"}</div>
+        <div style={{marginBottom:16,display:"inline-block",animation:spinning?"spin 0.5s linear infinite":opened?"none":"float 3s ease-in-out infinite alternate"}}><Icon3D name={opened?(reward?.icon||"die"):"die"} size={72}/></div>
         <p style={{margin:"0 0 6px",fontSize:20,fontWeight:900,color:"#fff"}}>{opened?reward?.label:"Mystery Box"}</p>
         <p style={{margin:"0 0 16px",fontSize:12,color:"rgba(255,255,255,.75)"}}>{opened?"Reward sudah masuk ke akunmu!":canOpen?"Buka mystery box sekarang!":"Bisa dibuka lagi dalam:"}</p>
         {!canOpen&&!opened&&<div style={{background:"rgba(255,255,255,.15)",borderRadius:14,padding:"12px 20px",marginBottom:16,display:"inline-block"}}><p style={{margin:0,fontSize:18,fontWeight:900,color:"#fff",fontFamily:"monospace"}}>{hrs}j {min}m</p></div>}
         {!opened
-          ?<button onClick={open}disabled={!canOpen||spinning}style={{background:canOpen?"#fff":"rgba(255,255,255,.3)",color:canOpen?"#7c3aed":"rgba(255,255,255,.6)",border:"none",borderRadius:16,padding:"12px 28px",fontSize:13,fontWeight:900,cursor:canOpen?"pointer":"not-allowed",fontFamily:"inherit"}}>{spinning?"Mengundi...":canOpen?"🎁 Buka Sekarang!":"⏳ Belum Bisa Dibuka"}</button>
+          ?<button onClick={open}disabled={!canOpen||spinning}style={{background:canOpen?"#fff":"rgba(255,255,255,.3)",color:canOpen?"#7c3aed":"rgba(255,255,255,.6)",border:"none",borderRadius:16,padding:"12px 28px",fontSize:13,fontWeight:900,cursor:canOpen?"pointer":"not-allowed",fontFamily:"inherit"}}>{spinning?"Mengundi...":canOpen?"Buka Sekarang!":"Belum Bisa Dibuka"}</button>
           :<button onClick={()=>{setOpened(false);setReward(null);}}style={{background:"rgba(255,255,255,.2)",color:"#fff",border:"none",borderRadius:16,padding:"12px 28px",fontSize:13,fontWeight:900,cursor:"pointer",fontFamily:"inherit"}}>Tutup</button>
         }
       </div>
@@ -1156,11 +1777,11 @@ function TabMystery({s,d}){
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           {MYSTERY_REWARDS.map(r=>(
             <div key={r.type}style={{background:"#f8faff",borderRadius:14,padding:"10px 14px",border:"1px solid #e0e7ff",display:"flex",alignItems:"center",gap:8}}>
-              <span style={{fontSize:22}}>{r.icon}</span><span style={{fontSize:11,fontWeight:800,color:"#1e1b4b"}}>{r.label}</span>
+              <Icon3D name={r.icon} size={26}/><span style={{fontSize:11,fontWeight:800,color:"#1e1b4b"}}>{r.label}</span>
             </div>
           ))}
         </div>
-        <p style={{margin:"12px 0 0",fontSize:10,color:"#94a3b8",fontWeight:700,textAlign:"center"}}>⏰ Mystery Box bisa dibuka setiap 3 jam sekali</p>
+        <p style={{margin:"12px 0 0",fontSize:10,color:"#94a3b8",fontWeight:700,textAlign:"center"}}>Mystery Box bisa dibuka setiap 3 jam sekali</p>
       </div>
     </div>
   );
@@ -1171,19 +1792,19 @@ function TabAchievement({s}){
   return(
     <div style={{maxWidth:680}}>
       <Card style={{marginBottom:16}}>
-        <p style={{margin:"0 0 4px",fontSize:14,fontWeight:900,color:"#1e1b4b"}}>🏆 Achievement System</p>
+        <p style={{margin:"0 0 4px",fontSize:14,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:8}}><Icon3D name="trophy" size={18}/> Achievement System</p>
         <p style={{margin:0,fontSize:11,color:"#94a3b8"}}>Badge otomatis terbuka saat kamu mencapai target di semua fitur!</p>
-        <p style={{margin:"8px 0 0",fontSize:12,fontWeight:800,color:"#6366f1"}}>✅ {s.achievements.length}/{ALL_ACHIEVEMENTS.length} badge earned</p>
+        <p style={{margin:"8px 0 0",fontSize:12,fontWeight:800,color:"#6366f1",display:"flex",alignItems:"center",gap:5}}><Icon3D name="check" size={14}/> {s.achievements.length}/{ALL_ACHIEVEMENTS.length} badge earned</p>
       </Card>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
         {ALL_ACHIEVEMENTS.map(a=>{
           const earned=s.achievements.includes(a.key);
           return(
             <div key={a.key}style={{background:"#fff",borderRadius:20,padding:18,border:`1.5px solid ${earned?"#fbbf24":"#e8eaf2"}`,textAlign:"center",opacity:earned?1:0.55,transition:"all .3s"}}>
-              <p style={{margin:"0 0 6px",fontSize:34}}>{earned?a.icon:"🔒"}</p>
+              <div style={{display:"flex",justifyContent:"center",margin:"0 0 6px"}}><Icon3D name={earned?a.icon:"lock"} size={34}/></div>
               <p style={{margin:"0 0 4px",fontSize:12,fontWeight:900,color:earned?"#1e1b4b":"#94a3b8"}}>{a.key}</p>
               <p style={{margin:0,fontSize:10,color:"#94a3b8"}}>{a.desc}</p>
-              {earned&&<p style={{margin:"6px 0 0",fontSize:9,color:"#f59e0b",fontWeight:800}}>✅ EARNED</p>}
+              {earned&&<p style={{margin:"6px 0 0",fontSize:9,color:"#f59e0b",fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",gap:4}}><Icon3D name="check" size={11}/> EARNED</p>}
             </div>
           );
         })}
@@ -1193,11 +1814,10 @@ function TabAchievement({s}){
 }
 
 // ── TAB: AI MENTOR ───────────────────────────────────────────────────────────
-// Perbaikan: history dikirim dengan benar, streaming simulasi, konteks lebih kaya
 function TabMentor({s,d}){
   const[input,setInput]=useState("");
   const[loading,setLoading]=useState(false);
-  const[streamedText,setStreamedText]=useState(""); // simulasi streaming
+  const[streamedText,setStreamedText]=useState("");
   const endRef=useRef(null);
   const inputRef=useRef(null);
 
@@ -1217,9 +1837,8 @@ function TabMentor({s,d}){
   const MENTOR_SYSTEM = `Kamu adalah AI Mentor belajar pribadi untuk pelajar/mahasiswa Indonesia bernama "Plotwist AI".
 
 Karakter kamu:
-- Ramah, supportif, dan penuh semangat 🎓
+- Ramah, supportif, dan penuh semangat
 - Menggunakan bahasa Indonesia yang santai tapi tetap informatif
-- Sering menggunakan emoji untuk membuat penjelasan lebih menarik
 - Memberikan contoh nyata yang relevan dengan kehidupan pelajar Indonesia
 - Kalau menjelaskan kode, gunakan code block dengan bahasa yang tepat
 - Selalu memotivasi dan memberi apresiasi atas pertanyaan
@@ -1239,7 +1858,6 @@ Sesuaikan energi balasanmu dengan mood user (kalau burnout, lebih menenangkan; k
     d({ type: "ADD_AI_MSG", role: "user", content: msg });
 
     try {
-      // Bangun history yang benar — kirim semua pesan sebelumnya + pesan baru
       const history = [
         ...s.aiMessages.map(m => ({ role: m.role, content: m.content })),
         { role: "user", content: msg }
@@ -1247,12 +1865,11 @@ Sesuaikan energi balasanmu dengan mood user (kalau burnout, lebih menenangkan; k
 
       const reply = await callClaude(history, MENTOR_SYSTEM);
 
-      // Simulasi streaming — tampilkan teks satu per satu
       let i = 0;
       const interval = setInterval(() => {
         if (i < reply.length) {
           setStreamedText(reply.slice(0, i + 1));
-          i += Math.ceil(reply.length / 80); // kecepatan tampil
+          i += Math.ceil(reply.length / 80);
         } else {
           clearInterval(interval);
           setStreamedText("");
@@ -1262,7 +1879,7 @@ Sesuaikan energi balasanmu dengan mood user (kalau burnout, lebih menenangkan; k
       }, 16);
 
     } catch (err) {
-      const errMsg = `❌ Oops! Koneksi ke AI bermasalah.\n\nError: ${err.message}\n\nCoba lagi ya! Pastikan koneksi internetmu stabil. 😅`;
+      const errMsg = `Oops! Koneksi ke AI bermasalah.\n\nError: ${err.message}\n\nCoba lagi ya! Pastikan koneksi internetmu stabil.`;
       d({ type: "ADD_AI_MSG", role: "assistant", content: errMsg });
       setLoading(false);
       setStreamedText("");
@@ -1271,12 +1888,11 @@ Sesuaikan energi balasanmu dengan mood user (kalau burnout, lebih menenangkan; k
 
   return(
     <div style={{maxWidth:720,display:"flex",flexDirection:"column",height:600}}>
-      {/* Header */}
       <div style={{background:"linear-gradient(135deg,#1e1b4b,#312e81)",borderRadius:"20px 20px 0 0",padding:"14px 18px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
           <Mascot evo={s.mascotEvo}costume={s.mascotCostume}mood="semangat"size={40}/>
           <div>
-            <p style={{margin:0,fontWeight:900,color:"#fff",fontSize:14}}>🤖 AI Mentor</p>
+            <p style={{margin:0,fontWeight:900,color:"#fff",fontSize:14,display:"flex",alignItems:"center",gap:6}}><Icon3D name="robot" size={16}/> AI Mentor</p>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
               <div style={{width:6,height:6,borderRadius:"50%",background:"#22c55e"}}/>
               <p style={{margin:0,fontSize:10,color:"#818cf8"}}>Online · Powered by Claude · Siap bantu belajar!</p>
@@ -1285,17 +1901,15 @@ Sesuaikan energi balasanmu dengan mood user (kalau burnout, lebih menenangkan; k
         </div>
         <div style={{display:"flex",gap:8,alignItems:"center"}}>
           <span style={{background:"rgba(255,255,255,.1)",color:"#c7d2fe",fontSize:9,padding:"3px 8px",borderRadius:8,fontWeight:700}}>{s.aiMessages.filter(m=>m.role==="user").length} pesan</span>
-          {s.aiMessages.length>0&&<button onClick={()=>d({type:"CLEAR_AI"})}style={{background:"rgba(255,255,255,.1)",color:"#c7d2fe",border:"none",borderRadius:10,padding:"5px 12px",fontSize:10,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>🗑 Hapus Chat</button>}
+          {s.aiMessages.length>0&&<button onClick={()=>d({type:"CLEAR_AI"})}style={{background:"rgba(255,255,255,.1)",color:"#c7d2fe",border:"none",borderRadius:10,padding:"5px 12px",fontSize:10,fontWeight:800,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}><Icon3D name="trash" size={12}/> Hapus Chat</button>}
         </div>
       </div>
 
-      {/* Chat area */}
       <div style={{flex:1,background:"#fff",overflowY:"auto",padding:"16px 16px 8px",display:"flex",flexDirection:"column",gap:12,border:"1.5px solid #e0e7ff"}}>
-        {/* Welcome state */}
         {s.aiMessages.length===0&&!loading&&(
           <div style={{textAlign:"center",padding:"16px 10px"}}>
-            <p style={{fontSize:40,margin:"0 0 8px"}}>🤖</p>
-            <p style={{fontSize:14,color:"#1e1b4b",fontWeight:800,marginBottom:4}}>Halo! Aku AI Mentor Plotwist 👋</p>
+            <div style={{display:"flex",justifyContent:"center",margin:"0 0 8px"}}><Icon3D name="robot" size={40}/></div>
+            <p style={{fontSize:14,color:"#1e1b4b",fontWeight:800,marginBottom:4,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}><Icon3D name="wave-hand" size={16}/> Halo! Aku AI Mentor Plotwist</p>
             <p style={{fontSize:11,color:"#64748b",marginBottom:16}}>Tanya apa saja tentang pelajaran, minta soal latihan, atau minta tips belajar!</p>
             <div style={{display:"flex",flexWrap:"wrap",gap:6,justifyContent:"center",maxWidth:580,margin:"0 auto"}}>
               {SUGG.map(sg=>(
@@ -1307,35 +1921,32 @@ Sesuaikan energi balasanmu dengan mood user (kalau burnout, lebih menenangkan; k
           </div>
         )}
 
-        {/* Messages */}
         {s.aiMessages.map((m,i)=>(
           <div key={i}style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start",gap:8,alignItems:"flex-end"}}>
             {m.role==="assistant"&&(
-              <div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0,marginBottom:2}}>🤖</div>
+              <div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginBottom:2}}><Icon3D name="robot" size={16}/></div>
             )}
             <div style={{maxWidth:"78%",background:m.role==="user"?"linear-gradient(135deg,#6366f1,#8b5cf6)":"#f8faff",color:m.role==="user"?"#fff":"#1e1b4b",borderRadius:m.role==="user"?"18px 18px 4px 18px":"18px 18px 18px 4px",padding:"10px 14px",fontSize:12,fontWeight:700,lineHeight:1.7,border:m.role==="assistant"?"1px solid #e0e7ff":"none",whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
               {m.content}
             </div>
             {m.role==="user"&&(
-              <div style={{width:28,height:28,borderRadius:"50%",background:"#eef2ff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0,marginBottom:2}}>😊</div>
+              <div style={{width:28,height:28,borderRadius:"50%",background:"#eef2ff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginBottom:2}}><Icon3D name="user" size={15}/></div>
             )}
           </div>
         ))}
 
-        {/* Streaming text */}
         {loading&&streamedText&&(
           <div style={{display:"flex",justifyContent:"flex-start",gap:8,alignItems:"flex-end"}}>
-            <div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>🤖</div>
+            <div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Icon3D name="robot" size={16}/></div>
             <div style={{maxWidth:"78%",background:"#f8faff",color:"#1e1b4b",borderRadius:"18px 18px 18px 4px",padding:"10px 14px",fontSize:12,fontWeight:700,lineHeight:1.7,border:"1px solid #e0e7ff",whiteSpace:"pre-wrap"}}>
               {streamedText}<span style={{display:"inline-block",width:2,height:14,background:"#6366f1",marginLeft:2,animation:"blink 1s step-end infinite"}}/>
             </div>
           </div>
         )}
 
-        {/* Loading dots (saat menunggu respons) */}
         {loading&&!streamedText&&(
           <div style={{display:"flex",justifyContent:"flex-start",gap:8,alignItems:"flex-end"}}>
-            <div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>🤖</div>
+            <div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Icon3D name="robot" size={16}/></div>
             <div style={{background:"#f8faff",borderRadius:"18px 18px 18px 4px",padding:"12px 16px",border:"1px solid #e0e7ff"}}>
               <div style={{display:"flex",gap:5}}>{[0,1,2].map(i=><div key={i}style={{width:7,height:7,borderRadius:"50%",background:"#818cf8",animation:`bounce 1s ease ${i*0.2}s infinite`}}/>)}</div>
             </div>
@@ -1345,7 +1956,6 @@ Sesuaikan energi balasanmu dengan mood user (kalau burnout, lebih menenangkan; k
         <div ref={endRef}/>
       </div>
 
-      {/* Input area */}
       <div style={{background:"#fff",borderRadius:"0 0 20px 20px",padding:"10px 12px",display:"flex",gap:8,border:"1.5px solid #e0e7ff",borderTop:"1px solid #f1f5ff",alignItems:"flex-end"}}>
         <textarea
           ref={inputRef}
@@ -1359,8 +1969,8 @@ Sesuaikan energi balasanmu dengan mood user (kalau burnout, lebih menenangkan; k
         <button
           onClick={()=>send()}
           disabled={loading||!input.trim()}
-          style={{background:loading||!input.trim()?"#e0e7ff":"linear-gradient(135deg,#6366f1,#8b5cf6)",color:loading||!input.trim()?"#94a3b8":"#fff",border:"none",borderRadius:14,padding:"10px 18px",fontSize:12,fontWeight:900,cursor:loading||!input.trim()?"not-allowed":"pointer",transition:"all .2s",fontFamily:"inherit",flexShrink:0}}>
-          {loading?"⏳":"Kirim →"}
+          style={{background:loading||!input.trim()?"#e0e7ff":"linear-gradient(135deg,#6366f1,#8b5cf6)",color:loading||!input.trim()?"#94a3b8":"#fff",border:"none",borderRadius:14,padding:"10px 18px",fontSize:12,fontWeight:900,cursor:loading||!input.trim()?"not-allowed":"pointer",transition:"all .2s",fontFamily:"inherit",flexShrink:0,display:"flex",alignItems:"center",gap:6}}>
+          {loading?<Icon3D name="stopwatch" size={14}/>:<>Kirim <Icon3D name="send" size={14}/></>}
         </button>
       </div>
     </div>
@@ -1373,17 +1983,17 @@ function TabMood({s,d}){
   return(
     <div style={{maxWidth:600}}>
       <Card style={{marginBottom:16}}>
-        <p style={{margin:"0 0 12px",fontSize:14,fontWeight:900,color:"#1e1b4b"}}>📈 Mood Tracker</p>
+        <p style={{margin:"0 0 12px",fontSize:14,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:8}}><Icon3D name="chart" size={18}/> Mood Tracker</p>
         <div style={{display:"flex",gap:10,marginBottom:16}}>
           {MOODS.map(m=>(
             <button key={m.key}onClick={()=>d({type:"SET_MOOD",mood:m.key})}style={{flex:1,background:s.mood===m.key?"#eef2ff":"#f8faff",border:`2px solid ${s.mood===m.key?"#6366f1":"#e0e7ff"}`,borderRadius:16,padding:"12px 8px",cursor:"pointer",textAlign:"center",fontFamily:"inherit"}}>
-              <p style={{margin:0,fontSize:24}}>{m.label.split(" ")[0]}</p>
-              <p style={{margin:0,fontSize:9,fontWeight:800,color:s.mood===m.key?"#4f46e5":"#94a3b8"}}>{m.label.split(" ").slice(1).join(" ")}</p>
+              <div style={{display:"flex",justifyContent:"center",marginBottom:4}}><Icon3D name={m.icon} size={26}/></div>
+              <p style={{margin:0,fontSize:9,fontWeight:800,color:s.mood===m.key?"#4f46e5":"#94a3b8"}}>{m.label}</p>
             </button>
           ))}
         </div>
         <div style={{background:"#f0fdf4",borderRadius:14,padding:"14px 16px",border:"1px solid #bbf7d0"}}>
-          <p style={{margin:"0 0 4px",fontSize:10,fontWeight:800,color:"#16a34a"}}>🤖 REKOMENDASI AI</p>
+          <p style={{margin:"0 0 4px",fontSize:10,fontWeight:800,color:"#16a34a",display:"flex",alignItems:"center",gap:5}}><Icon3D name="robot" size={13}/> REKOMENDASI AI</p>
           <p style={{margin:0,fontSize:12,color:"#065f46",fontWeight:700,lineHeight:1.6}}>{mo.rec}</p>
         </div>
       </Card>
@@ -1391,7 +2001,7 @@ function TabMood({s,d}){
         <p style={{margin:"0 0 12px",fontSize:13,fontWeight:900,color:"#1e1b4b"}}>Riwayat Mood</p>
         {s.moodHistory.length===0
           ?<p style={{fontSize:12,color:"#94a3b8",textAlign:"center",padding:20}}>Belum ada riwayat. Pilih mood di atas!</p>
-          :<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{s.moodHistory.map((h,i)=>{const m=MOODS.find(x=>x.key===h.mood)||MOODS[0];return(<div key={i}style={{background:"#f8faff",borderRadius:14,padding:"10px 8px",textAlign:"center",border:"1px solid #e0e7ff",minWidth:70}}><p style={{margin:0,fontSize:20}}>{m.label.split(" ")[0]}</p><p style={{margin:0,fontSize:8,color:"#94a3b8",fontWeight:700,marginTop:4}}>{h.date}</p></div>);})}</div>
+          :<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{s.moodHistory.map((h,i)=>{const m=MOODS.find(x=>x.key===h.mood)||MOODS[0];return(<div key={i}style={{background:"#f8faff",borderRadius:14,padding:"10px 8px",textAlign:"center",border:"1px solid #e0e7ff",minWidth:70}}><div style={{display:"flex",justifyContent:"center"}}><Icon3D name={m.icon} size={22}/></div><p style={{margin:0,fontSize:8,color:"#94a3b8",fontWeight:700,marginTop:4}}>{h.date}</p></div>);})}</div>
         }
       </Card>
     </div>
@@ -1400,18 +2010,18 @@ function TabMood({s,d}){
 
 // ── TAB: SKILL ───────────────────────────────────────────────────────────────
 function TabSkill({s}){
-  const skills=[
-    {key:"Knowledge",icon:"📚",desc:"Dari: XP, AI Analisis, Flashcard review",val:Math.min(100,Math.round((s.totalXpEarned*0.04+s.aiAnalyzeCount*8+s.flashcardViewed*2)))},
-    {key:"Logic",icon:"🧠",desc:"Dari: Soal quiz & Daily Quest",val:Math.min(100,Math.round(s.totalQuestsDone*10))},
-    {key:"Creativity",icon:"🎨",desc:"Dari: Catatan & Note-Taking",val:Math.min(100,Math.round(s.noteCount*20))},
-    {key:"Discipline",icon:"🎯",desc:"Dari: Streak harian & Focus Arena",val:Math.min(100,Math.round(s.streak*10+s.focusSessions*8))},
-    {key:"Communication",icon:"💬",desc:"Dari: Chat AI Mentor",val:Math.min(100,Math.round(s.aiMessages.length*5))},
+  const skills: { key: string; icon: IconName; desc: string; val: number }[] = [
+    {key:"Knowledge",icon:"book",desc:"Dari: XP, AI Analisis, Flashcard review",val:Math.min(100,Math.round((s.totalXpEarned*0.04+s.aiAnalyzeCount*8+s.flashcardViewed*2)))},
+    {key:"Logic",icon:"brain",desc:"Dari: Soal quiz & Daily Quest",val:Math.min(100,Math.round(s.totalQuestsDone*10))},
+    {key:"Creativity",icon:"sparkle",desc:"Dari: Catatan & Note-Taking",val:Math.min(100,Math.round(s.noteCount*20))},
+    {key:"Discipline",icon:"target",desc:"Dari: Streak harian & Focus Arena",val:Math.min(100,Math.round(s.streak*10+s.focusSessions*8))},
+    {key:"Communication",icon:"send",desc:"Dari: Chat AI Mentor",val:Math.min(100,Math.round(s.aiMessages.length*5))},
   ];
   const total=Math.round(skills.reduce((a,sk)=>a+sk.val,0)/skills.length);
   return(
     <div style={{maxWidth:600}}>
       <Card style={{marginBottom:16,background:"linear-gradient(135deg,#1e1b4b,#312e81)"}}>
-        <p style={{margin:"0 0 4px",fontSize:14,fontWeight:900,color:"#c7d2fe"}}>🚀 Skill Collection</p>
+        <p style={{margin:"0 0 4px",fontSize:14,fontWeight:900,color:"#c7d2fe",display:"flex",alignItems:"center",gap:8}}><Icon3D name="rocket" size={18}/> Skill Collection</p>
         <p style={{margin:"0 0 10px",fontSize:11,color:"#818cf8"}}>Skill tumbuh otomatis dari semua aktivitasmu!</p>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
           <div style={{flex:1,background:"rgba(255,255,255,.1)",borderRadius:8,height:10,overflow:"hidden"}}>
@@ -1425,7 +2035,7 @@ function TabSkill({s}){
         {skills.map(sk=>(
           <Card key={sk.key}>
             <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
-              <span style={{fontSize:28}}>{sk.icon}</span>
+              <Icon3D name={sk.icon} size={28}/>
               <div style={{flex:1}}>
                 <p style={{margin:0,fontSize:14,fontWeight:900,color:"#1e1b4b"}}>{sk.key}</p>
                 <p style={{margin:0,fontSize:11,color:"#64748b"}}>{sk.desc}</p>
@@ -1455,12 +2065,12 @@ function TabJourney({s,d}){
   return(
     <div style={{maxWidth:560}}>
       <Card style={{marginBottom:16}}>
-        <p style={{margin:"0 0 14px",fontSize:14,fontWeight:900,color:"#1e1b4b"}}>🌟 Learning Journey</p>
+        <p style={{margin:"0 0 14px",fontSize:14,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:8}}><Icon3D name="sparkle" size={18}/> Learning Journey</p>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
           <div style={{background:"#f8faff",borderRadius:16,padding:"12px 14px",border:"1px solid #e0e7ff"}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
               <p style={{margin:0,fontSize:9,color:"#6366f1",fontWeight:800}}>TARGET (JAM)</p>
-              <button onClick={()=>setEditTarget(t=>!t)}style={{background:"none",border:"none",color:"#6366f1",fontSize:12,cursor:"pointer",fontFamily:"inherit"}}>✏️</button>
+              <button onClick={()=>setEditTarget(t=>!t)}style={{background:"none",border:"none",color:"#6366f1",cursor:"pointer",fontFamily:"inherit",display:"flex"}}><Icon3D name="edit" size={13}/></button>
             </div>
             {editTarget
               ?<div style={{display:"flex",gap:6}}><input type="number"value={tmpTarget}onChange={e=>setTmpTarget(Number(e.target.value))}style={{width:"100%",padding:"4px 8px",borderRadius:8,border:"1.5px solid #c7d2fe",fontSize:14,fontWeight:900,fontFamily:"inherit"}}/><button onClick={()=>{d({type:"UPDATE_JOURNEY",data:{learningTarget:tmpTarget}});setEditTarget(false);}}style={{background:"#6366f1",color:"#fff",border:"none",borderRadius:8,padding:"4px 10px",fontSize:10,fontWeight:900,cursor:"pointer",fontFamily:"inherit"}}>✓</button></div>
@@ -1470,7 +2080,7 @@ function TabJourney({s,d}){
           <div style={{background:"#f8faff",borderRadius:16,padding:"12px 14px",border:"1px solid #e0e7ff"}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
               <p style={{margin:0,fontSize:9,color:"#6366f1",fontWeight:800}}>SUDAH (JAM)</p>
-              <button onClick={()=>setEditDone(t=>!t)}style={{background:"none",border:"none",color:"#6366f1",fontSize:12,cursor:"pointer",fontFamily:"inherit"}}>✏️</button>
+              <button onClick={()=>setEditDone(t=>!t)}style={{background:"none",border:"none",color:"#6366f1",cursor:"pointer",fontFamily:"inherit",display:"flex"}}><Icon3D name="edit" size={13}/></button>
             </div>
             {editDone
               ?<div style={{display:"flex",gap:6}}><input type="number"value={tmpDone}onChange={e=>setTmpDone(Number(e.target.value))}style={{width:"100%",padding:"4px 8px",borderRadius:8,border:"1.5px solid #c7d2fe",fontSize:14,fontWeight:900,fontFamily:"inherit"}}/><button onClick={()=>{d({type:"UPDATE_JOURNEY",data:{learningDone:tmpDone}});setEditDone(false);}}style={{background:"#6366f1",color:"#fff",border:"none",borderRadius:8,padding:"4px 10px",fontSize:10,fontWeight:900,cursor:"pointer",fontFamily:"inherit"}}>✓</button></div>
@@ -1506,8 +2116,8 @@ function TabJourney({s,d}){
                   <button onClick={()=>setEditMs(null)}style={{background:"#f1f5ff",color:"#6366f1",border:"none",borderRadius:10,padding:"5px 10px",fontSize:10,cursor:"pointer",fontFamily:"inherit"}}>✕</button>
                 </div>
                 :<div style={{background:"#fff",borderRadius:14,padding:"10px 14px",border:`1px solid ${item.done?"#c7d2fe":"#e8eaf2"}`,display:"flex",alignItems:"center",gap:8,opacity:item.done?1:0.8}}>
-                  <span style={{fontSize:12,fontWeight:800,color:item.done?"#6366f1":"#94a3b8",flex:1}}>{item.done?"✅ ":""}{item.label}{item.date&&<span style={{marginLeft:8,fontSize:9,color:"#94a3b8"}}>{item.date}</span>}</span>
-                  <button onClick={()=>setEditMs(item.id)}style={{background:"none",border:"none",color:"#6366f1",fontSize:12,cursor:"pointer",fontFamily:"inherit"}}>✏️</button>
+                  <span style={{fontSize:12,fontWeight:800,color:item.done?"#6366f1":"#94a3b8",flex:1,display:"flex",alignItems:"center",gap:6}}>{item.done&&<Icon3D name="check" size={13}/>}{item.label}{item.date&&<span style={{marginLeft:8,fontSize:9,color:"#94a3b8"}}>{item.date}</span>}</span>
+                  <button onClick={()=>setEditMs(item.id)}style={{background:"none",border:"none",color:"#6366f1",cursor:"pointer",fontFamily:"inherit",display:"flex"}}><Icon3D name="edit" size={13}/></button>
                 </div>
               }
             </div>
@@ -1523,7 +2133,7 @@ function TabRank({s}){
   const cur=getRankIdx(s.xp);
   return(
     <div style={{maxWidth:580}}>
-      <Card style={{marginBottom:16}}><p style={{margin:"0 0 4px",fontSize:14,fontWeight:900,color:"#1e1b4b"}}>🎖️ Rank System</p><p style={{margin:0,fontSize:11,color:"#94a3b8"}}>Kumpulkan XP dari semua aktivitas untuk naik rank!</p></Card>
+      <Card style={{marginBottom:16}}><p style={{margin:"0 0 4px",fontSize:14,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:8}}><Icon3D name="medal" size={18}/> Rank System</p><p style={{margin:0,fontSize:11,color:"#94a3b8"}}>Kumpulkan XP dari semua aktivitas untuk naik rank!</p></Card>
       <div style={{display:"flex",flexDirection:"column",gap:10}}>
         {RANKS.map((rank,i)=>{
           const active=i===cur,done=i<cur;
@@ -1531,11 +2141,11 @@ function TabRank({s}){
           return(
             <div key={rank}style={{background:"#fff",borderRadius:20,padding:"16px 20px",border:`2px solid ${active?"#6366f1":done?"#86efac":"#e8eaf2"}`}}>
               <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:active?10:0}}>
-                <span style={{fontSize:32}}>{RANK_ICONS[i]}</span>
+                <Icon3D name={RANK_ICON_NAMES[i]} size={32}/>
                 <div style={{flex:1}}><p style={{margin:"0 0 2px",fontSize:15,fontWeight:900,color:active?"#4f46e5":done?"#16a34a":"#94a3b8"}}>{rank}</p><p style={{margin:0,fontSize:10,color:"#94a3b8"}}>{RANK_XP[i]}+ XP</p></div>
-                {active&&<span style={{background:"#eef2ff",color:"#4f46e5",fontSize:10,fontWeight:900,padding:"5px 14px",borderRadius:10}}>⭐ Aktif</span>}
-                {done&&<span style={{fontSize:18}}>✅</span>}
-                {!active&&!done&&<span style={{background:"#f1f5ff",color:"#94a3b8",fontSize:10,fontWeight:900,padding:"5px 14px",borderRadius:10}}>🔒</span>}
+                {active&&<span style={{background:"#eef2ff",color:"#4f46e5",fontSize:10,fontWeight:900,padding:"5px 14px",borderRadius:10,display:"flex",alignItems:"center",gap:4}}><Icon3D name="sparkle" size={12}/> Aktif</span>}
+                {done&&<Icon3D name="check" size={18}/>}
+                {!active&&!done&&<span style={{background:"#f1f5ff",color:"#94a3b8",fontSize:10,fontWeight:900,padding:"5px 14px",borderRadius:10,display:"flex",alignItems:"center",gap:4}}><Icon3D name="lock" size={12}/></span>}
               </div>
               {active&&<div><div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{fontSize:9,color:"#6366f1",fontWeight:800}}>Progress ke {RANKS[i+1]||"MAX"}</span><span style={{fontSize:9,color:"#94a3b8"}}>{s.xp}/{RANK_XP[i+1]||"MAX"} XP</span></div><div style={{background:"#e0e7ff",borderRadius:8,height:7,overflow:"hidden"}}><div style={{height:"100%",width:`${pct}%`,background:"linear-gradient(90deg,#818cf8,#6366f1)",borderRadius:8,transition:"width .5s"}}/></div></div>}
             </div>
@@ -1558,10 +2168,15 @@ function TabMoney({s,d}){
     d({type:"ADD_TRANSACTION",tx:{id:Date.now(),type:form.type,label:form.label,amount:parseInt(form.amount),cat:form.cat,date:new Date().toLocaleDateString("id-ID",{day:"numeric",month:"short"})}});
     setForm(f=>({...f,label:"",amount:""}));
   };
+  const summaryCards: { l: string; bg: string; bd: string; cl: string; v: string }[] = [
+    {l:"MASUK",bg:"#f0fdf4",bd:"#86efac",cl:"#166534",v:`Rp${totalIn.toLocaleString("id")}`},
+    {l:"KELUAR",bg:"#fef2f2",bd:"#fca5a5",cl:"#991b1b",v:`Rp${totalOut.toLocaleString("id")}`},
+    {l:"SALDO",bg:"#f8faff",bd:"#e0e7ff",cl:"#4f46e5",v:`Rp${(totalIn-totalOut).toLocaleString("id")}`},
+  ];
   return(
     <div style={{maxWidth:700}}>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:16}}>
-        {[["💸 MASUK","#f0fdf4","#86efac","#166534",`Rp${totalIn.toLocaleString("id")}`],["💳 KELUAR","#fef2f2","#fca5a5","#991b1b",`Rp${totalOut.toLocaleString("id")}`],["📈 SALDO","#f8faff","#e0e7ff","#4f46e5",`Rp${(totalIn-totalOut).toLocaleString("id")}`]].map(([l,bg,bd,cl,v])=>(
+        {summaryCards.map(({l,bg,bd,cl,v})=>(
           <div key={l}style={{background:bg,borderRadius:20,padding:16,border:`1.5px solid ${bd}`}}><p style={{margin:"0 0 4px",fontSize:10,color:cl,fontWeight:800}}>{l}</p><p style={{margin:0,fontSize:17,fontWeight:900,color:cl}}>{v}</p></div>
         ))}
       </div>
@@ -1571,23 +2186,23 @@ function TabMoney({s,d}){
           {s.transactions.length===0&&<p style={{fontSize:11,color:"#94a3b8",textAlign:"center",padding:16}}>Belum ada transaksi</p>}
           {s.transactions.slice(-6).reverse().map(t=>(
             <div key={t.id}style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-              <span style={{fontSize:18}}>{CAT_ICONS[t.cat]||"💰"}</span>
+              <Icon3D name={CAT_ICONS[t.cat]||"money"} size={20}/>
               <div style={{flex:1}}><p style={{margin:0,fontSize:11,fontWeight:800,color:"#1e1b4b"}}>{t.label}</p><p style={{margin:0,fontSize:9,color:"#94a3b8"}}>{t.cat} · {t.date}</p></div>
               <span style={{fontSize:11,fontWeight:900,color:t.type==="in"?"#16a34a":"#dc2626"}}>{t.type==="in"?"+":"-"}Rp{t.amount.toLocaleString("id")}</span>
             </div>
           ))}
         </Card>
         <Card>
-          <p style={{margin:"0 0 10px",fontSize:13,fontWeight:900,color:"#1e1b4b"}}>🎯 Target Nabung</p>
+          <p style={{margin:"0 0 10px",fontSize:13,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:6}}><Icon3D name="target" size={15}/> Target Nabung</p>
           <p style={{margin:"0 0 8px",fontSize:16,fontWeight:900,color:"#4f46e5"}}>Rp{s.savingTarget.toLocaleString("id")}</p>
           <div style={{background:"#e0e7ff",borderRadius:8,height:8,overflow:"hidden",marginBottom:6}}>
             <div style={{height:"100%",width:`${Math.min(100,Math.round(s.savingNow/s.savingTarget*100))}%`,background:"linear-gradient(90deg,#818cf8,#6366f1)",borderRadius:8}}/>
           </div>
           <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}><span style={{fontSize:10,fontWeight:800,color:"#6366f1"}}>Rp{s.savingNow.toLocaleString("id")}</span><span style={{fontSize:10,color:"#94a3b8"}}>{Math.round(s.savingNow/s.savingTarget*100)}%</span></div>
-          <div style={{background:"#f0fdf4",borderRadius:12,padding:"8px 12px",border:"1px solid #bbf7d0"}}><p style={{margin:0,fontSize:10,fontWeight:800,color:"#166534"}}>⏱ Est. {isFinite(months)&&months>0?months+"bln":"—"}</p></div>
+          <div style={{background:"#f0fdf4",borderRadius:12,padding:"8px 12px",border:"1px solid #bbf7d0"}}><p style={{margin:0,fontSize:10,fontWeight:800,color:"#166534",display:"flex",alignItems:"center",gap:5}}><Icon3D name="stopwatch" size={12}/> Est. {isFinite(months)&&months>0?months+"bln":"—"}</p></div>
         </Card>
       </div>
-      {kopiTotal>0&&<div style={{background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",borderRadius:18,padding:14,border:"1.5px solid #86efac",marginBottom:14}}><p style={{margin:"0 0 4px",fontSize:10,fontWeight:800,color:"#16a34a"}}>🤖 AI INSIGHT</p><p style={{margin:0,fontSize:12,color:"#166534",fontWeight:700}}>Kamu habis Rp{kopiTotal.toLocaleString("id")} untuk kopi ☕. Kurangi 20% → hemat Rp{Math.round(kopiTotal*0.2).toLocaleString("id")}!</p></div>}
+      {kopiTotal>0&&<div style={{background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",borderRadius:18,padding:14,border:"1.5px solid #86efac",marginBottom:14}}><p style={{margin:"0 0 4px",fontSize:10,fontWeight:800,color:"#16a34a",display:"flex",alignItems:"center",gap:5}}><Icon3D name="robot" size={13}/> AI INSIGHT</p><p style={{margin:0,fontSize:12,color:"#166534",fontWeight:700}}>Kamu habis Rp{kopiTotal.toLocaleString("id")} untuk kopi. Kurangi 20% → hemat Rp{Math.round(kopiTotal*0.2).toLocaleString("id")}!</p></div>}
       <Card>
         <p style={{margin:"0 0 10px",fontSize:13,fontWeight:900,color:"#1e1b4b"}}>+ Tambah Transaksi</p>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
@@ -1641,19 +2256,19 @@ function TabCalc(){
         </div>
       </Card>}
       {mode==="Pelajar"&&<Card>
-        <p style={{margin:"0 0 10px",fontSize:13,fontWeight:900,color:"#1e1b4b"}}>📊 Kalkulator Nilai Rata-rata</p>
+        <p style={{margin:"0 0 10px",fontSize:13,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:6}}><Icon3D name="chart" size={15}/> Kalkulator Nilai Rata-rata</p>
         <textarea value={avg}onChange={e=>setAvg(e.target.value)}placeholder="Masukkan nilai dipisah koma, contoh: 80, 75, 90, 85"style={{width:"100%",padding:"10px 14px",borderRadius:14,border:"1.5px solid #e0e7ff",fontSize:12,fontWeight:700,outline:"none",resize:"none",height:70,marginBottom:12,fontFamily:"inherit"}}/>
         {avgRes!==null&&<div style={{background:"#eef2ff",borderRadius:16,padding:"14px 18px",textAlign:"center"}}><p style={{margin:"0 0 4px",fontSize:10,color:"#6366f1",fontWeight:800}}>RATA-RATA</p><p style={{margin:0,fontSize:36,fontWeight:900,color:"#4f46e5"}}>{avgRes.toFixed(1)}</p><p style={{margin:"4px 0 0",fontSize:10,color:"#818cf8"}}>dari {avgVals.length} nilai</p></div>}
       </Card>}
       {mode==="Uang"&&<Card>
-        <p style={{margin:"0 0 12px",fontSize:13,fontWeight:900,color:"#1e1b4b"}}>🎯 Kalkulator Target Nabung</p>
+        <p style={{margin:"0 0 12px",fontSize:13,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:6}}><Icon3D name="target" size={15}/> Kalkulator Target Nabung</p>
         {[["Target (Rp)",st,setSt],["Tabungan sekarang (Rp)",sn,setSn],["Nabung per bulan (Rp)",sm,setSm]].map(([l,v,sv])=>(
           <div key={l}style={{marginBottom:10}}><p style={{margin:"0 0 4px",fontSize:10,fontWeight:800,color:"#64748b"}}>{l}</p><input type="number"value={v}onChange={e=>sv(e.target.value)}style={{width:"100%",padding:"8px 12px",borderRadius:12,border:"1.5px solid #e0e7ff",fontSize:13,fontWeight:700,outline:"none",fontFamily:"inherit"}}/></div>
         ))}
         <div style={{background:"#eef2ff",borderRadius:16,padding:"14px 18px",textAlign:"center",marginTop:12}}><p style={{margin:"0 0 4px",fontSize:10,color:"#6366f1",fontWeight:800}}>ESTIMASI</p><p style={{margin:0,fontSize:36,fontWeight:900,color:"#4f46e5"}}>{isFinite(mos)&&mos>0?mos:"∞"} bulan</p><p style={{margin:"4px 0 0",fontSize:10,color:"#818cf8"}}>Progress: {Math.min(100,Math.round(parseInt(sn||"0")/Math.max(parseInt(st||"1"),1)*100))}%</p></div>
       </Card>}
       {mode==="Produktivitas"&&<Card>
-        <p style={{margin:"0 0 12px",fontSize:13,fontWeight:900,color:"#1e1b4b"}}>📊 Kalkulator Produktivitas</p>
+        <p style={{margin:"0 0 12px",fontSize:13,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:6}}><Icon3D name="chart" size={15}/> Kalkulator Produktivitas</p>
         {[["Target Belajar (Jam)",td,setTd],["Sudah Tercapai (Jam)",dd,setDd]].map(([l,v,sv])=>(
           <div key={l}style={{marginBottom:10}}><p style={{margin:"0 0 4px",fontSize:10,fontWeight:800,color:"#64748b"}}>{l}</p><input type="number"value={v}onChange={e=>sv(e.target.value)}style={{width:"100%",padding:"8px 12px",borderRadius:12,border:"1.5px solid #e0e7ff",fontSize:13,fontWeight:700,outline:"none",fontFamily:"inherit"}}/></div>
         ))}
@@ -1701,12 +2316,12 @@ useEffect(()=>{
     if(state.lastLoginDate===today)return;
     const yesterday=new Date(Date.now()-86400000).toDateString();
     let newStreak=1,msg="";
-    if(!state.lastLoginDate){msg="👋 Selamat datang! Perjalanan belajarmu dimulai hari ini! 🌱";}
+    if(!state.lastLoginDate){msg="Selamat datang! Perjalanan belajarmu dimulai hari ini!";}
     else if(state.lastLoginDate===yesterday){
       newStreak=state.streak+1;
-      if(newStreak>=7)msg=`🏅 LUAR BIASA! Streak ${newStreak} hari! Kamu sudah unlock badge "7 Hari Konsisten"!`;
-      else msg=`🔥 Streak ${newStreak} hari! Terus pertahankan login tiap hari!`;
-    }else{msg="💔 Streak-mu terputus. Mulai lagi dari hari ini — kamu pasti bisa! 💪";}
+      if(newStreak>=7)msg=`LUAR BIASA! Streak ${newStreak} hari! Kamu sudah unlock badge "7 Hari Konsisten"!`;
+      else msg=`Streak ${newStreak} hari! Terus pertahankan login tiap hari!`;
+    }else{msg="Streak-mu terputus. Mulai lagi dari hari ini — kamu pasti bisa!";}
     dispatch({type:"UPDATE_STREAK",streak:newStreak,date:today});
     dispatch({type:"RESET_DAILY",date:today});
     if(msg){setToast(msg);setTimeout(()=>setToast(null),5000);}
@@ -1742,7 +2357,6 @@ useEffect(()=>{
         textarea,input,select{font-family:'Sora',sans-serif;}
         ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#c7d2fe;border-radius:4px;}
         button:hover{opacity:0.9;}
-        button:hover{opacity:0.9;}
 @media (max-width: 768px) {
   aside { display: none !important; }
   main { padding: 70px 16px 40px !important; }
@@ -1770,7 +2384,6 @@ useEffect(()=>{
       </div>
 
       <div style={{minHeight:"100vh",background:"#f0f2f8",display:"flex",fontFamily:"'Sora',sans-serif"}}>
-       {/* MOBILE TOP BAR */}
 <div className="mobile-topbar" style={{
   position:"fixed",top:0,left:0,right:0,zIndex:50,
   background:"#fff",borderBottom:"1.5px solid #e8eaf2",
@@ -1778,11 +2391,10 @@ useEffect(()=>{
 }}>
   <div style={{fontSize:18,fontWeight:900,color:"#4f46e5"}}>Plotwist</div>
   <div style={{display:"flex",gap:8}}>
-    <span style={{background:"#eef2ff",borderRadius:10,padding:"4px 10px",fontSize:10,fontWeight:800,color:"#4f46e5"}}>⚡ {state.xp}</span>
-    <span style={{background:"#fff7ed",borderRadius:10,padding:"4px 10px",fontSize:10,fontWeight:800,color:"#92400e"}}>🔥 {state.streak}</span>
+    <span style={{background:"#eef2ff",borderRadius:10,padding:"4px 10px",fontSize:10,fontWeight:800,color:"#4f46e5",display:"flex",alignItems:"center",gap:4}}><Icon3D name="lightning" size={12}/> {state.xp}</span>
+    <span style={{background:"#fff7ed",borderRadius:10,padding:"4px 10px",fontSize:10,fontWeight:800,color:"#92400e",display:"flex",alignItems:"center",gap:4}}><Icon3D name="fire" size={12}/> {state.streak}</span>
   </div>
 </div>
-        {/* SIDEBAR */}
         <aside style={{width:210,background:"#fff",display:"flex",flexDirection:"column",borderRight:"1.5px solid #e8eaf2",height:"100vh",position:"sticky",top:0,flexShrink:0}}>
           <div style={{padding:"18px 16px 10px"}}>
             <div style={{fontSize:20,fontWeight:900,color:"#4f46e5",letterSpacing:-1,marginBottom:2}}>Plotwist</div>
@@ -1794,7 +2406,7 @@ useEffect(()=>{
                 style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"8px 10px",borderRadius:12,border:"none",
                   background:tab===t.key?"#eef2ff":"transparent",color:tab===t.key?"#4f46e5":"#94a3b8",
                   fontSize:11,fontWeight:800,cursor:"pointer",textAlign:"left",marginBottom:1,fontFamily:"inherit",transition:"all .1s"}}>
-                <span style={{fontSize:14}}>{t.icon}</span>{t.label}
+                <Icon3D name={t.icon} size={16}/>{t.label}
               </button>
             ))}
           </div>
@@ -1802,12 +2414,12 @@ useEffect(()=>{
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
               <Mascot evo={state.mascotEvo}costume={state.mascotCostume||"default"}mood={state.mood}size={38}/>
               <div>
-                <p style={{margin:0,fontSize:10,fontWeight:900,color:"#1e1b4b"}}>{RANK_ICONS[ri]} {RANKS[ri]}</p>
-                <p style={{margin:0,fontSize:9,color:"#94a3b8"}}>⚡{state.xp} · 🪙{state.coins}</p>
+                <p style={{margin:0,fontSize:10,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:4}}><Icon3D name={RANK_ICON_NAMES[ri]} size={14}/> {RANKS[ri]}</p>
+                <p style={{margin:0,fontSize:9,color:"#94a3b8",display:"flex",alignItems:"center",gap:6}}><Icon3D name="lightning" size={11}/>{state.xp} · <Icon3D name="coin" size={11}/>{state.coins}</p>
               </div>
             </div>
             <div style={{background:"#fff7ed",borderRadius:10,padding:"6px 10px",border:"1px solid #fed7aa",display:"flex",alignItems:"center",gap:6}}>
-              <span style={{fontSize:14}}>🔥</span>
+              <Icon3D name="fire" size={18}/>
               <div>
                 <p style={{margin:0,fontSize:10,fontWeight:900,color:"#92400e"}}>{state.streak} hari streak</p>
                 <p style={{margin:0,fontSize:8,color:"#b45309"}}>Login tiap hari untuk jaga streak!</p>
@@ -1816,7 +2428,6 @@ useEffect(()=>{
           </div>
         </aside>
 
-        {/* MAIN */}
         <main style={{flex:1,padding:"22px 26px 40px",overflowY:"auto",minWidth:0,paddingBottom:"80px"}}>
           <div style={{marginBottom:18,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div style={{display:"flex",alignItems:"center",gap:12}}>
@@ -1827,8 +2438,8 @@ useEffect(()=>{
                 </button>
               )}
               <div>
-                <h1 style={{margin:0,fontSize:18,fontWeight:900,color:"#1e1b4b"}}>
-                  {TABS.find(t=>t.key===tab)?.icon} {TABS.find(t=>t.key===tab)?.label}
+                <h1 style={{margin:0,fontSize:18,fontWeight:900,color:"#1e1b4b",display:"flex",alignItems:"center",gap:8}}>
+                  <Icon3D name={TABS.find(t=>t.key===tab)?.icon || "sparkle"} size={20}/> {TABS.find(t=>t.key===tab)?.label}
                 </h1>
                 <p style={{margin:0,fontSize:10,color:"#94a3b8",marginTop:2}}>
                   {new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
@@ -1836,16 +2447,15 @@ useEffect(()=>{
               </div>
             </div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{background:"#eef2ff",borderRadius:12,padding:"5px 12px",fontSize:11,fontWeight:800,color:"#4f46e5"}}>⚡ {state.xp} XP</span>
-              <span style={{background:"#fef3c7",borderRadius:12,padding:"5px 12px",fontSize:11,fontWeight:800,color:"#92400e"}}>🪙 {state.coins}</span>
-              <span style={{background:"#f0fdf4",borderRadius:12,padding:"5px 12px",fontSize:11,fontWeight:800,color:"#16a34a"}}>💚 {state.energy}</span>
-              <span style={{background:"#fff7ed",borderRadius:12,padding:"5px 12px",fontSize:11,fontWeight:800,color:"#92400e",border:"1px solid #fed7aa"}}>🔥 {state.streak} hari</span>
+              <span style={{background:"#eef2ff",borderRadius:12,padding:"5px 12px",fontSize:11,fontWeight:800,color:"#4f46e5",display:"flex",alignItems:"center",gap:5}}><Icon3D name="lightning" size={13}/> {state.xp} XP</span>
+              <span style={{background:"#fef3c7",borderRadius:12,padding:"5px 12px",fontSize:11,fontWeight:800,color:"#92400e",display:"flex",alignItems:"center",gap:5}}><Icon3D name="coin" size={13}/> {state.coins}</span>
+              <span style={{background:"#f0fdf4",borderRadius:12,padding:"5px 12px",fontSize:11,fontWeight:800,color:"#16a34a",display:"flex",alignItems:"center",gap:5}}><Icon3D name="heart" size={13}/> {state.energy}</span>
+              <span style={{background:"#fff7ed",borderRadius:12,padding:"5px 12px",fontSize:11,fontWeight:800,color:"#92400e",border:"1px solid #fed7aa",display:"flex",alignItems:"center",gap:5}}><Icon3D name="fire" size={13}/> {state.streak} hari</span>
             </div>
           </div>
           {CONTENT[tab]}
         </main>
       </div>
-      {/* MOBILE BOTTOM NAV */}
 <div className="mobile-topbar" style={{
   position:"fixed",bottom:0,left:0,right:0,zIndex:50,
   background:"#fff",borderTop:"1.5px solid #e8eaf2",
@@ -1860,7 +2470,7 @@ useEffect(()=>{
         cursor:"pointer",fontFamily:"inherit",flexShrink:0,
         opacity:tab===t.key?1:0.4,
       }}>
-      <span style={{fontSize:18}}>{t.icon}</span>
+      <Icon3D name={t.icon} size={18}/>
       <span style={{fontSize:7,fontWeight:800,color:tab===t.key?"#4f46e5":"#94a3b8",whiteSpace:"nowrap"}}>{t.label}</span>
     </button>
   ))}
@@ -1880,7 +2490,7 @@ useEffect(()=>{
           cursor:"pointer",fontFamily:"inherit",flexShrink:0,
           opacity:tab===t.key?1:0.4,
         }}>
-        <span style={{fontSize:18}}>{t.icon}</span>
+        <Icon3D name={t.icon} size={18}/>
         <span style={{fontSize:7,fontWeight:800,color:tab===t.key?"#4f46e5":"#94a3b8",whiteSpace:"nowrap"}}>{t.label}</span>
       </button>
     ))}

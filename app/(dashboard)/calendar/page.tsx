@@ -362,7 +362,7 @@ export default function CalendarPage() {
   )
   const [countdownLabel,      setCountdownLabel]      = useState<string>(() => lsRead(LS.cdLabel,    'UAS'))
   const [countdownMiddle,     setCountdownMiddle]     = useState<string>(() => lsRead(LS.cdMiddle,   'Hari menuju'))
-  const [countdownSubtitle,   setCountdownSubtitle]   = useState<string>(() => lsRead(LS.cdSubtitle, 'Tetap konsisten dan jangan SKS 🚀'))
+  const [countdownSubtitle,   setCountdownSubtitle]   = useState<string>(() => lsRead(LS.cdSubtitle, 'Tetap konsisten dan jangan SKS'))
   const [countdownTargetDate, setCountdownTargetDate] = useState<string>(() => lsRead(LS.cdDate,     '2025-12-15'))
 
   useEffect(() => { lsWrite(LS.events,     events)            }, [events])
@@ -384,7 +384,7 @@ export default function CalendarPage() {
   const [editingCountdown,    setEditingCountdown]    = useState(false)
   const [cdLabelDraft,    setCdLabelDraft]    = useState('UAS')
   const [cdMiddleDraft,   setCdMiddleDraft]   = useState('Hari menuju')
-  const [cdSubtitleDraft, setCdSubtitleDraft] = useState('Tetap konsisten dan jangan SKS 🚀')
+  const [cdSubtitleDraft, setCdSubtitleDraft] = useState('Tetap konsisten dan jangan SKS')
   const [cdDateDraft,     setCdDateDraft]     = useState('2025-12-15')
 
   const computedCountdownDays = useMemo(() => {
@@ -412,7 +412,7 @@ export default function CalendarPage() {
     setCountdownSubtitle(cdSubtitleDraft.trim())
     setCountdownTargetDate(cdDateDraft)
     setEditingCountdown(false)
-    triggerToast('Countdown disimpan ✅')
+    triggerToast('Countdown disimpan')
   }
 
   const changeMonth = (dir: 1 | -1) => {
@@ -432,12 +432,12 @@ export default function CalendarPage() {
   }
 
   const openAdd = () => {
-    if (isLocked) { triggerToast('Klik Unlock untuk mengedit 🔒'); return }
+    if (isLocked) { triggerToast('Klik Unlock untuk mengedit'); return }
     setEditingEvent(null); setModalOpen(true)
   }
 
   const openEdit = (ev: CalEvent) => {
-    if (isLocked) { triggerToast('Klik Unlock untuk mengedit 🔒'); return }
+    if (isLocked) { triggerToast('Klik Unlock untuk mengedit'); return }
     setEditingEvent(ev); setModalOpen(true)
   }
 
@@ -454,7 +454,7 @@ export default function CalendarPage() {
   }
 
   const deleteEvent = (id: number) => {
-    if (isLocked) { triggerToast('Klik Unlock untuk mengedit 🔒'); return }
+    if (isLocked) { triggerToast('Klik Unlock untuk mengedit'); return }
     if (confirm('Hapus jadwal ini?')) { setEvents(prev => prev.filter(e => e.id !== id)); markDirty() }
   }
 
@@ -534,7 +534,7 @@ export default function CalendarPage() {
 
         {/* ── PetCompanion: tampil hanya jika Pro terbuka, sisanya banner terkunci ── */}
         {isProUnlocked ? (
-          <PetCompanion variant="inline" message="Yuk atur jadwalmu hari ini! 📅" />
+          <PetCompanion variant="inline" message="Yuk atur jadwalmu hari ini!" />
         ) : (
           <div className="flex items-center gap-3 bg-purple-50 border border-purple-200 rounded-2xl px-5 py-3 mb-6">
             <div className="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
@@ -563,8 +563,8 @@ export default function CalendarPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => {
-                  if (isLocked) { setIsLocked(false); triggerToast('Mode edit aktif 🔓') }
-                  else if (isDirty) { setIsDirty(false); setIsLocked(true); triggerToast('Tersimpan & terkunci 🔒') }
+                  if (isLocked) { setIsLocked(false); triggerToast('Mode edit aktif') }
+                  else if (isDirty) { setIsDirty(false); setIsLocked(true); triggerToast('Tersimpan & terkunci') }
                 }}
                 className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-2xl font-bold transition-all ${
                   isLocked ? 'bg-gray-200 text-gray-600 hover:bg-gray-300' :
@@ -765,10 +765,10 @@ export default function CalendarPage() {
           <div className="col-span-1 lg:col-span-3 space-y-6">
             <div className="bg-white rounded-[28px] p-3 shadow-xl grid grid-cols-2 gap-2">
               {([
-                { id: 'calendar', label: '📅 Jadwal' },
-                { id: 'absence',  label: '✅ Absensi' },
-                { id: 'team',     label: '👥 Tim' },
-                { id: 'sync',     label: '🔗 Sync' },
+                { id: 'calendar', label: 'Jadwal' },
+                { id: 'absence',  label: 'Absensi' },
+                { id: 'team',     label: 'Tim' },
+                { id: 'sync',     label: 'Sync' },
               ] as { id: ActivePanel; label: string }[]).map(p => (
                 <button key={p.id} onClick={() => setActivePanel(p.id)}
                   className={`py-2.5 rounded-2xl font-semibold text-sm transition-all ${
@@ -856,7 +856,7 @@ export default function CalendarPage() {
                           <div>
                             <div className="font-semibold text-gray-800 text-sm">{cl.name}</div>
                             <div className={`text-xs font-semibold ${pct < 75 ? 'text-red-500' : 'text-gray-400'}`}>
-                              {cl.hadir}/{tot} hadir ({pct}%) {pct < 75 ? '⚠️' : ''}
+                              {cl.hadir}/{tot} hadir ({pct}%)
                             </div>
                           </div>
                           <button onClick={() => removeAbsClass(cl.id)} className="text-gray-300 hover:text-red-400 transition text-sm"><FaTimes /></button>
@@ -925,7 +925,7 @@ export default function CalendarPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h2 className="text-2xl font-bold">Weather Alert</h2>
-                      <p className="opacity-80 mt-2">Hujan diprediksi jam 13:00 🌧️</p>
+                      <p className="opacity-80 mt-2">Hujan diprediksi jam 13:00</p>
                     </div>
                     <FaCloudRain className="text-5xl" />
                   </div>

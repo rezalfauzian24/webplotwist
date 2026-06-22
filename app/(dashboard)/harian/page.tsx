@@ -2,6 +2,39 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 
+// ─── 3D Emoji renderer ─────────────────────────────────────────────────────
+// Renders any emoji glyph as a Fluent "3D" style image (instead of the flat
+// system emoji font), with automatic fallback back to the plain text glyph
+// if the image fails to load (offline, blocked CDN, unsupported emoji, etc).
+
+const EMOJI_3D_BASE = 'https://cdn.jsdelivr.net/gh/ehne/fluentui-twemoji-3d/export/3D_png'
+
+function toEmojiCodepoint(emoji: string): string {
+  return Array.from(emoji)
+    .map(ch => (ch.codePointAt(0) ?? 0).toString(16))
+    .join('-')
+}
+
+function Emoji3D({ e, size = 18, className = '' }: { e: string; size?: number; className?: string }) {
+  const [failed, setFailed] = useState(false)
+  if (failed) {
+    return <span className={className} style={{ fontSize: size * 0.85, lineHeight: 1 }}>{e}</span>
+  }
+  return (
+    <img
+      src={`${EMOJI_3D_BASE}/${toEmojiCodepoint(e)}.png`}
+      alt={e}
+      width={size}
+      height={size}
+      draggable={false}
+      loading="lazy"
+      onError={() => setFailed(true)}
+      className={`inline-block align-[-15%] select-none ${className}`}
+      style={{ width: size, height: size, minWidth: size }}
+    />
+  )
+}
+
 // ─── Pet Academy: baca pet aktif dari localStorage ────────────────────────────
 
 const PET_STORAGE_KEY = 'plotwist_active_pet'
@@ -130,16 +163,16 @@ const panicChallenges = [
 ];
 
 const plotwistMissions = [
-  { mission: "Belajar di tempat baru hari ini—kafe, taman, atau pojok kamar yang belum pernah kamu coba.", tag: "🗺️ Explore"        },
-  { mission: "Dengerin playlist instrumental selama sesi belajar berikutnya. Lo kaget betapa fokusnya lo.", tag: "🎵 Vibes"          },
-  { mission: "Kirim satu pesan apresiasi ke teman yang udah bantu kamu minggu ini.",                        tag: "💌 Connect"        },
-  { mission: "Istirahat 5 menit: keluar, hirup udara, liat langit. Beneran, bukan scroll IG.",              tag: "🌿 Reset"          },
-  { mission: "Tulis 3 hal yang bikin kamu penasaran hari ini, berapapun kecilnya.",                         tag: "🔍 Curious"        },
-  { mission: "Coba teknik Pomodoro: 25 menit fokus, 5 menit bebas. Repeat 4x.",                            tag: "🍅 Focus"          },
-  { mission: "Baca satu artikel tentang topik yang sama sekali bukan bidangmu.",                            tag: "🧠 Random"         },
-  { mission: "Matiin notifikasi HP selama 1 jam penuh. Lihat bedanya.",                                     tag: "📵 Digital Detox"  },
-  { mission: "Gambar mind-map dari materi yang paling susah kamu pahami.",                                  tag: "🗂️ Visual"         },
-  { mission: "Minum segelas air sebelum mulai sesi belajar. Otak 75% air, ingat!",                         tag: "💧 Hydrate"        },
+  { mission: "Belajar di tempat baru hari ini—kafe, taman, atau pojok kamar yang belum pernah kamu coba.", tagEmoji: "🗺️", tagLabel: "Explore"       },
+  { mission: "Dengerin playlist instrumental selama sesi belajar berikutnya. Lo kaget betapa fokusnya lo.", tagEmoji: "🎵", tagLabel: "Vibes"         },
+  { mission: "Kirim satu pesan apresiasi ke teman yang udah bantu kamu minggu ini.",                        tagEmoji: "💌", tagLabel: "Connect"       },
+  { mission: "Istirahat 5 menit: keluar, hirup udara, liat langit. Beneran, bukan scroll IG.",              tagEmoji: "🌿", tagLabel: "Reset"         },
+  { mission: "Tulis 3 hal yang bikin kamu penasaran hari ini, berapapun kecilnya.",                         tagEmoji: "🔍", tagLabel: "Curious"       },
+  { mission: "Coba teknik Pomodoro: 25 menit fokus, 5 menit bebas. Repeat 4x.",                            tagEmoji: "🍅", tagLabel: "Focus"         },
+  { mission: "Baca satu artikel tentang topik yang sama sekali bukan bidangmu.",                            tagEmoji: "🧠", tagLabel: "Random"        },
+  { mission: "Matiin notifikasi HP selama 1 jam penuh. Lihat bedanya.",                                     tagEmoji: "📵", tagLabel: "Digital Detox" },
+  { mission: "Gambar mind-map dari materi yang paling susah kamu pahami.",                                  tagEmoji: "🗂️", tagLabel: "Visual"        },
+  { mission: "Minum segelas air sebelum mulai sesi belajar. Otak 75% air, ingat!",                         tagEmoji: "💧", tagLabel: "Hydrate"       },
 ];
 
 const defaultState: DailyState = {
@@ -265,7 +298,9 @@ function EditHabitModal({ habit, onSave, onDelete, onClose, isNew }: EditHabitMo
         <p className="text-[9px] text-slate-400 font-semibold -mt-2">Mental & Fisik: bobot konsumsi energi. Makin tinggi = makin nguras baterai.</p>
         <div className="flex gap-2 pt-1">
           {!isNew && (
-            <button onClick={() => { onDelete(form.id); onClose(); }} className="px-3 py-2.5 rounded-xl border-2 border-red-100 text-red-400 text-[10px] font-black hover:bg-red-50 transition-all">🗑️ Hapus</button>
+            <button onClick={() => { onDelete(form.id); onClose(); }} className="px-3 py-2.5 rounded-xl border-2 border-red-100 text-red-400 text-[10px] font-black hover:bg-red-50 transition-all inline-flex items-center gap-1">
+              <Emoji3D e="🗑️" size={13} /> Hapus
+            </button>
           )}
           <button onClick={onClose} className="flex-1 py-2.5 border border-slate-200 text-slate-500 rounded-xl text-[10px] font-bold hover:bg-slate-50 transition-all">Batal</button>
           <button onClick={() => { onSave(form); onClose(); }} className="flex-1 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl text-[10px] font-black hover:opacity-90 transition-all shadow-md shadow-violet-200">Simpan ✓</button>
@@ -284,15 +319,15 @@ function ComboRewardModal({ xp, streak, onClose }: { xp: number; streak: number;
         <div className="absolute -top-10 -left-10 w-32 h-32 bg-violet-500/30 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl animate-pulse" />
         <div className="relative z-10 space-y-4">
-          <div className="text-6xl animate-bounce">🎉</div>
+          <div className="animate-bounce flex justify-center"><Emoji3D e="🎉" size={72} /></div>
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.25em] text-violet-400 mb-1">Daily Combo</p>
             <h2 className="text-2xl font-black tracking-tight">Reward Unlocked!</h2>
           </div>
-          <div className="flex justify-center gap-1 text-2xl">
-            <span className="animate-spin" style={{ animationDuration: '3s' }}>⭐</span>
-            <span className="animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}>⭐</span>
-            <span className="animate-spin" style={{ animationDuration: '4s' }}>⭐</span>
+          <div className="flex justify-center gap-1.5">
+            <span className="animate-spin inline-block" style={{ animationDuration: '3s' }}><Emoji3D e="⭐" size={30} /></span>
+            <span className="animate-spin inline-block" style={{ animationDuration: '2s', animationDirection: 'reverse' }}><Emoji3D e="⭐" size={30} /></span>
+            <span className="animate-spin inline-block" style={{ animationDuration: '4s' }}><Emoji3D e="⭐" size={30} /></span>
           </div>
           <div className="bg-white/10 border border-white/10 rounded-2xl p-4 space-y-2 backdrop-blur-sm">
             <p className="text-[11px] text-slate-300">Semua habit selesai hari ini!</p>
@@ -301,12 +336,14 @@ function ComboRewardModal({ xp, streak, onClose }: { xp: number; streak: number;
               <span className="text-sm font-bold text-amber-300">XP hari ini</span>
             </div>
             <div className="flex justify-center gap-3 text-[9px] font-bold text-slate-400 pt-1">
-              <span>🔥 Streak {streak} hari</span>
-              <span>👑 Combo Master</span>
+              <span className="inline-flex items-center gap-1"><Emoji3D e="🔥" size={13} /> Streak {streak} hari</span>
+              <span className="inline-flex items-center gap-1"><Emoji3D e="👑" size={13} /> Combo Master</span>
             </div>
             <p className="text-[9px] text-slate-500 font-bold pt-1">XP reset tiap hari • Jaga streak-mu!</p>
           </div>
-          <button onClick={onClose} className="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900 rounded-2xl text-[11px] font-black tracking-wider hover:opacity-90 transition-all shadow-lg shadow-orange-500/30">CLAIM REWARD ⚡</button>
+          <button onClick={onClose} className="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900 rounded-2xl text-[11px] font-black tracking-wider hover:opacity-90 transition-all shadow-lg shadow-orange-500/30 inline-flex items-center justify-center gap-1.5">
+            CLAIM REWARD <Emoji3D e="⚡" size={15} />
+          </button>
         </div>
       </div>
     </div>
@@ -329,7 +366,9 @@ function AutoSaveIndicator({ show }: { show: boolean }) {
 function PetLockedBanner({ xpNeeded }: { xpNeeded: number }) {
   return (
     <div className="flex items-center gap-3 bg-purple-50 border border-purple-200 rounded-2xl px-4 py-3">
-      <div className="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center shrink-0 text-base">🐾</div>
+      <div className="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+        <Emoji3D e="🐾" size={22} />
+      </div>
       <div className="flex-1">
         <p className="text-xs font-black text-purple-400">Pet Companion terkunci</p>
         <p className="text-[10px] text-purple-300 font-semibold">
@@ -337,7 +376,7 @@ function PetLockedBanner({ xpNeeded }: { xpNeeded: number }) {
           {xpNeeded > 0 && <> · butuh <span className="font-black text-purple-500">{xpNeeded.toLocaleString('id-ID')} XP</span> lagi</>}
         </p>
       </div>
-      <span className="text-purple-200 text-sm">🔒</span>
+      <Emoji3D e="🔒" size={18} />
     </div>
   )
 }
@@ -349,13 +388,13 @@ function PetLockedCard({ xpNeeded }: { xpNeeded: number }) {
     <div className="relative overflow-hidden rounded-[28px] p-5 shadow-lg bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700">
       <div className="flex items-center gap-4">
         <div className="w-16 h-16 rounded-2xl bg-slate-700 border border-slate-600 flex items-center justify-center shrink-0">
-          <span className="text-2xl opacity-40">🐾</span>
+          <Emoji3D e="🐾" size={30} className="opacity-40" />
         </div>
         <div>
           <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-0.5">Pet Academy</p>
           <p className="text-white font-black text-sm opacity-40">Terkunci</p>
-          <p className="text-[10px] text-slate-500 font-semibold mt-1">
-            🔒 Butuh Level 2
+          <p className="text-[10px] text-slate-500 font-semibold mt-1 inline-flex items-center gap-1">
+            <Emoji3D e="🔒" size={13} /> Butuh Level 2
             {xpNeeded > 0 && <> · {xpNeeded.toLocaleString('id-ID')} XP lagi</>}
           </p>
         </div>
@@ -657,12 +696,16 @@ export default function HarianPage() {
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-red-50 rounded-full blur-2xl" />
             <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-orange-50 rounded-full blur-xl" />
             <div className="relative z-10">
-              <div className="text-5xl mb-3 text-center">{currentPanic.emoji}</div>
+              <div className="mb-3 flex justify-center"><Emoji3D e={currentPanic.emoji} size={60} /></div>
               <h2 className="text-xl font-black text-slate-900 text-center tracking-tight mb-1">{currentPanic.title}</h2>
               <p className="text-[12px] text-slate-500 font-semibold text-center leading-relaxed mb-5">{currentPanic.body}</p>
               <div className="flex gap-2">
-                <button onClick={newPanicChallenge} className="flex-1 py-2.5 border-2 border-slate-200 text-slate-500 rounded-2xl text-[10px] font-black hover:bg-slate-50 transition-all uppercase tracking-widest">🎲 Tantangan Lain</button>
-                <button onClick={() => setShowPanicModal(false)} className="flex-1 py-2.5 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-2xl text-[10px] font-black hover:opacity-90 transition-all shadow-lg shadow-orange-200 uppercase tracking-widest">✅ Siap Gas!</button>
+                <button onClick={newPanicChallenge} className="flex-1 py-2.5 border-2 border-slate-200 text-slate-500 rounded-2xl text-[10px] font-black hover:bg-slate-50 transition-all uppercase tracking-widest inline-flex items-center justify-center gap-1.5">
+                  <Emoji3D e="🎲" size={15} /> Tantangan Lain
+                </button>
+                <button onClick={() => setShowPanicModal(false)} className="flex-1 py-2.5 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-2xl text-[10px] font-black hover:opacity-90 transition-all shadow-lg shadow-orange-200 uppercase tracking-widest inline-flex items-center justify-center gap-1.5">
+                  <Emoji3D e="✅" size={15} /> Siap Gas!
+                </button>
               </div>
               <p className="text-center text-[9px] text-slate-300 font-bold mt-3">Klik di luar untuk tutup</p>
             </div>
@@ -705,7 +748,7 @@ export default function HarianPage() {
                   <span className="text-[9px] font-bold text-white bg-black/20 px-1.5 py-0.5 rounded-full">Companion</span>
                 </div>
                 <p className="text-xs font-semibold text-slate-700">
-                  Begadang boleh, tapi jangan lupa minum air putih, Rezal. Ginjalmu bukan spek gaming. 💧
+                  Begadang boleh, tapi jangan lupa minum air putih, Rezal. Ginjalmu bukan spek gaming. <Emoji3D e="💧" size={14} />
                 </p>
               </div>
               <a
@@ -726,12 +769,12 @@ export default function HarianPage() {
             className="w-full relative overflow-hidden group py-4 px-6 rounded-2xl bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-black text-sm tracking-wide shadow-xl shadow-orange-200/60 flex items-center justify-center gap-3 transition-all duration-200 hover:shadow-orange-300/80 hover:scale-[1.01] active:scale-[0.99]"
           >
             <div className="absolute inset-0 opacity-0 transition-opacity duration-300 bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 group-hover:opacity-100" />
-            <span className="relative z-10 text-xl">🚨</span>
+            <span className="relative z-10"><Emoji3D e="🚨" size={26} /></span>
             <div className="relative z-10 text-left">
               <span className="block text-[13px] font-black">PANIC MODE — Anti-Procrastination!</span>
               <span className="block text-[9px] font-semibold opacity-80 uppercase tracking-widest">Klik kalau kamu lagi males banget • Chaos Tamers mode ON</span>
             </div>
-            <span className="relative z-10 text-xl ml-auto">⚡</span>
+            <span className="relative z-10 ml-auto"><Emoji3D e="⚡" size={26} /></span>
           </button>
 
           {/* ── 3 Column Grid ────────────────────────────────────────────── */}
@@ -747,7 +790,7 @@ export default function HarianPage() {
                   </div>
                   {displayXP > 0 && (
                     <div className="text-right shrink-0">
-                      <span className="text-[9px] font-black text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-lg block">⭐ {displayXP} XP hari ini</span>
+                      <span className="text-[9px] font-black text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-lg inline-flex items-center gap-1"><Emoji3D e="⭐" size={13} /> {displayXP} XP hari ini</span>
                       <span className="text-[8px] font-bold text-slate-400 block mt-0.5">Reset besok</span>
                     </div>
                   )}
@@ -792,10 +835,13 @@ export default function HarianPage() {
                   allDone ? 'bg-gradient-to-r from-violet-50 to-amber-50 border border-amber-100 p-2.5 -mx-0.5' : ''
                 }`}>
                   <div className="flex justify-between items-center text-[9px] text-slate-400 font-bold">
-                    <span>{allDone ? `🎊 ${doneCount}/${habits.length} — Combo Unlocked!` : `🚀 ${doneCount}/${habits.length} — Complete all for Bonus XP`}</span>
+                    <span className="inline-flex items-center gap-1">
+                      <Emoji3D e={allDone ? '🎊' : '🚀'} size={13} />
+                      {allDone ? `${doneCount}/${habits.length} — Combo Unlocked!` : `${doneCount}/${habits.length} — Complete all for Bonus XP`}
+                    </span>
                     <button
                       onClick={() => { if (allDone) setShowComboModal(true); }}
-                      className={`px-2 py-0.5 rounded-md font-black transition-all ${
+                      className={`px-2 py-0.5 rounded-md font-black transition-all inline-flex items-center gap-1 ${
                         allDone && comboClaimedToday
                           ? 'text-emerald-600 bg-emerald-50 border border-emerald-100 cursor-default'
                           : allDone
@@ -803,7 +849,11 @@ export default function HarianPage() {
                           : 'text-violet-500 bg-violet-50 cursor-default'
                       }`}
                     >
-                      {allDone && comboClaimedToday ? '✅ Reward Claimed!' : allDone ? `🎁 CLAIM +${XP_PER_COMBO} XP` : 'Daily Combo Reward'}
+                      {allDone && comboClaimedToday ? (
+                        <><Emoji3D e="✅" size={13} /> Reward Claimed!</>
+                      ) : allDone ? (
+                        <><Emoji3D e="🎁" size={13} /> CLAIM +{XP_PER_COMBO} XP</>
+                      ) : 'Daily Combo Reward'}
                     </button>
                   </div>
                   <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -826,7 +876,7 @@ export default function HarianPage() {
                           : 'text-slate-400 hover:text-slate-600'
                       }`}
                     >
-                      <span className="text-base mb-0.5">{m.emoji}</span>
+                      <span className="mb-0.5"><Emoji3D e={m.emoji} size={22} /></span>
                       <span className="uppercase tracking-wider">{m.label}</span>
                     </button>
                   ))}
@@ -856,11 +906,11 @@ export default function HarianPage() {
                 </div>
                 <div className="pt-3 border-t border-slate-100 space-y-1.5">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-base">🏆</span>
+                    <Emoji3D e="🏆" size={22} />
                     <h4 className="text-[11px] font-black text-slate-800 tracking-tight">Daily Win</h4>
                     <span className="text-[8px] font-bold text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-100 uppercase tracking-wide ml-auto">Heroic Moment</span>
                   </div>
-                  <p className="text-[9px] text-slate-400 font-semibold">Satu hal yang paling kamu banggain hari ini ✨</p>
+                  <p className="text-[9px] text-slate-400 font-semibold inline-flex items-center gap-1">Satu hal yang paling kamu banggain hari ini <Emoji3D e="✨" size={13} /></p>
                   {!isEditingWin ? (
                     <div onClick={openWinEdit} className="w-full min-h-[44px] bg-gradient-to-br from-amber-50 to-orange-50 text-[11px] font-bold text-slate-700 p-3 rounded-2xl border border-amber-100 transition-all leading-relaxed relative group cursor-pointer hover:border-amber-300">
                       {dailyWin || <span className="text-slate-300 font-semibold">Tulis satu kemenangan kecilmu...</span>}
@@ -873,9 +923,11 @@ export default function HarianPage() {
                       <p className="text-[8px] text-slate-300 font-semibold text-right">Tersimpan otomatis saat mengetik</p>
                       <div className="flex gap-2">
                         <button onClick={cancelWin} className="flex-1 py-2 border border-slate-200 text-slate-500 rounded-xl text-[10px] font-bold hover:bg-slate-50 transition-all">Batal</button>
-                        <button onClick={saveWin} className="flex-1 py-2 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-xl text-[10px] font-black hover:opacity-90 transition-all shadow-md shadow-amber-200">🏆 Simpan!</button>
+                        <button onClick={saveWin} className="flex-1 py-2 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-xl text-[10px] font-black hover:opacity-90 transition-all shadow-md shadow-amber-200 inline-flex items-center justify-center gap-1">
+                          <Emoji3D e="🏆" size={14} /> Simpan!
+                        </button>
                       </div>
-                      {winSaved && <p className="text-center text-[9px] text-amber-500 font-bold animate-pulse">🎉 Kemenangan dicatat!</p>}
+                      {winSaved && <p className="text-center text-[9px] text-amber-500 font-bold animate-pulse inline-flex items-center gap-1"><Emoji3D e="🎉" size={13} /> Kemenangan dicatat!</p>}
                     </div>
                   )}
                 </div>
@@ -920,7 +972,7 @@ export default function HarianPage() {
                   battery.total < 70 ? 'bg-amber-50 border border-amber-100 text-amber-600' :
                                        'bg-emerald-50 border border-emerald-100 text-emerald-600'
                 }`}>
-                  <span>{battery.total < 40 ? '⚠️' : battery.total < 70 ? '⚡' : '✅'}</span>
+                  <Emoji3D e={battery.total < 40 ? '⚠️' : battery.total < 70 ? '⚡' : '✅'} size={16} />
                   <p className="leading-tight">
                     {battery.total < 40 ? `Energi kamu sisa ${battery.total}%, waktunya me-time atau tidur!` :
                      battery.total < 70 ? 'Energi cukup untuk lanjut, tapi tetap istirahat ya!' :
@@ -949,19 +1001,19 @@ export default function HarianPage() {
                     ))}
                   </div>
                 </div>
-                <div className="text-[9px] text-center font-bold text-violet-500 bg-violet-50 py-1.5 rounded-xl border border-violet-100/60 mt-2">
-                  🔗 Terhubung ke status Mode Begadang
+                <div className="text-[9px] text-center font-bold text-violet-500 bg-violet-50 py-1.5 rounded-xl border border-violet-100/60 mt-2 inline-flex items-center justify-center gap-1 w-full">
+                  <Emoji3D e="🔗" size={13} /> Terhubung ke status Mode Begadang
                 </div>
               </div>
 
               <div className="bg-white p-5 rounded-[28px] shadow-sm border border-slate-100/50">
                 <div className="flex items-center justify-between mb-1">
                   <h3 className="text-base font-black text-slate-900 tracking-tight">Water Intake</h3>
-                  <span className={`text-[9px] font-black px-2 py-0.5 rounded-lg uppercase tracking-widest ${waterCount >= WATER_GOAL ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400'}`}>
-                    {waterCount >= WATER_GOAL ? '💧 Terhidrasi!' : `${waterCount}/${WATER_GOAL} gelas`}
+                  <span className={`text-[9px] font-black px-2 py-0.5 rounded-lg uppercase tracking-widest inline-flex items-center gap-1 ${waterCount >= WATER_GOAL ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400'}`}>
+                    {waterCount >= WATER_GOAL ? (<><Emoji3D e="💧" size={13} /> Terhidrasi!</>) : `${waterCount}/${WATER_GOAL} gelas`}
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-400 font-semibold mb-3">Minum air putih itu bukan opsi, Rezal 💧</p>
+                <p className="text-[10px] text-slate-400 font-semibold mb-3 inline-flex items-center gap-1">Minum air putih itu bukan opsi, Rezal <Emoji3D e="💧" size={14} /></p>
                 <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 mb-3">
                   {Array.from({ length: WATER_GOAL }).map((_, i) => (
                     <button key={i} onClick={i < waterCount ? removeWater : addWater}
@@ -971,7 +1023,7 @@ export default function HarianPage() {
                           : 'bg-slate-50 border-slate-200 hover:border-blue-200 hover:bg-blue-50'
                       }`}
                     >
-                      <span className={`text-[14px] transition-all ${i < waterCount ? 'opacity-100' : 'opacity-30'}`}>💧</span>
+                      <Emoji3D e="💧" size={20} className={`transition-all ${i < waterCount ? 'opacity-100' : 'opacity-30'}`} />
                     </button>
                   ))}
                 </div>
@@ -980,7 +1032,9 @@ export default function HarianPage() {
                 </div>
                 <div className="flex justify-between text-[9px] font-bold text-slate-400 mt-1">
                   <span>0 gelas</span>
-                  <span className={waterCount >= WATER_GOAL ? 'text-blue-500' : ''}>{waterCount >= WATER_GOAL ? '🎉 Goal tercapai!' : `${WATER_GOAL - waterCount} lagi!`}</span>
+                  <span className={`inline-flex items-center gap-1 ${waterCount >= WATER_GOAL ? 'text-blue-500' : ''}`}>
+                    {waterCount >= WATER_GOAL ? (<><Emoji3D e="🎉" size={13} /> Goal tercapai!</>) : `${WATER_GOAL - waterCount} lagi!`}
+                  </span>
                   <span>{WATER_GOAL} gelas</span>
                 </div>
               </div>
@@ -1028,15 +1082,20 @@ export default function HarianPage() {
                       <span className="text-[8px] font-black uppercase tracking-[0.2em] text-violet-400">✦ The Daily</span>
                       <h3 className="text-base font-black tracking-tight text-white">Plotwist</h3>
                     </div>
-                    <button onClick={shufflePlottwist} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-sm transition-all hover:rotate-180 duration-300">🎲</button>
+                    <button onClick={shufflePlottwist} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all hover:rotate-180 duration-300">
+                      <Emoji3D e="🎲" size={20} />
+                    </button>
                   </div>
                   <div className="bg-white/8 border border-white/10 rounded-2xl p-4 space-y-2 backdrop-blur-sm">
-                    <span className="text-[8px] font-black uppercase tracking-widest text-violet-400 bg-violet-500/20 px-2 py-0.5 rounded-md">{currentPlottwist.tag}</span>
+                    <span className="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-violet-400 bg-violet-500/20 px-2 py-0.5 rounded-md">
+                      <Emoji3D e={currentPlottwist.tagEmoji} size={13} />
+                      {currentPlottwist.tagLabel}
+                    </span>
                     <p className="text-[11px] font-semibold text-slate-300 leading-relaxed">{currentPlottwist.mission}</p>
                   </div>
                   <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-500">
                     <span className="w-1 h-1 bg-violet-400 rounded-full inline-block" />
-                    Misi baru setiap hari • Klik 🎲 untuk random
+                    Misi baru setiap hari • Klik dadu untuk random
                   </div>
                 </div>
               </div>
@@ -1052,7 +1111,7 @@ export default function HarianPage() {
                   </div>
                   <div className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100">
                     <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400">
-                      <span>🐙</span> GitHub
+                      <Emoji3D e="🐙" size={18} /> GitHub
                     </div>
                     <span className="text-[9px] font-black text-amber-500 uppercase tracking-wide">Expired</span>
                   </div>
@@ -1061,17 +1120,17 @@ export default function HarianPage() {
 
               <div className="bg-gradient-to-b from-[#1e1441] to-[#120a2b] p-5 rounded-[28px] shadow-xl text-white flex flex-col justify-between relative overflow-hidden" style={{ minHeight: '180px' }}>
                 <div className="space-y-1.5 z-10 relative">
-                  <span className="text-lg">👑</span>
+                  <Emoji3D e="👑" size={26} />
                   <h3 className="text-xl font-black tracking-tight">Plotwist Pro</h3>
                   <p className="text-[10px] text-slate-400 leading-relaxed font-medium">Unlock AI insights, advanced analytics, realtime sync, and premium themes.</p>
                 </div>
                 {isProUnlocked ? (
-                  <div className="w-full py-3 bg-gradient-to-r from-yellow-300/20 to-orange-400/20 border border-yellow-300/30 text-yellow-200 rounded-2xl text-[10px] font-black tracking-wider text-center z-10 relative mt-4">
-                    ✨ Pro Member Aktif
+                  <div className="w-full py-3 bg-gradient-to-r from-yellow-300/20 to-orange-400/20 border border-yellow-300/30 text-yellow-200 rounded-2xl text-[10px] font-black tracking-wider text-center z-10 relative mt-4 inline-flex items-center justify-center gap-1.5">
+                    <Emoji3D e="✨" size={14} /> Pro Member Aktif
                   </div>
                 ) : (
-                  <button className="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 rounded-2xl text-[10px] font-black tracking-wider transition-all shadow-lg shadow-orange-500/20 z-10 relative mt-4">
-                    🔒 Capai Level 2 untuk Unlock
+                  <button className="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 rounded-2xl text-[10px] font-black tracking-wider transition-all shadow-lg shadow-orange-500/20 z-10 relative mt-4 inline-flex items-center justify-center gap-1.5">
+                    <Emoji3D e="🔒" size={14} /> Capai Level 2 untuk Unlock
                   </button>
                 )}
                 <div className="absolute -right-8 -top-8 w-24 h-24 bg-violet-500/10 rounded-full blur-2xl" />

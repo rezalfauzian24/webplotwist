@@ -15,15 +15,352 @@ import {
   FaExternalLinkAlt, FaLink, FaCloudUploadAlt, FaChevronDown,
 } from 'react-icons/fa'
 
+// ════════════════════════════════════════════════════════════════════════════
+// ICON3D — set ikon SVG bergaya glossy/3D (gradient + highlight + shadow)
+// Menggantikan semua emoji standar OS di halaman Profile ini.
+// Pakai seperti: <Icon3D name="fire" size={28} />
+// ════════════════════════════════════════════════════════════════════════════
+
+type IconName =
+  | "seed" | "book" | "rocket" | "trophy" | "crown" | "diamond"
+  | "happy" | "neutral" | "sleepy" | "dizzy"
+  | "fire" | "coin" | "heart" | "lightning" | "medal" | "energy"
+  | "lock" | "check" | "cross" | "target"
+  | "graduate" | "globe-web" | "moon"
+  | "note" | "brain" | "chart" | "send" | "edit" | "save"
+  | "robot" | "sparkle" | "warning" | "bell" | "shield"
+
+const grad = (id: string, c1: string, c2: string) => (
+  <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stopColor={c1} />
+    <stop offset="100%" stopColor={c2} />
+  </linearGradient>
+)
+
+function Shell({
+  id, c1, c2, children, size,
+}: {
+  id: string; c1: string; c2: string; children: React.ReactNode; size: number
+}) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" style={{ display: 'inline-block', flexShrink: 0, verticalAlign: 'middle' }}>
+      <defs>
+        {grad(id, c1, c2)}
+        <radialGradient id={`${id}-hl`} cx="35%" cy="25%" r="65%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </radialGradient>
+        <filter id={`${id}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1.5" stdDeviation="1.4" floodColor="#1e1b4b" floodOpacity="0.28" />
+        </filter>
+      </defs>
+      <g filter={`url(#${id}-shadow)`}>{children}</g>
+    </svg>
+  )
+}
+
+function Icon3D({ name, size = 28 }: { name: IconName; size?: number }) {
+  const id = `i3d-${name}`
+
+  switch (name) {
+    case "seed":
+      return (
+        <Shell id={id} c1="#86efac" c2="#16a34a" size={size}>
+          <ellipse cx="24" cy="27" rx="13" ry="15" fill={`url(#${id})`} />
+          <path d="M24 14c-3 3-3 8 0 11" stroke="#15803d" strokeWidth="2" fill="none" strokeLinecap="round" />
+          <ellipse cx="20" cy="21" rx="6" ry="9" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "book":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#2563eb" size={size}>
+          <path d="M24 13 9 18v19l15-5 15 5V18z" fill={`url(#${id})`} />
+          <path d="M24 13v24" stroke="#1d4ed8" strokeWidth="1.6" />
+          <path d="M9 18l15-5v6l-15 5z" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "rocket":
+      return (
+        <Shell id={id} c1="#c4b5fd" c2="#7c3aed" size={size}>
+          <path d="M24 8c5 4 7 11 6 19l-6 6-6-6c-1-8 1-15 6-19z" fill={`url(#${id})`} />
+          <circle cx="24" cy="20" r="3.4" fill="#fff" opacity="0.85" />
+          <path d="M16 30l-4 8 8-3M32 30l4 8-8-3" fill="#fbbf24" />
+          <path d="M19 12c2-2 6-2 8 0" stroke="#fff" strokeOpacity="0.5" strokeWidth="2" fill="none" strokeLinecap="round" />
+        </Shell>
+      )
+    case "trophy":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#d97706" size={size}>
+          <path d="M16 11h16v9c0 6-4 10-8 10s-8-4-8-10z" fill={`url(#${id})`} />
+          <path d="M16 13h-5v3c0 4 2 6 5 6" stroke="#b45309" strokeWidth="2" fill="none" />
+          <path d="M32 13h5v3c0 4-2 6-5 6" stroke="#b45309" strokeWidth="2" fill="none" />
+          <rect x="20" y="30" width="8" height="5" fill="#b45309" />
+          <rect x="16" y="35" width="16" height="4" rx="1.5" fill="#92400e" />
+          <ellipse cx="20" cy="16" rx="4" ry="5" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "crown":
+      return (
+        <Shell id={id} c1="#fef08a" c2="#ca8a04" size={size}>
+          <path d="M10 32l3-15 6 7 5-10 5 10 6-7 3 15z" fill={`url(#${id})`} />
+          <rect x="10" y="32" width="28" height="4" rx="1" fill="#a16207" />
+          <circle cx="24" cy="14" r="2.6" fill="#f87171" />
+          <circle cx="14" cy="20" r="2" fill="#60a5fa" />
+          <circle cx="34" cy="20" r="2" fill="#60a5fa" />
+          <path d="M14 22l4 4 6-9 6 9 4-4" fill={`url(#${id}-hl)`} opacity="0.6" />
+        </Shell>
+      )
+    case "diamond":
+      return (
+        <Shell id={id} c1="#a5f3fc" c2="#0891b2" size={size}>
+          <path d="M14 18h20l5 6-15 14-15-14z" fill={`url(#${id})`} />
+          <path d="M14 18l5-6h10l5 6" fill="#67e8f9" />
+          <path d="M19 18l5 20 5-20" stroke="#0e7490" strokeWidth="1.3" fill="none" />
+          <path d="M16 19h8l-4-6z" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "happy":
+      return (
+        <Shell id={id} c1="#fef08a" c2="#f59e0b" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M17 22q1-3 4-3M27 22q1-3 4-3" stroke="#92400e" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <path d="M16 27q8 8 16 0" stroke="#92400e" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <ellipse cx="18" cy="17" rx="5" ry="4" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "neutral":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#d97706" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <circle cx="18" cy="21" r="2" fill="#92400e" />
+          <circle cx="30" cy="21" r="2" fill="#92400e" />
+          <path d="M17 29h14" stroke="#92400e" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <ellipse cx="18" cy="17" rx="5" ry="4" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "sleepy":
+      return (
+        <Shell id={id} c1="#c7d2fe" c2="#4f46e5" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M16 21q3-2 6 0M26 21q3-2 6 0" stroke="#312e81" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <path d="M18 29q6 4 12 0" stroke="#312e81" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <path d="M34 15c2 1 3 3 2 5" stroke="#a5b4fc" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+          <ellipse cx="18" cy="17" rx="5" ry="4" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "dizzy":
+      return (
+        <Shell id={id} c1="#fecaca" c2="#dc2626" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M15 19l5 5M20 19l-5 5" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+          <path d="M28 19l5 5M33 19l-5 5" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+          <path d="M17 30q7 6 14 0" stroke="#7f1d1d" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <ellipse cx="18" cy="16" rx="5" ry="4" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "fire":
+      return (
+        <Shell id={id} c1="#fdba74" c2="#dc2626" size={size}>
+          <path d="M24 8c5 6 9 10 9 17a9 9 0 11-18 0c0-3 1-5 3-7 0 3 1 5 3 5-1-7 1-11 3-15z" fill={`url(#${id})`} />
+          <path d="M24 20c2 3 3 5 3 8a3 3 0 11-6 0c0-1 1-2 1-3 0 1 1 2 2 2-1-3 0-5 0-7z" fill="#fef3c7" />
+          <ellipse cx="20" cy="18" rx="3" ry="5" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "coin":
+      return (
+        <Shell id={id} c1="#fef08a" c2="#ca8a04" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <circle cx="24" cy="24" r="10.5" fill="none" stroke="#a16207" strokeWidth="1.6" />
+          <text x="24" y="29" textAnchor="middle" fontSize="13" fontWeight="700" fill="#854d0e">Rp</text>
+          <ellipse cx="18" cy="16" rx="5" ry="4" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "heart":
+      return (
+        <Shell id={id} c1="#6ee7b7" c2="#059669" size={size}>
+          <path d="M24 35c-9-6-14-11-14-17a8 8 0 0114-5 8 8 0 0114 5c0 6-5 11-14 17z" fill={`url(#${id})`} />
+          <path d="M14 18c1-3 3-5 6-5" stroke="#fff" strokeOpacity="0.5" strokeWidth="2" fill="none" strokeLinecap="round" />
+        </Shell>
+      )
+    case "lightning":
+    case "energy":
+      return (
+        <Shell id={id} c1="#fde047" c2="#ea580c" size={size}>
+          <path d="M26 7 14 27h8l-3 14 15-22h-9z" fill={`url(#${id})`} />
+          <path d="M23 11l-6 11h5" stroke="#fff" strokeOpacity="0.45" strokeWidth="1.6" fill="none" />
+        </Shell>
+      )
+    case "medal":
+      return (
+        <Shell id={id} c1="#fda4af" c2="#be123c" size={size}>
+          <path d="M17 8h14l-5 12-2-1-2 1z" fill="#94a3b8" />
+          <circle cx="24" cy="28" r="11" fill={`url(#${id})`} />
+          <circle cx="24" cy="28" r="6.5" fill="none" stroke="#fff" strokeOpacity="0.6" strokeWidth="1.6" />
+          <ellipse cx="19" cy="23" rx="3.5" ry="3" fill={`url(#${id}-hl)`} />
+        </Shell>
+      )
+    case "lock":
+      return (
+        <Shell id={id} c1="#c4b5fd" c2="#6d28d9" size={size}>
+          <rect x="14" y="21" width="20" height="16" rx="3" fill={`url(#${id})`} />
+          <path d="M18 21v-4a6 6 0 0112 0v4" stroke="#5b21b6" strokeWidth="3" fill="none" />
+          <circle cx="24" cy="29" r="2.6" fill="#5b21b6" />
+        </Shell>
+      )
+    case "check":
+      return (
+        <Shell id={id} c1="#86efac" c2="#15803d" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M17 25l5 5 10-11" stroke="#fff" strokeWidth="3.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </Shell>
+      )
+    case "cross":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#b91c1c" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <path d="M18 18l12 12M30 18l-12 12" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" />
+        </Shell>
+      )
+    case "target":
+      return (
+        <Shell id={id} c1="#fca5a5" c2="#b91c1c" size={size}>
+          <circle cx="24" cy="24" r="14" fill={`url(#${id})`} />
+          <circle cx="24" cy="24" r="9" fill="#fff" />
+          <circle cx="24" cy="24" r="4.5" fill="#b91c1c" />
+        </Shell>
+      )
+    case "graduate":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1d4ed8" size={size}>
+          <path d="M24 12 6 19l18 7 18-7z" fill={`url(#${id})`} />
+          <path d="M14 22v8c0 3 5 5 10 5s10-2 10-5v-8" stroke="#1e3a8a" strokeWidth="2" fill="none" />
+          <path d="M40 19v9" stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="40" cy="30" r="1.8" fill="#1e3a8a" />
+        </Shell>
+      )
+    case "globe-web":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1e3a8a" size={size}>
+          <circle cx="24" cy="24" r="15" fill={`url(#${id})`} />
+          <ellipse cx="24" cy="24" rx="15" ry="6" fill="none" stroke="#fff" strokeOpacity="0.6" strokeWidth="1.4" />
+          <path d="M24 9v30M11 24h26" stroke="#fff" strokeOpacity="0.6" strokeWidth="1.4" />
+        </Shell>
+      )
+    case "moon":
+      return (
+        <Shell id={id} c1="#c7d2fe" c2="#4338ca" size={size}>
+          <path d="M30 9a16 16 0 100 30 13 13 0 01-3-22 13 13 0 013-8z" fill={`url(#${id})`} />
+        </Shell>
+      )
+    case "note":
+      return (
+        <Shell id={id} c1="#fef08a" c2="#ca8a04" size={size}>
+          <rect x="11" y="9" width="22" height="26" rx="2" fill={`url(#${id})`} />
+          <rect x="29" y="29" width="8" height="8" fill="#fde68a" />
+          <path d="M29 29l8 8" stroke="#ca8a04" strokeWidth="1" />
+          <rect x="15" y="15" width="14" height="2" fill="#854d0e" opacity="0.6" />
+          <rect x="15" y="20" width="14" height="2" fill="#854d0e" opacity="0.6" />
+          <rect x="15" y="25" width="9" height="2" fill="#854d0e" opacity="0.6" />
+        </Shell>
+      )
+    case "brain":
+      return (
+        <Shell id={id} c1="#f9a8d4" c2="#a21caf" size={size}>
+          <path d="M18 12a6 6 0 00-6 8 6 6 0 002 11 6 6 0 0010 3 6 6 0 0010-3 6 6 0 002-11 6 6 0 00-6-8 6 6 0 00-12 0z" fill={`url(#${id})`} />
+          <path d="M24 13v21" stroke="#86198f" strokeWidth="1.3" />
+        </Shell>
+      )
+    case "chart":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1e40af" size={size}>
+          <rect x="10" y="24" width="7" height="14" fill={`url(#${id})`} />
+          <rect x="20" y="16" width="7" height="22" fill={`url(#${id})`} />
+          <rect x="30" y="9" width="7" height="29" fill={`url(#${id})`} />
+        </Shell>
+      )
+    case "send":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1d4ed8" size={size}>
+          <path d="M8 24l32-14-12 32-5-12z" fill={`url(#${id})`} />
+          <path d="M40 10L23 30" stroke="#bfdbfe" strokeWidth="1.4" />
+        </Shell>
+      )
+    case "edit":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#b45309" size={size}>
+          <path d="M14 30l-2 8 8-2 20-20-6-6z" fill={`url(#${id})`} />
+          <path d="M30 12l6 6" stroke="#92400e" strokeWidth="2" />
+        </Shell>
+      )
+    case "save":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1e3a8a" size={size}>
+          <path d="M12 9h19l8 8v22H12z" fill={`url(#${id})`} />
+          <rect x="17" y="24" width="14" height="11" fill="#fff" opacity="0.85" />
+          <rect x="17" y="11" width="10" height="7" fill="#1e3a8a" opacity="0.4" />
+        </Shell>
+      )
+    case "robot":
+      return (
+        <Shell id={id} c1="#a5b4fc" c2="#4338ca" size={size}>
+          <rect x="12" y="17" width="24" height="19" rx="4" fill={`url(#${id})`} />
+          <rect x="22" y="8" width="4" height="7" fill="#4338ca" />
+          <circle cx="24" cy="8" r="2.4" fill="#fbbf24" />
+          <circle cx="19" cy="26" r="3" fill="#fff" />
+          <circle cx="29" cy="26" r="3" fill="#fff" />
+          <rect x="18" y="32" width="12" height="2.4" rx="1.2" fill="#fff" opacity="0.8" />
+        </Shell>
+      )
+    case "sparkle":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#d97706" size={size}>
+          <path d="M24 7l4 11 11 4-11 4-4 11-4-11-11-4 11-4z" fill={`url(#${id})`} />
+        </Shell>
+      )
+    case "warning":
+      return (
+        <Shell id={id} c1="#fde68a" c2="#d97706" size={size}>
+          <path d="M24 8l18 30H6z" fill={`url(#${id})`} />
+          <rect x="22.5" y="20" width="3" height="9" rx="1.5" fill="#fff" />
+          <circle cx="24" cy="32" r="1.8" fill="#fff" />
+        </Shell>
+      )
+    case "bell":
+      return (
+        <Shell id={id} c1="#fda4af" c2="#be123c" size={size}>
+          <path d="M24 8a4 4 0 00-4 4v1c-5 1-8 5-8 11v6l-3 4h30l-3-4v-6c0-6-3-10-8-11v-1a4 4 0 00-4-4z" fill={`url(#${id})`} />
+          <path d="M19 36a5 5 0 0010 0z" fill="#be123c" />
+        </Shell>
+      )
+    case "shield":
+      return (
+        <Shell id={id} c1="#93c5fd" c2="#1d4ed8" size={size}>
+          <path d="M24 7l14 5v11c0 9-6 15-14 18-8-3-14-9-14-18V12z" fill={`url(#${id})`} />
+          <path d="M18 24l4 4 8-9" stroke="#fff" strokeWidth="2.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </Shell>
+      )
+    default:
+      return (
+        <Shell id={id} c1="#cbd5e1" c2="#475569" size={size}>
+          <circle cx="24" cy="24" r="14" fill={`url(#${id})`} />
+        </Shell>
+      )
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// BADGE LIST
+// ════════════════════════════════════════════════════════════════════════════
+
 const BADGE_LIST = [
-  { id: 'antiSks',     icon: <FaFire className="text-4xl mb-4" />,   label: 'Anti SKS',     gradient: 'from-orange-400 to-red-500',    xpRequired: 0     },
-  { id: 'nightOwl',    icon: <FaMoon className="text-4xl mb-4" />,   label: 'Night Owl',    gradient: 'from-indigo-500 to-purple-500', xpRequired: 2000  },
-  { id: 'suhuIpk',     icon: <FaBrain className="text-4xl mb-4" />,  label: 'Suhu IPK',     gradient: 'from-pink-500 to-fuchsia-500',  xpRequired: 5000  },
-  { id: 'focusMaster', icon: <FaBolt className="text-4xl mb-4" />,   label: 'Focus Master', gradient: 'from-cyan-400 to-blue-500',     xpRequired: 9000  },
-  { id: 'topStudent',  icon: <FaTrophy className="text-4xl mb-4" />, label: 'Top Student',  gradient: 'from-yellow-400 to-orange-500', xpRequired: 12000 },
-  { id: 'champion',    icon: <FaMedal className="text-4xl mb-4" />,  label: 'Champion',     gradient: 'from-green-400 to-teal-500',    xpRequired: 15000 },
-  { id: 'legend',      icon: <FaStar className="text-4xl mb-4" />,   label: 'Legend',       gradient: 'from-rose-400 to-pink-600',     xpRequired: 20000 },
-  { id: 'crown',       icon: <FaCrown className="text-4xl mb-4" />,  label: 'Royalty',      gradient: 'from-amber-400 to-yellow-600',  xpRequired: 30000 },
+  { id: 'antiSks',     icon: <Icon3D name="fire" size={48} />,     label: 'Anti SKS',     gradient: 'from-orange-400 to-red-500',    xpRequired: 0     },
+  { id: 'nightOwl',    icon: <Icon3D name="moon" size={48} />,     label: 'Night Owl',    gradient: 'from-indigo-500 to-purple-500', xpRequired: 2000  },
+  { id: 'suhuIpk',     icon: <Icon3D name="brain" size={48} />,    label: 'Suhu IPK',     gradient: 'from-pink-500 to-fuchsia-500',  xpRequired: 5000  },
+  { id: 'focusMaster', icon: <Icon3D name="lightning" size={48} />,label: 'Focus Master', gradient: 'from-cyan-400 to-blue-500',     xpRequired: 9000  },
+  { id: 'topStudent',  icon: <Icon3D name="trophy" size={48} />,   label: 'Top Student',  gradient: 'from-yellow-400 to-orange-500', xpRequired: 12000 },
+  { id: 'champion',    icon: <Icon3D name="medal" size={48} />,    label: 'Champion',     gradient: 'from-green-400 to-teal-500',    xpRequired: 15000 },
+  { id: 'legend',      icon: <Icon3D name="sparkle" size={48} />,  label: 'Legend',       gradient: 'from-rose-400 to-pink-600',     xpRequired: 20000 },
+  { id: 'crown',       icon: <Icon3D name="crown" size={48} />,    label: 'Royalty',      gradient: 'from-amber-400 to-yellow-600',  xpRequired: 30000 },
 ]
 function useBadges(xp: number) {
   return BADGE_LIST.map(b => ({ ...b, earned: xp >= b.xpRequired }))
@@ -176,9 +513,9 @@ export default function ProfilePage() {
     if (audioRef.current) { audioRef.current.pause(); audioRef.current.src = '' }
     if (playingAudio === key) { setPlayingAudio(null); audioRef.current = null; return }
     const audio = new Audio(`https://rmkmqafgjbpisopuaxle.supabase.co/storage/v1/object/public/assets/${key}.mp3`)
-    audio.oncanplaythrough = () => audio.play().catch(() => { triggerToast('File tidak ditemukan ⚠️'); setPlayingAudio(null) })
+    audio.oncanplaythrough = () => audio.play().catch(() => { triggerToast('File tidak ditemukan'); setPlayingAudio(null) })
     audio.onended = () => { setPlayingAudio(null); audioRef.current = null }
-    audio.onerror = () => { triggerToast(`${key}.mp3 tidak ditemukan ⚠️`); setPlayingAudio(null) }
+    audio.onerror = () => { triggerToast(`${key}.mp3 tidak ditemukan`); setPlayingAudio(null) }
     audioRef.current = audio; setPlayingAudio(key); audio.load()
   }
   const stopAudio = () => {
@@ -403,7 +740,7 @@ export default function ProfilePage() {
 
   if (!uid) {
     console.log('UID NULL')
-    triggerToast('Sesi tidak ditemukan, silakan login ulang ❌')
+    triggerToast('Sesi tidak ditemukan, silakan login ulang')
     return
   }
 
@@ -434,8 +771,8 @@ export default function ProfilePage() {
   setIsEditMode(false)
   triggerToast(
     ok
-      ? 'Profil tersimpan ✅'
-      : 'Tersimpan lokal, cek koneksi / Firestore Rules ⚠️'
+      ? 'Profil tersimpan'
+      : 'Tersimpan lokal, cek koneksi / Firestore Rules'
   )
 }
 
@@ -457,13 +794,13 @@ export default function ProfilePage() {
     const file = e.target.files?.[0]
     if (!file) return
     const uid = await getUid()
-    if (!uid) { triggerToast('Sesi tidak ditemukan ❌'); return }
+    if (!uid) { triggerToast('Sesi tidak ditemukan'); return }
     const reader = new FileReader()
     reader.onloadend = async () => {
       const base64 = reader.result as string
       setProfileImage(base64)
       const ok = await saveToFirestore({ name, major, semester, studentId, angkatan, bio, profileImage: base64, educationLevel, xp: activeXp, socialLinks }, uid)
-      triggerToast(ok ? 'Foto profil tersimpan ✅' : 'Gagal simpan foto ❌')
+      triggerToast(ok ? 'Foto profil tersimpan' : 'Gagal simpan foto')
     }
     reader.readAsDataURL(file)
   }
@@ -471,11 +808,11 @@ export default function ProfilePage() {
   // ── saveSocial ───────────────────────────────────────────────────────────────
   const saveSocial = async () => {
     const uid = await getUid()
-    if (!uid) { triggerToast('Sesi tidak ditemukan ❌'); return }
+    if (!uid) { triggerToast('Sesi tidak ditemukan'); return }
     setIsSavingSocial(true)
     const ok = await saveToFirestore({ name, major, semester, studentId, angkatan, bio, profileImage, educationLevel, xp: activeXp, socialLinks: socialDraft }, uid)
-    if (ok) { setSocialLinks({ ...socialDraft }); setIsEditingSocial(false); triggerToast('Link sosial tersimpan ✅') }
-    else triggerToast('Gagal menyimpan link ❌')
+    if (ok) { setSocialLinks({ ...socialDraft }); setIsEditingSocial(false); triggerToast('Link sosial tersimpan') }
+    else triggerToast('Gagal menyimpan link')
     setIsSavingSocial(false)
   }
 
@@ -483,11 +820,11 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       const { error } = await supabase.auth.signOut()
-      if (error) { triggerToast('Gagal logout ❌'); return }
+      if (error) { triggerToast('Gagal logout'); return }
       localStorage.removeItem('plotwist_profile_backup')
       userIdRef.current = null
       window.location.href = '/login?logout=true'
-    } catch { triggerToast('Gagal logout ❌') }
+    } catch { triggerToast('Gagal logout') }
   }
 
   const questDone   = eduData?.dailyQuests.filter(q => q.done).length ?? 0
@@ -495,11 +832,12 @@ export default function ProfilePage() {
   const questPct    = questTotal > 0 ? Math.round((questDone / questTotal) * 100) : 0
   const RANKS       = ['Beginner','Learner','Explorer','Researcher','Mastermind','Legend']
   const RANK_XP     = [0,100,300,600,1000,1800]
-  const RANK_ICONS  = ['🌱','📚','🚀','🏆','👑','💎']
+  const RANK_ICON_NAMES: IconName[] = ['seed','book','rocket','trophy','crown','diamond']
   const rankIdx     = RANK_XP.reduce((i, v, j) => activeXp >= v ? j : i, 0)
   const filledLinks = Object.values(socialLinks).filter(v => v.trim() !== '').length
   const earnedCount = badges.filter(b => b.earned).length
-  const moodEmoji: Record<string,string> = { semangat:'😊 Semangat', biasa:'😐 Biasa', lelah:'😴 Lelah', burnout:'😵 Burnout' }
+  const moodIconMap: Record<string, IconName> = { semangat: 'happy', biasa: 'neutral', lelah: 'sleepy', burnout: 'dizzy' }
+  const moodLabelMap: Record<string,string> = { semangat:'Semangat', biasa:'Biasa', lelah:'Lelah', burnout:'Burnout' }
 
   const socialMeta: { key: keyof SocialLinks; label: string; icon: React.ReactNode; placeholder: string; color: string; gradient: string }[] = [
     { key:'linkedin',  label:'LinkedIn',  icon:<FaLinkedin />,  placeholder:'https://linkedin.com/in/username', color:'text-blue-600',   gradient:'from-blue-500 to-blue-700'    },
@@ -510,10 +848,10 @@ export default function ProfilePage() {
     { key:'portfolio', label:'Portfolio', icon:<FaGlobe />,     placeholder:'https://yourportfolio.com',      color:'text-purple-500', gradient:'from-purple-500 to-violet-600' },
   ]
 
-  const eduOptions: { value: EducationLevel; label: string; icon: string; sub: string }[] = [
-    { value:'kuliah',  label:'Kuliah',  icon:'🎓', sub:'Mahasiswa universitas / politeknik' },
-    { value:'pelajar', label:'Pelajar', icon:'📘', sub:'Siswa SMP / SMA / SMK' },
-    { value:'lainnya', label:'Lainnya', icon:'🌐', sub:'Kursus, bootcamp, atau lainnya' },
+  const eduOptions: { value: EducationLevel; label: string; icon: IconName; sub: string }[] = [
+    { value:'kuliah',  label:'Kuliah',  icon:'graduate',  sub:'Mahasiswa universitas / politeknik' },
+    { value:'pelajar', label:'Pelajar', icon:'book',      sub:'Siswa SMP / SMA / SMK' },
+    { value:'lainnya', label:'Lainnya', icon:'globe-web', sub:'Kursus, bootcamp, atau lainnya' },
   ]
   const activeEdu = eduOptions.find(o => o.value === educationLevel)!
 
@@ -536,7 +874,7 @@ export default function ProfilePage() {
                   onClick={() => setShowEduDropdown(v => !v)}
                   className="flex items-center gap-2 bg-white/20 hover:bg-white/30 border border-white/30 text-white font-bold text-sm px-4 py-2 rounded-2xl transition-all"
                 >
-                  {activeEdu.icon} {activeEdu.label}
+                  <Icon3D name={activeEdu.icon} size={20} /> {activeEdu.label}
                   <FaChevronDown className={`text-xs transition-transform ${showEduDropdown ? 'rotate-180' : ''}`} />
                 </button>
                 {showEduDropdown && (
@@ -547,7 +885,7 @@ export default function ProfilePage() {
                         onClick={() => handleEducationChange(opt.value)}
                         className={`w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-purple-50 ${educationLevel === opt.value ? 'bg-purple-50 text-purple-700' : 'text-gray-700'}`}
                       >
-                        <span className="text-xl">{opt.icon}</span>
+                        <Icon3D name={opt.icon} size={26} />
                         <div>
                           <p className="font-bold text-sm">{opt.label}</p>
                           <p className="text-xs text-gray-400">{opt.sub}</p>
@@ -564,7 +902,7 @@ export default function ProfilePage() {
                   ${saveStatus==='saving'?'bg-yellow-300 text-black':saveStatus==='saved'?'bg-green-400 text-black':'bg-red-400 text-white'}`}>
                   {saveStatus==='saving'&&<><FaCloudUploadAlt className="animate-bounce"/>Menyimpan...</>}
                   {saveStatus==='saved'&&<><FaCheck/>Tersimpan!</>}
-                  {saveStatus==='error'&&<>❌ Gagal</>}
+                  {saveStatus==='error'&&<><Icon3D name="cross" size={14}/>Gagal</>}
                 </div>
               )}
             </div>
@@ -612,7 +950,7 @@ export default function ProfilePage() {
                     : angkatan && <span className="bg-white/20 border border-white/25 text-white text-xs font-bold px-4 py-1.5 rounded-xl">{cfg.angkatanLabel} {angkatan}</span>
                   }
                   {isProActive
-                    ? <span className="bg-gradient-to-r from-yellow-300 to-orange-400 text-black text-xs font-extrabold px-4 py-1.5 rounded-xl">✨ Plotwist Pro</span>
+                    ? <span className="bg-gradient-to-r from-yellow-300 to-orange-400 text-black text-xs font-extrabold px-4 py-1.5 rounded-xl flex items-center gap-1.5"><Icon3D name="sparkle" size={14}/> Plotwist Pro</span>
                     : <span className="bg-white/10 border border-white/20 text-white/50 text-xs font-bold px-4 py-1.5 rounded-xl">Free Plan</span>
                   }
                 </div>
@@ -636,7 +974,7 @@ export default function ProfilePage() {
                 <button onClick={handleLogout} className="px-6 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 bg-red-500/80 text-white hover:bg-red-600 hover:scale-105 active:scale-95 transition-all">
                   <FaSignOutAlt/> Logout
                 </button>
-                {isEditMode && <p className="text-white/50 text-[11px] text-center leading-relaxed">✏️ Auto-tersimpan saat pindah halaman</p>}
+                {isEditMode && <p className="text-white/50 text-[11px] text-center leading-relaxed flex items-center justify-center gap-1"><FaEdit className="text-[10px]"/> Auto-tersimpan saat pindah halaman</p>}
               </div>
             </div>
           </div>
@@ -730,7 +1068,7 @@ export default function ProfilePage() {
                   </div>
                   <div className="text-right">
                     <div className="bg-purple-100 text-purple-600 px-6 py-3 rounded-2xl font-bold text-xl mb-1">LVL {activeLevel}</div>
-                    <div className="text-xs text-center font-bold text-purple-500">{RANK_ICONS[rankIdx]} {RANKS[rankIdx]}</div>
+                    <div className="text-xs text-center font-bold text-purple-500 flex items-center justify-center gap-1.5"><Icon3D name={RANK_ICON_NAMES[rankIdx]} size={18}/> {RANKS[rankIdx]}</div>
                   </div>
                 </div>
                 <div className="mb-6">
@@ -743,27 +1081,27 @@ export default function ProfilePage() {
                 {eduData && (
                   <>
                     <div className="grid grid-cols-4 gap-4 mb-6">
-                      {[{icon:'🪙',label:'Koin',value:eduData.coins},{icon:'🔥',label:'Streak',value:`${eduData.streak}h`},{icon:'💚',label:'Energi',value:`${eduData.energy}/${eduData.maxEnergy}`},{icon:'⏱',label:'Fokus',value:eduData.focusSessions}].map(({icon,label,value})=>(
-                        <div key={label} className={`${ct.soft} rounded-2xl p-4 text-center`}><p className="text-2xl mb-1">{icon}</p><p className={`text-base font-bold ${ct.text}`}>{value}</p><p className={`text-xs ${ct.subtext}`}>{label}</p></div>
+                      {([{icon:'coin' as IconName,label:'Koin',value:eduData.coins},{icon:'fire' as IconName,label:'Streak',value:`${eduData.streak}h`},{icon:'heart' as IconName,label:'Energi',value:`${eduData.energy}/${eduData.maxEnergy}`},{icon:'lightning' as IconName,label:'Fokus',value:eduData.focusSessions}]).map(({icon,label,value})=>(
+                        <div key={label} className={`${ct.soft} rounded-2xl p-4 text-center`}><div className="flex justify-center mb-1"><Icon3D name={icon} size={32}/></div><p className={`text-base font-bold ${ct.text}`}>{value}</p><p className={`text-xs ${ct.subtext}`}>{label}</p></div>
                       ))}
                     </div>
                     <div className="grid grid-cols-3 gap-4 mb-6">
-                      {[{icon:'📝',label:'Catatan',value:eduData.noteCount},{icon:'🧠',label:'AI Analisis',value:eduData.aiAnalyzeCount},{icon:'⚡',label:'Flashcard',value:eduData.flashcardViewed}].map(({icon,label,value})=>(
-                        <div key={label} className={`${ct.soft} rounded-2xl p-4 text-center`}><p className="text-xl mb-1">{icon}</p><p className={`text-base font-bold ${ct.text}`}>{value}</p><p className={`text-xs ${ct.subtext}`}>{label}</p></div>
+                      {([{icon:'note' as IconName,label:'Catatan',value:eduData.noteCount},{icon:'brain' as IconName,label:'AI Analisis',value:eduData.aiAnalyzeCount},{icon:'lightning' as IconName,label:'Flashcard',value:eduData.flashcardViewed}]).map(({icon,label,value})=>(
+                        <div key={label} className={`${ct.soft} rounded-2xl p-4 text-center`}><div className="flex justify-center mb-1"><Icon3D name={icon} size={28}/></div><p className={`text-base font-bold ${ct.text}`}>{value}</p><p className={`text-xs ${ct.subtext}`}>{label}</p></div>
                       ))}
                     </div>
                     <div className={`${ct.soft} rounded-2xl p-5 mb-6 flex items-center gap-4`}>
-                      <div className="text-3xl">{eduData.mood==='semangat'?'😊':eduData.mood==='biasa'?'😐':eduData.mood==='lelah'?'😴':'😵'}</div>
-                      <div><p className={`font-bold ${ct.text}`}>Mood: {moodEmoji[eduData.mood]??eduData.mood}</p><p className={`text-xs ${ct.subtext}`}>Dari Plotwist Edu · hari ini</p></div>
+                      <Icon3D name={moodIconMap[eduData.mood] || 'happy'} size={44}/>
+                      <div><p className={`font-bold ${ct.text}`}>Mood: {moodLabelMap[eduData.mood] ?? eduData.mood}</p><p className={`text-xs ${ct.subtext}`}>Dari Plotwist Edu · hari ini</p></div>
                     </div>
                     {eduData.dailyQuests.length > 0 && (
                       <div className={`${ct.soft} rounded-2xl p-5 mb-6`}>
-                        <div className="flex justify-between items-center mb-3"><p className={`font-bold ${ct.text}`}>🎯 Daily Quest</p><span className={`text-sm font-bold ${ct.subtext}`}>{questDone}/{questTotal} · {questPct}%</span></div>
+                        <div className="flex justify-between items-center mb-3"><p className={`font-bold ${ct.text} flex items-center gap-2`}><Icon3D name="target" size={20}/> Daily Quest</p><span className={`text-sm font-bold ${ct.subtext}`}>{questDone}/{questTotal} · {questPct}%</span></div>
                         <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4"><div className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full" style={{width:`${questPct}%`}}/></div>
                         {eduData.dailyQuests.map(q=>(
                           <div key={q.id} className="flex items-center gap-3 mb-2">
                             <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs font-bold flex-shrink-0 ${q.done?'bg-purple-500 text-white':`${ct.card} border border-gray-300`}`}>{q.done?'✓':''}</div>
-                            <span className={`text-sm font-semibold flex-1 ${q.done?`${ct.subtext} line-through`:ct.text}`}>{q.icon} {q.label}</span>
+                            <span className={`text-sm font-semibold flex-1 ${q.done?`${ct.subtext} line-through`:ct.text}`}>{q.label}</span>
                             <span className="text-xs text-purple-400 font-bold">+{q.xp} XP</span>
                           </div>
                         ))}
@@ -778,9 +1116,9 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {badges.map(badge=>(
                     <div key={badge.id}
-                      className={`relative rounded-3xl p-6 shadow-xl transition-all duration-300 ${badge.earned?`bg-gradient-to-br ${badge.gradient} text-white hover:scale-105 cursor-pointer`:`${ct.soft} opacity-40 grayscale cursor-not-allowed`}`}
+                      className={`relative rounded-3xl p-6 shadow-xl transition-all duration-300 flex flex-col items-center text-center ${badge.earned?`bg-gradient-to-br ${badge.gradient} text-white hover:scale-105 cursor-pointer`:`${ct.soft} opacity-40 grayscale cursor-not-allowed`}`}
                       title={badge.earned?`${badge.label} — Unlocked!`:`Butuh ${badge.xpRequired.toLocaleString()} XP`}>
-                      {badge.icon}
+                      <div className="mb-3">{badge.icon}</div>
                       <h3 className={`font-bold text-base ${badge.earned?'text-white':ct.text}`}>{badge.label}</h3>
                       {!badge.earned&&<><div className="absolute top-2 right-2"><FaLock className="text-gray-400 text-sm"/></div><p className={`text-xs mt-1 ${ct.subtext}`}>{badge.xpRequired.toLocaleString()} XP</p></>}
                       {badge.earned&&<div className="absolute top-2 right-2"><FaCheck className="text-white/80 text-sm"/></div>}
@@ -798,8 +1136,8 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   {[
                     { icon:<FaGoogle className="text-red-500 text-2xl"/>, label:'Google Calendar', status:'Connected', color:'text-green-500' },
-                    { icon:<FaGithub className={`text-2xl ${ct.text}`}/>, label:'GitHub', status:'Expired', color:'text-yellow-500', onClick:()=>triggerToast('Menghubungkan GitHub... 🔗') },
-                    { icon:<span className="text-2xl">🎓</span>, label:'Plotwist Edu', status:eduData?'Synced':'Waiting', color:eduData?'text-green-500':'text-yellow-500' },
+                    { icon:<FaGithub className={`text-2xl ${ct.text}`}/>, label:'GitHub', status:'Expired', color:'text-yellow-500', onClick:()=>triggerToast('Menghubungkan GitHub...') },
+                    { icon:<Icon3D name="graduate" size={30}/>, label:'Plotwist Edu', status:eduData?'Synced':'Waiting', color:eduData?'text-green-500':'text-yellow-500' },
                   ].map(item=>(
                     <div key={item.label} className={`${ct.soft} p-5 rounded-3xl flex justify-between items-center`}>
                       <div className="flex items-center gap-3">{item.icon}<span className={`${ct.text} font-semibold text-lg`}>{item.label}</span></div>
@@ -826,7 +1164,7 @@ export default function ProfilePage() {
                       <h3 className={`text-2xl font-bold ${ct.text}`}>Appearance</h3>
                       <div className="flex justify-between items-center">
                         <span className={`${ct.text} font-medium`}>Dark Mode</span>
-                        <button onClick={()=>{setDarkMode(!darkMode);triggerToast(darkMode?'Light Mode ☀️':'Dark Mode 🌙')}} className={`w-16 h-8 rounded-full transition ${darkMode?'bg-purple-500':'bg-gray-300'}`}>
+                        <button onClick={()=>{setDarkMode(!darkMode);triggerToast(darkMode?'Light Mode':'Dark Mode')}} className={`w-16 h-8 rounded-full transition ${darkMode?'bg-purple-500':'bg-gray-300'}`}>
                           <div className={`w-7 h-7 bg-white rounded-full shadow-md transform transition ${darkMode?'translate-x-8':'translate-x-1'}`}/>
                         </button>
                       </div>
@@ -834,7 +1172,7 @@ export default function ProfilePage() {
                         <p className={`${ct.text} font-medium mb-3`}>Theme</p>
                         <div className="grid grid-cols-2 gap-3">
                           {Object.keys(themes).map(t=>(
-                            <button key={t} onClick={()=>{setTheme(t);triggerToast(`Theme "${t}" aktif 🎨`)}}
+                            <button key={t} onClick={()=>{setTheme(t);triggerToast(`Theme "${t}" aktif`)}}
                               className={`p-3 rounded-2xl font-semibold transition-all ${theme===t?ct.active:'bg-white text-gray-700'}`}>{t}</button>
                           ))}
                         </div>
@@ -846,7 +1184,7 @@ export default function ProfilePage() {
                       <h3 className={`text-2xl font-bold ${ct.text}`}>Notifications</h3>
                       <div className="flex justify-between items-center">
                         <span className={`${ct.text} font-medium`}>Deadline Reminder</span>
-                        <button onClick={()=>{setNotification(!notification);triggerToast(notification?'Off':'On 🔔')}} className={`px-5 py-2 rounded-full font-semibold transition-all ${notification?'bg-pink-500 text-white':'bg-gray-300 text-black'}`}>{notification?'ON':'OFF'}</button>
+                        <button onClick={()=>{setNotification(!notification);triggerToast(notification?'Off':'On')}} className={`px-5 py-2 rounded-full font-semibold transition-all ${notification?'bg-pink-500 text-white':'bg-gray-300 text-black'}`}>{notification?'ON':'OFF'}</button>
                       </div>
                       <div className={`${ct.card} rounded-2xl p-4`}>
                         <div className="flex items-center gap-2 mb-3"><FaVolumeUp className="text-pink-400 text-sm"/><span className={`text-sm font-bold ${ct.text}`}>Nada Dering Deadline</span></div>
@@ -861,7 +1199,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className={`${ct.text} font-medium`}>Email Notifications</span>
-                        <button onClick={()=>{setEmailNotif(!emailNotif);triggerToast(emailNotif?'Off':'On 📧')}} className={`px-5 py-2 rounded-full font-semibold transition-all ${emailNotif?'bg-purple-500 text-white':'bg-gray-300 text-black'}`}>{emailNotif?'ON':'OFF'}</button>
+                        <button onClick={()=>{setEmailNotif(!emailNotif);triggerToast(emailNotif?'Off':'On')}} className={`px-5 py-2 rounded-full font-semibold transition-all ${emailNotif?'bg-purple-500 text-white':'bg-gray-300 text-black'}`}>{emailNotif?'ON':'OFF'}</button>
                       </div>
                       <div className={`${ct.card} rounded-2xl p-4`}>
                         <div className="flex items-center gap-2 mb-3"><FaVolumeUp className="text-purple-400 text-sm"/><span className={`text-sm font-bold ${ct.text}`}>Nada Dering Email</span></div>
@@ -876,9 +1214,9 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className={ct.text}>Notification Sound</span>
-                        <button onClick={()=>{setNotificationSound(!notificationSound);triggerToast(notificationSound?'Suara Off 🔇':'Suara On 🔊')}} className={`px-5 py-2 rounded-full font-semibold transition-all ${notificationSound?'bg-cyan-500 text-white':'bg-gray-300 text-black'}`}>{notificationSound?'ON':'OFF'}</button>
+                        <button onClick={()=>{setNotificationSound(!notificationSound);triggerToast(notificationSound?'Suara Off':'Suara On')}} className={`px-5 py-2 rounded-full font-semibold transition-all ${notificationSound?'bg-cyan-500 text-white':'bg-gray-300 text-black'}`}>{notificationSound?'ON':'OFF'}</button>
                       </div>
-                      <div className={`${ct.card} rounded-2xl p-4 ${ct.text}`}>Quiet Mode: 23.00 - 06.00 🌙</div>
+                      <div className={`${ct.card} rounded-2xl p-4 ${ct.text} flex items-center gap-2`}><Icon3D name="moon" size={22}/> Quiet Mode: 23.00 - 06.00</div>
                     </div>
                   )}
                   {activeSetting==='security'&&(
@@ -886,24 +1224,31 @@ export default function ProfilePage() {
                       <h3 className={`text-2xl font-bold ${ct.text}`}>Security</h3>
                       <div className="flex justify-between items-center">
                         <span className={ct.text}>Two Factor Auth</span>
-                        <button onClick={()=>{setTwoFactor(!twoFactor);triggerToast(twoFactor?'2FA Disabled 🔓':'2FA Enabled 🔐')}} className={`px-5 py-2 rounded-full font-semibold transition-all ${twoFactor?'bg-blue-500 text-white':'bg-gray-300 text-black'}`}>{twoFactor?'Enabled':'Disabled'}</button>
+                        <button onClick={()=>{setTwoFactor(!twoFactor);triggerToast(twoFactor?'2FA Disabled':'2FA Enabled')}} className={`px-5 py-2 rounded-full font-semibold transition-all ${twoFactor?'bg-blue-500 text-white':'bg-gray-300 text-black'}`}>{twoFactor?'Enabled':'Disabled'}</button>
                       </div>
                       <div className={`${ct.card} rounded-2xl p-4`}>
                         <h4 className={`font-bold mb-3 ${ct.text}`}>Active Devices</h4>
                         {securityLog.map((d,i)=>(
                           <div key={i} className={`flex items-center justify-between mb-2 ${ct.text}`}>
-                            <span>{d}</span><button onClick={()=>triggerToast(`${d} logged out 🚪`)} className="text-red-400 hover:text-red-500 font-semibold">Logout</button>
+                            <span>{d}</span><button onClick={()=>triggerToast(`${d} logged out`)} className="text-red-400 hover:text-red-500 font-semibold">Logout</button>
                           </div>
                         ))}
                       </div>
-                      <div className={`${ct.card} rounded-2xl p-4 ${ct.text}`}>Face ID Authentication Ready 🔐</div>
+                      <div className={`${ct.card} rounded-2xl p-4 ${ct.text} flex items-center gap-2`}><Icon3D name="shield" size={24}/> Face ID Authentication Ready</div>
                     </div>
                   )}
                   {activeSetting==='help'&&(
                     <div className={`${ct.soft} rounded-3xl p-5 space-y-4`}>
                       <h3 className={`text-2xl font-bold ${ct.text}`}>Help Center</h3>
-                      {['📘 Tutorial SISKA Integration','🐞 Report Bug','💡 Feature Request','❓ FAQ & Support'].map(item=>(
-                        <button key={item} onClick={()=>{setSelectedHelp(item);setHelpModal(true)}} className={`w-full ${ct.card} rounded-2xl p-4 text-left hover:scale-[1.01] transition ${ct.text}`}>{item}</button>
+                      {[
+                        {label:'Tutorial SISKA Integration', icon:'book' as IconName},
+                        {label:'Report Bug', icon:'warning' as IconName},
+                        {label:'Feature Request', icon:'sparkle' as IconName},
+                        {label:'FAQ & Support', icon:'chart' as IconName},
+                      ].map(item=>(
+                        <button key={item.label} onClick={()=>{setSelectedHelp(item.label);setHelpModal(true)}} className={`w-full ${ct.card} rounded-2xl p-4 text-left hover:scale-[1.01] transition ${ct.text} flex items-center gap-3`}>
+                          <Icon3D name={item.icon} size={22}/> {item.label}
+                        </button>
                       ))}
                     </div>
                   )}
@@ -914,27 +1259,31 @@ export default function ProfilePage() {
               <div className="rounded-[35px] p-8 bg-gradient-to-br from-[#111827] to-[#581C87] text-white shadow-2xl overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-purple-500/20 blur-3xl rounded-full"/>
                 <div className="relative z-10">
-                  <FaCrown className="text-yellow-300 text-5xl mb-5"/>
+                  <div className="mb-5"><Icon3D name="crown" size={52}/></div>
                   <h2 className="text-4xl font-bold mb-2">Plotwist Pro</h2>
                   {isProActive&&<div className="inline-flex items-center gap-2 bg-yellow-300/20 border border-yellow-300/40 text-yellow-200 text-sm font-bold px-4 py-2 rounded-2xl mb-4"><FaCheck/> Aktif</div>}
                   <div className="space-y-2 mb-6">
                     <div className={`flex items-center gap-3 text-sm px-4 py-3 rounded-2xl ${isProActive?'bg-yellow-300/10 border border-yellow-300/30 text-yellow-200':'bg-white/5 border border-white/10 text-white/50'}`}>
-                      <span className="text-lg">🐾</span>
+                      <Icon3D name="graduate" size={26}/>
                       <div><p className="font-bold">Pet Academy</p><p className="text-xs opacity-70">Pelihara maskot & unlock evolusi langka</p></div>
                       {isProActive?<FaCheck className="ml-auto text-yellow-300 flex-shrink-0"/>:<FaLock className="ml-auto text-white/30 flex-shrink-0"/>}
                     </div>
-                    {[{icon:'🧠',label:'AI Insights',desc:'Analisis belajar berbasis AI'},{icon:'🎨',label:'Premium Themes',desc:'Tema eksklusif Plotwist'},{icon:'📊',label:'Advanced Analytics',desc:'Statistik produktivitas lengkap'}].map(f=>(
+                    {([
+                      {icon:'brain' as IconName,label:'AI Insights',desc:'Analisis belajar berbasis AI'},
+                      {icon:'sparkle' as IconName,label:'Premium Themes',desc:'Tema eksklusif Plotwist'},
+                      {icon:'chart' as IconName,label:'Advanced Analytics',desc:'Statistik produktivitas lengkap'},
+                    ]).map(f=>(
                       <div key={f.label} className="flex items-center gap-3 text-sm px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white/40">
-                        <span className="text-lg">{f.icon}</span>
+                        <Icon3D name={f.icon} size={26}/>
                         <div><p className="font-bold">{f.label}</p><p className="text-xs opacity-70">{f.desc}</p></div>
                         <span className="ml-auto text-xs bg-white/10 px-2 py-1 rounded-full">Soon</span>
                       </div>
                     ))}
                   </div>
                   {isProActive
-                    ? <div className="w-full bg-yellow-300/20 border border-yellow-300/30 text-yellow-200 py-4 rounded-2xl font-bold text-center">✨ Pro Member — Pet Academy Terbuka!</div>
+                    ? <div className="w-full bg-yellow-300/20 border border-yellow-300/30 text-yellow-200 py-4 rounded-2xl font-bold text-center flex items-center justify-center gap-2"><Icon3D name="sparkle" size={20}/> Pro Member — Pet Academy Terbuka!</div>
                     : <div className="w-full bg-white/10 border border-white/20 text-white/60 py-4 rounded-2xl font-bold text-center text-sm">
-                        🔒 Capai <span className="text-yellow-300">Level 2</span> untuk unlock Pet Academy
+                        <span className="flex items-center justify-center gap-2"><Icon3D name="lock" size={18}/> Capai <span className="text-yellow-300">Level 2</span> untuk unlock Pet Academy</span>
                         <p className="text-xs font-normal mt-1 opacity-60">Level {activeLevel} · butuh {Math.max(0,1000-activeXp).toLocaleString()} XP lagi</p>
                       </div>
                   }
@@ -951,7 +1300,7 @@ export default function ProfilePage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className={`${ct.card} w-[500px] rounded-[35px] p-8 shadow-2xl`}>
             <h2 className={`text-3xl font-bold mb-4 ${ct.text}`}>{selectedHelp}</h2>
-            <p className={`${ct.subtext} leading-relaxed`}>Fitur ini sedang dalam pengembangan. Plotwist AI Support akan segera hadir 🚀</p>
+            <p className={`${ct.subtext} leading-relaxed flex items-start gap-2`}><Icon3D name="rocket" size={20}/> <span>Fitur ini sedang dalam pengembangan. Plotwist AI Support akan segera hadir.</span></p>
             <button onClick={()=>setHelpModal(false)} className="mt-6 w-full bg-purple-500 text-white py-3 rounded-2xl font-bold hover:bg-purple-600 transition">Tutup</button>
           </div>
         </div>
