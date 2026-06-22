@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase'
 import { db } from '@/firebase/config'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import {
-  FaFire, FaMoon, FaBrain, FaBolt, FaCrown, FaGithub, FaGoogle,
+  FaFire, FaMoon, FaBrain, FaBolt, FaCrown, FaGoogle,
   FaLock, FaBell, FaPalette, FaQuestionCircle, FaSave, FaCamera,
   FaEdit, FaCheck, FaStar, FaTrophy, FaMedal, FaSignOutAlt, FaSync,
   FaExclamationTriangle, FaVolumeUp, FaPlay, FaStop, FaLinkedin,
@@ -1136,7 +1136,6 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   {[
                     { icon:<FaGoogle className="text-red-500 text-2xl"/>, label:'Google Calendar', status:'Connected', color:'text-green-500' },
-                    { icon:<FaGithub className={`text-2xl ${ct.text}`}/>, label:'GitHub', status:'Expired', color:'text-yellow-500', onClick:()=>triggerToast('Menghubungkan GitHub...') },
                     { icon:<Icon3D name="graduate" size={30}/>, label:'Plotwist Edu', status:eduData?'Synced':'Waiting', color:eduData?'text-green-500':'text-yellow-500' },
                   ].map(item=>(
                     <div key={item.label} className={`${ct.soft} p-5 rounded-3xl flex justify-between items-center`}>
