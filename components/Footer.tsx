@@ -70,7 +70,7 @@ export default function Footer() {
             </li>
             <li>
               <span className="ci">Instagram:</span>
-              <a href="https://instagram.com/plotwist.id_" target="_blank" rel="noreferrer" className="pw-contact-link">@plotwist.id_</a>
+              <a href="https://instagram.com/rzlworks.id" target="_blank" rel="noreferrer" className="pw-contact-link">@rzlworks.id</a>
             </li>
           </ul>
         </div>
