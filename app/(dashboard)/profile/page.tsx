@@ -1135,8 +1135,8 @@ export default function ProfilePage() {
                 <h2 className={`text-3xl font-bold mb-6 ${ct.text}`}>Integration</h2>
                 <div className="space-y-4">
                   {[
-                    { icon:<FaGoogle className="text-red-500 text-2xl"/>, label:'Google Calendar', status:'Connected', color:'text-green-500' },
-                    { icon:<Icon3D name="graduate" size={30}/>, label:'Plotwist Edu', status:eduData?'Synced':'Waiting', color:eduData?'text-green-500':'text-yellow-500' },
+                  { icon:<FaGoogle className="text-red-500 text-2xl"/>, label:'Google Calendar', status:'Connected', color:'text-green-500', onClick: undefined },
+                  { icon:<Icon3D name="graduate" size={30}/>, label:'Plotwist Edu', status:eduData?'Synced':'Waiting', color:eduData?'text-green-500':'text-yellow-500', onClick: undefined },
                   ].map(item=>(
                     <div key={item.label} className={`${ct.soft} p-5 rounded-3xl flex justify-between items-center`}>
                       <div className="flex items-center gap-3">{item.icon}<span className={`${ct.text} font-semibold text-lg`}>{item.label}</span></div>
