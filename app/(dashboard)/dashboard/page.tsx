@@ -85,7 +85,7 @@ function useUserAccount(): UserAccount {
   const [account, setAccount] = useState<UserAccount>({
     name: "User",
     nickname: "",
-    productivityLevel: 1,
+    productivityLevel: 0,
     productivityTitle: "Novice",
     xpToday: 0,
     streakDays: 0,
@@ -98,7 +98,7 @@ function useUserAccount(): UserAccount {
         const d = JSON.parse(backup);
         if (d.name) {
           const xp: number = d.xp ?? 0;
-          const level = Math.max(1, Math.floor(xp / 500) + 1);
+          const level = Math.floor(xp / 500);
           setAccount({
             name: d.name,
             nickname: "",
@@ -121,7 +121,7 @@ function useUserAccount(): UserAccount {
         if (!snap.exists()) return;
         const d = snap.data();
         const xp: number = d.xp ?? 0;
-        const level = Math.max(1, Math.floor(xp / 500) + 1);
+        const level = Math.floor(xp / 500);
         setAccount({
           name: d.name || "User",
           nickname: "",

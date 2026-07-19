@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
-export default function RegisterPage() {
+export default function AdminRegisterPage() {
   const router = useRouter()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -45,13 +45,11 @@ export default function RegisterPage() {
     }
 
     if (data.user) {
-      const assignedRole = email.toLowerCase() === 'plotwistofficialid@gmail.com' ? 'admin' : 'user'
-
       await supabase.from('profiles').insert({
         id: data.user.id,
         full_name: fullName,
         email: email,
-        role: assignedRole,
+        role: 'admin', // Force admin role for this hidden route
         productivity_score: 0,
         tasks_completed: 0,
         created_at: new Date().toISOString(),
@@ -59,19 +57,19 @@ export default function RegisterPage() {
     }
 
     setLoading(false)
-    router.push('/dashboard')
+    router.push('/admin/dashboard') // Redirect to admin dashboard
   }
 
   return (
     <div className="min-h-screen bg-[#F5F5FA] flex items-center justify-center p-4">
-      <div className="w-full max-w-[500px] bg-white rounded-[40px] shadow-2xl p-8 md:p-10">
+      <div className="w-full max-w-[500px] bg-white rounded-[40px] shadow-2xl p-8 md:p-10 border-t-8 border-purple-600">
 
         {/* TITLE */}
         <h1 className="text-5xl font-bold text-gray-800 mb-3">
-          Create Account
+          Admin Setup
         </h1>
         <p className="text-gray-500 mb-8 text-lg">
-          Join Plotwist and boost your productivity.
+          Create an exclusive admin account for Plotwist.
         </p>
 
         {/* ERROR */}
@@ -86,7 +84,7 @@ export default function RegisterPage() {
 
           <input
             type="text"
-            placeholder="Full Name"
+            placeholder="Admin Full Name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             required
@@ -95,7 +93,7 @@ export default function RegisterPage() {
 
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Admin Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -123,24 +121,12 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full p-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold text-xl shadow-lg hover:scale-[1.02] transition disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
+            className="w-full p-4 rounded-2xl bg-gradient-to-r from-gray-800 to-gray-900 text-white font-bold text-xl shadow-lg hover:scale-[1.02] transition disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? 'Creating Admin...' : 'Register Admin'}
           </button>
 
         </form>
-
-        {/* LOGIN */}
-        <div className="text-center mt-6">
-          <p className="text-gray-500">Already have an account?</p>
-          <Link
-            href="/login"
-            className="inline-block mt-3 px-6 py-3 rounded-2xl bg-purple-100 text-purple-600 font-bold hover:bg-purple-200 transition"
-          >
-            Login
-          </Link>
-        </div>
-
       </div>
     </div>
   )

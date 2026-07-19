@@ -451,4 +451,4 @@ export default function PetAcademyPage() {
       `}</style>
     </div>
   )
-}
+}                                                                                                                                                                                                                            

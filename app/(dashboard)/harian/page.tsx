@@ -71,7 +71,7 @@ function useActivePet() {
 // ─── Hook: baca productivity level dari localStorage ─────────────────────────
 
 function useProductivityLevel(): number {
-  const [level, setLevel] = useState(1)
+  const [level, setLevel] = useState(0)
   useEffect(() => {
     const read = () => {
       try {
@@ -79,7 +79,7 @@ function useProductivityLevel(): number {
         if (raw) {
           const p = JSON.parse(raw)
           const xp = p.xp ?? 0
-          setLevel(Math.max(1, Math.floor(xp / 500) + 1))
+          setLevel(Math.floor(xp / 500))
         }
       } catch {}
     }
