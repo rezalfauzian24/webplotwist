@@ -27,6 +27,7 @@ import {
 
 import { useMemo, useState, useEffect } from 'react'
 import PetCompanion from '@/components/PetCompanion'
+import { useIsAdmin } from '@/hooks/useIsAdmin'
 
 type EventType = 'class' | 'deadline' | 'exam' | 'personal' | 'focus'
 
@@ -335,7 +336,8 @@ export default function CalendarPage() {
 
   const today = new Date()
   const productivityLevel = useProductivityLevel()
-  const isProUnlocked = productivityLevel >= 2
+  const isAdmin = useIsAdmin()
+  const isProUnlocked = productivityLevel >= 2 || isAdmin
 
   const [currentYear,  setCurrentYear]  = useState(today.getFullYear())
   const [currentMonth, setCurrentMonth] = useState(today.getMonth() + 1)

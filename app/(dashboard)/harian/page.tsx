@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 // ─── 3D Emoji renderer ─────────────────────────────────────────────────────
 // Renders any emoji glyph as a Fluent "3D" style image (instead of the flat
@@ -436,7 +437,8 @@ export default function HarianPage() {
 
   // ── Pro status ───────────────────────────────────────────────────────────────
   const productivityLevel = useProductivityLevel()
-  const isProUnlocked     = productivityLevel >= 2
+  const isAdmin = useIsAdmin()
+  const isProUnlocked     = productivityLevel >= 2 || isAdmin
 
   // XP yang masih dibutuhkan untuk level 2
   const xpNeeded = (() => {
